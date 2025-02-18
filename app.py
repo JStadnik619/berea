@@ -7,7 +7,8 @@ cursor = conn.cursor()
 
 cursor.execute("""
 SELECT text FROM KJV_verses
-WHERE book_id = 8
+JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
+WHERE KJV_books.name = 'Genesis'
 AND chapter = 4
 AND verse = 1
 """)
