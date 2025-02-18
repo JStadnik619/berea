@@ -26,6 +26,12 @@ def valid_books(version='KJV'):
     return books
 
 
+# TODO: print_book
+
+# TODO: print_chapter
+
+
+# TODO: Filter book by abbreviations and short names (case-insensitive)
 def print_verse(params, version='KJV'):
     database = f'{get_source_root()}/data/{version}.db'
     conn = sqlite3.connect(database)
@@ -47,8 +53,11 @@ def print_verse(params, version='KJV'):
         print(row[0])
 
 
-# TODO: Parse verse if in format eg. 5-7 
+# TODO: Filter book by abbreviations and short names (case-insensitive)
 def print_verses(params, version='KJV'):
+    """
+    Print a range of verses, eg. 5-7. 
+    """
     database = f'{get_source_root()}/data/{version}.db'
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
