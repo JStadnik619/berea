@@ -1,2 +1,2 @@
 benchmark:
-	hyperfine --warmup 3 'python3 -m biblecli.cli Genesis 3 3'
+	hyperfine --warmup 3 'bible Genesis 3 3'

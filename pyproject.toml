@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biblecli"
+authors = [
+    {name = "Jamie Stadnik"},
+]
+description = "My package description"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["bible", "cli"]
+license = {text = "BSD-3-Clause"}  # TODO: Update this
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = []
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "biblecli.__version__"}
+
+# [project.optional-dependencies]
+# TODO: add pytest, requests
+
+[project.scripts]
+bible = "biblecli.cli:main"
+
+# ... other project metadata fields as listed in:
+#     https://packaging.python.org/en/latest/guides/writing-pyproject-toml/

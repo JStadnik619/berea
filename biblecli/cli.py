@@ -1,5 +1,6 @@
 import argparse
 
+from biblecli import __version__
 from biblecli.query import print_verse, valid_books, print_verses
 
 
@@ -7,7 +8,7 @@ from biblecli.query import print_verse, valid_books, print_verses
 def parse_biblecli_args():
     description = "A CLI for looking up passages of Scripture."
     parser = argparse.ArgumentParser(description=description)
-    # parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     
     # TODO: Improve message returned by invalid choice
     # TODO: eg. fuzzy match input to valid name/abbr
