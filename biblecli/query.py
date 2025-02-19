@@ -31,12 +31,23 @@ def valid_books(version='KJV'):
 # TODO: print_chapter
 
 
+def clean_book_name(book):
+    cleaned_name = book.title()
+    # Database names use proper title case
+    # eg. 'Song of Solomon' and 'Revelation of John'
+    if 'Of' in cleaned_name:
+        cleaned_name = cleaned_name.replace('Of', 'of')
+    return cleaned_name
+
+
 # TODO: Filter book by abbreviations and short names (case-insensitive)
 def print_verse(params, version='KJV'):
     database = f'{get_source_root()}/data/{version}.db'
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
+    
+    params['book'] = clean_book_name(params['book'])
     
     # TODO: Pass version as query param
     
@@ -62,6 +73,8 @@ def print_verses(params, version='KJV'):
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
+    
+    params['book'] = clean_book_name(params['book'])
     
     verses = params.pop('verse').split('-')
     params['verse_start'] = verses[0]

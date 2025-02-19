@@ -10,8 +10,13 @@ def parse_biblecli_args():
     # parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     
     # TODO: Improve message returned by invalid choice
-    parser.add_argument('book', choices=valid_books())
-    # TODO: Parse chapter OR chapter:verse formats
+    # TODO: eg. fuzzy match input to valid name/abbr
+    parser.add_argument(
+        'book'#,
+        # TODO: Uncomment this once abbreviations are returned by valid_books()
+        # choices=valid_books()
+    )
+
     parser.add_argument('chapter')
     parser.add_argument('verse')
     
