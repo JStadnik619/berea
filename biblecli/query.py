@@ -80,3 +80,6 @@ def print_verses(params, version='KJV'):
     records = cursor.fetchall()
     for row in records:
         print(row[0])
+
+
+# TODO: Generate Markdown reference to passage
