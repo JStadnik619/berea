@@ -7,15 +7,30 @@ def get_source_root():
     return os.path.realpath(os.path.dirname(__file__))
 
 
-# TODO: Add abbreviations and short names to books table, add to returned list
-def valid_books(version='KJV'):
-    database = f'{get_source_root()}/data/{version}.db'
+# TODO: Run this when downloading new translation from the CLI
+def rename_tables(translation):
+    """Rename tables for consistent schema across downloaded translations.
+    """
+    database = f'{get_source_root()}/data/{translation}.db'
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
     
-    # TODO: Pass version as query param
-    cursor.execute("SELECT name FROM KJV_books")
+    tables = ['books', 'verses']
+    for table in tables:
+        # SQLite doesn't bind parameters for schema objects
+        sql = f"ALTER TABLE {translation}_{table} RENAME TO {table};"
+        cursor.execute(sql)
+
+
+# TODO: Add abbreviations and short names to books table, add to returned list
+def valid_books(translation):
+    database = f'{get_source_root()}/data/{translation}.db'
+    conn = sqlite3.connect(database)
+    # TODO: Use context manager?
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT name FROM books")
 
     records = cursor.fetchall()
     
@@ -56,22 +71,20 @@ def get_book_from_abbreviation(book):
         print(msg)
 
 
-def print_book(params, version='KJV'):
-    database = f'{get_source_root()}/data/{version}.db'
+def print_book(params):
+    database = f"{get_source_root()}/data/{params['translation']}.db"
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
-    # TODO: Pass version as query param
-    
     if params['book']:
     
         cursor.execute("""
-        SELECT text FROM KJV_verses
-        JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
-        WHERE KJV_books.name = :book
+        SELECT text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE books.name = :book
         """, params)
 
         records = cursor.fetchall()
@@ -80,22 +93,20 @@ def print_book(params, version='KJV'):
                 print(row[0])
 
 
-def print_chapter(params, version='KJV'):
-    database = f'{get_source_root()}/data/{version}.db'
+def print_chapter(params):
+    database = f"{get_source_root()}/data/{params['translation']}.db"
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
-    # TODO: Pass version as query param
-    
     if params['book']:
     
         cursor.execute("""
-        SELECT text FROM KJV_verses
-        JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
-        WHERE KJV_books.name = :book
+        SELECT text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE books.name = :book
         AND chapter = :chapter
         """, params)
 
@@ -110,22 +121,20 @@ def print_chapter(params, version='KJV'):
                 print(row[0])
 
 
-def print_verse(params, version='KJV'):
-    database = f'{get_source_root()}/data/{version}.db'
+def print_verse(params):
+    database = f"{get_source_root()}/data/{params['translation']}.db"
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
-    # TODO: Pass version as query param
-    
     if params['book']:
     
         cursor.execute("""
-        SELECT text FROM KJV_verses
-        JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
-        WHERE KJV_books.name = :book
+        SELECT text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE books.name = :book
         AND chapter = :chapter
         AND verse = :verse
         """, params)
@@ -141,11 +150,11 @@ def print_verse(params, version='KJV'):
                 print(row[0])
 
 
-def print_verses(params, version='KJV'):
+def print_verses(params):
     """
     Print a range of verses, eg. 5-7. 
     """
-    database = f'{get_source_root()}/data/{version}.db'
+    database = f"{get_source_root()}/data/{params['translation']}.db"
     conn = sqlite3.connect(database)
     # TODO: Use context manager?
     cursor = conn.cursor()
@@ -158,12 +167,10 @@ def print_verses(params, version='KJV'):
         params['verse_start'] = verses[0]
         params['verse_end'] = verses[1]
         
-        # TODO: Pass version as query param
-        
         cursor.execute("""
-        SELECT text FROM KJV_verses
-        JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
-        WHERE KJV_books.name = :book
+        SELECT text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE books.name = :book
         AND chapter = :chapter
         AND verse BETWEEN :verse_start AND :verse_end
         """, params)

@@ -23,6 +23,13 @@ def parse_biblecli_args():
     parser.add_argument('chapter', nargs='?')
     parser.add_argument('verse', nargs='?')
     
+    parser.add_argument(
+        '-t', '--translation',
+        # TODO: parse choices from /data
+        choices=['KJV', 'BSB'],
+        default='KJV'
+    )
+    
     return parser.parse_args()
 
 
