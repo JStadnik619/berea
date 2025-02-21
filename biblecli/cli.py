@@ -30,9 +30,17 @@ def parse_biblecli_args():
         default='KJV'
     )
     
+    # TODO: Make the default format configurable
+    parser.add_argument(
+        '-f', '--format',
+        choices=['txt', 'md'],
+        default='txt'
+    )
+    
     return parser.parse_args()
 
 
+# TODO: markdown output format
 def main():
     args = parse_biblecli_args()
     
