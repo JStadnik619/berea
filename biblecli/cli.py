@@ -1,7 +1,9 @@
 import argparse
 
 from biblecli import __version__
-from biblecli.query import print_verse, valid_books, print_verses
+from biblecli.query import (
+    print_verse, valid_books, print_book, print_chapter, print_verses
+)
 
 
 # Example: python -m biblecli.cli Genesis 3 3
@@ -18,8 +20,8 @@ def parse_biblecli_args():
         # choices=valid_books()
     )
 
-    parser.add_argument('chapter')
-    parser.add_argument('verse')
+    parser.add_argument('chapter', nargs='?')
+    parser.add_argument('verse', nargs='?')
     
     return parser.parse_args()
 
@@ -29,7 +31,12 @@ def main():
     
     if args is not None:
         params = vars(args)
-        if '-' in args.verse:
+
+        if not args.chapter:
+            print_book(params)
+        elif not args.verse:
+            print_chapter(params)
+        elif '-' in args.verse:
             print_verses(params)
         else:
             print_verse(params)

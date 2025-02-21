@@ -27,11 +27,6 @@ def valid_books(version='KJV'):
     return books
 
 
-# TODO: print_book
-
-# TODO: print_chapter
-
-
 def clean_book_name(book):
     cleaned_name = book.title()
     # Database names use proper title case
@@ -59,6 +54,60 @@ def get_book_from_abbreviation(book):
         
         msg = f"Invalid input {book=}."
         print(msg)
+
+
+def print_book(params, version='KJV'):
+    database = f'{get_source_root()}/data/{version}.db'
+    conn = sqlite3.connect(database)
+    # TODO: Use context manager?
+    cursor = conn.cursor()
+    
+    params['book'] = get_book_from_abbreviation(params['book'])
+    
+    # TODO: Pass version as query param
+    
+    if params['book']:
+    
+        cursor.execute("""
+        SELECT text FROM KJV_verses
+        JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
+        WHERE KJV_books.name = :book
+        """, params)
+
+        records = cursor.fetchall()
+        
+        for row in records:
+                print(row[0])
+
+
+def print_chapter(params, version='KJV'):
+    database = f'{get_source_root()}/data/{version}.db'
+    conn = sqlite3.connect(database)
+    # TODO: Use context manager?
+    cursor = conn.cursor()
+    
+    params['book'] = get_book_from_abbreviation(params['book'])
+    
+    # TODO: Pass version as query param
+    
+    if params['book']:
+    
+        cursor.execute("""
+        SELECT text FROM KJV_verses
+        JOIN KJV_books ON KJV_verses.book_id = KJV_books.id
+        WHERE KJV_books.name = :book
+        AND chapter = :chapter
+        """, params)
+
+        records = cursor.fetchall()
+        
+        if len(records) == 0:
+            msg = f"Invalid chapter: {params['book']} {params['chapter']}"
+            print(msg)
+        
+        else:
+            for row in records:
+                print(row[0])
 
 
 def print_verse(params, version='KJV'):
