@@ -71,44 +71,11 @@ def get_book_from_abbreviation(book):
         print(msg)
 
 
-# TODO: This requires:
-# compiling all the abbreviations used in links to a given resourse (web scraper?)
-# a table for mapping books to abbreviations in the db
-# many-to-many lookup table for resources to abbreviations in the db
-# a resources table in the db
-def get_book_abbreviation_by_resource(translation, book, resource):
-    """Get a book's abbreviation used by a specific resource.
+def create_empty_markdown_link(params):
+    """Creates an empty link since mapping a book's abbreviation to
+    a URL path variable would be overly complex.
     """
-    database = f"{get_source_root()}/data/{translation}.db"
-    conn = sqlite3.connect(database)
-    # TODO: Use context manager?
-    cursor = conn.cursor()
-    
-    params = {
-        'book': book,
-        'resource': resource,
-    }
-    
-    # TODO: Implement these tables in db
-    cursor.execute("""
-        SELECT name FROM abbreviations
-        JOIN books ON abbreviations.book_id = books.id
-        JOIN resource_abbreviations ON resource_abbreviations.abbreviation_id = abbreviations.id
-        JOIN resources ON resource_abbreviations.resource_id = resources.id
-        WHERE books.name = :book
-        AND resources.name = :resource
-        """, params)
-    
-    # Assuming a resource only has one abbreviation for a given book and translation
-    return cursor.fetchone()[0]
-
-
-# TODO: Input resource from params, default to bible.com
-def create_markdown_link(params):
-    book_abbrev = get_book_abbreviation_by_resource(params['book'], 'bible.com')
-    link = f"https://www.bible.com/bible/59/{book_abbrev}.{params['chapter']}.{params['verse']}.{params['translation']}"
-    # TODO: Ping link and raise error if not valid?
-    return f"([{params['book']}: {params['chapter']}: {params['verse']}]({link}))"
+    return f"([{params['book']}: {params['chapter']}: {params['verse']}]())"
 
 
 def print_book(params):
@@ -189,6 +156,13 @@ def print_verse(params):
             for row in records:
                 print(row[0])
 
+"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
+def multiline_verse(verse):
+    space_split = verse[:79].rfind(' ')
+    first_line = verse[:space_split]
+    next_line = verse[space_split:].lstrip()
+    str(verse).split()
+
 
 def print_verses(params):
     """
@@ -203,7 +177,7 @@ def print_verses(params):
     
     if params['book']:
     
-        verses = params.pop('verse').split('-')
+        verses = params['verse'].split('-')
         params['verse_start'] = verses[0]
         params['verse_end'] = verses[1]
         
@@ -235,6 +209,11 @@ def print_verses(params):
                     print('###\n')
                     print('______________________________________________________________________\n')
                     for row in records:
+                        # TODO: Split the verse into multiple lines if it's too long
+                        # TODO: unit test this with Esther 8:9 (367 character verse)
+                        # if len(row[0]) > 80:
+                            # Do this while there's more characters left
+                            # Split verse on the last space before verse[79]
                         print(row[0])
-                    print(create_markdown_link(params))
+                    print(create_empty_markdown_link(params))
                     print('\n______________________________________________________________________')
