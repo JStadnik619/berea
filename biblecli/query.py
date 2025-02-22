@@ -78,6 +78,54 @@ def create_empty_markdown_link(params):
     return f"([{params['book']}: {params['chapter']}: {params['verse']}]())"
 
 
+def list_multiline_verse(verse):
+    lines = []
+    
+    next_line = verse
+    
+    while len(next_line) > 80:
+        # Split the verse if there's more than one line left
+        space_split = next_line[:79].rfind(' ')
+        lines.append(next_line[:space_split])
+        next_line = next_line[space_split:].lstrip()
+            
+    # Append last line of verse
+    lines.append(next_line)
+    
+    return lines
+
+
+def print_markdown_excerpt(verse_records, params):
+    """Generate Markdown excerpt for the verses.
+
+    Args:
+        verse_records (_type_): _description_
+        params (_type_): _description_
+    """
+    print('###\n')
+    print('______________________________________________________________________\n')
+    for row in verse_records:
+        # Split the verse into multiple lines if it's too long
+        if len(row[0]) > 80:
+            lines = list_multiline_verse(row[0])
+            for line in lines:
+                print(line)
+        else:
+            print(row[0])
+    print(create_empty_markdown_link(params))
+    print('\n______________________________________________________________________')
+
+
+def print_passage_by_format(params, verse_records):
+    match params['format']: 
+        case 'txt':
+            for row in verse_records:
+                print(row[0])
+
+        case 'md':
+            print_markdown_excerpt(verse_records, params)
+
+
 def print_book(params):
     database = f"{get_source_root()}/data/{params['translation']}.db"
     conn = sqlite3.connect(database)
@@ -94,10 +142,9 @@ def print_book(params):
         WHERE books.name = :book
         """, params)
 
-        records = cursor.fetchall()
+        verse_records = cursor.fetchall()
         
-        for row in records:
-                print(row[0])
+        print_passage_by_format(params, verse_records)
 
 
 def print_chapter(params):
@@ -117,15 +164,14 @@ def print_chapter(params):
         AND chapter = :chapter
         """, params)
 
-        records = cursor.fetchall()
+        verse_records = cursor.fetchall()
         
-        if len(records) == 0:
+        if len(verse_records) == 0:
             msg = f"Invalid chapter: {params['book']} {params['chapter']}"
             print(msg)
         
         else:
-            for row in records:
-                print(row[0])
+            print_passage_by_format(params, verse_records)
 
 
 def print_verse(params):
@@ -146,22 +192,14 @@ def print_verse(params):
         AND verse = :verse
         """, params)
 
-        records = cursor.fetchall()
+        verse_records = cursor.fetchall()
         
-        if len(records) == 0:
+        if len(verse_records) == 0:
             msg = f"Invalid verse: {params['book']} {params['chapter']}:{params['verse']}"
             print(msg)
         
         else:
-            for row in records:
-                print(row[0])
-
-"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
-def multiline_verse(verse):
-    space_split = verse[:79].rfind(' ')
-    first_line = verse[:space_split]
-    next_line = verse[space_split:].lstrip()
-    str(verse).split()
+            print_passage_by_format(params, verse_records)
 
 
 def print_verses(params):
@@ -189,9 +227,9 @@ def print_verses(params):
         AND verse BETWEEN :verse_start AND :verse_end
         """, params)
 
-        records = cursor.fetchall()
+        verse_records = cursor.fetchall()
         
-        if len(records) == 0:
+        if len(verse_records) == 0:
             msg = (
                 f"Invalid verses: {params['book']} "
                 f"{params['chapter']}:{params['verse_start']}-{params['verse_end']}"
@@ -199,21 +237,4 @@ def print_verses(params):
             print(msg)
         
         else:
-            match params['format']: 
-                case 'txt':
-                    for row in records:
-                        print(row[0])
-
-                # TODO: Generate Markdown excerpt for the verses
-                case 'md':
-                    print('###\n')
-                    print('______________________________________________________________________\n')
-                    for row in records:
-                        # TODO: Split the verse into multiple lines if it's too long
-                        # TODO: unit test this with Esther 8:9 (367 character verse)
-                        # if len(row[0]) > 80:
-                            # Do this while there's more characters left
-                            # Split verse on the last space before verse[79]
-                        print(row[0])
-                    print(create_empty_markdown_link(params))
-                    print('\n______________________________________________________________________')
+            print_passage_by_format(params, verse_records)
