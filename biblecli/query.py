@@ -75,7 +75,11 @@ def create_empty_markdown_link(params):
     """Creates an empty link since mapping a book's abbreviation to
     a URL path variable would be overly complex.
     """
-    return f"([{params['book']}: {params['chapter']}: {params['verse']}]())"
+    link = (
+        f"([{params['book']} {params['chapter']}:"
+        f"{params['verse']} {params['translation']}]()])"
+    )
+    return link
 
 
 def list_multiline_verse(verse):
