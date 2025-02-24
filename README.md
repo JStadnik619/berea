@@ -79,7 +79,8 @@ Revelation of John: revelation, rev, re, the revelation
 [scrollmapper/bible_databases: Bible versions and cross-reference databases.](https://github.com/scrollmapper/bible_databases)
 
 <!-- TODO: I should get authorization from Crossway before publishing this app -->
-[ESV API | ESV.org](https://api.esv.org/)
+<!-- Users may not copy or download more than 500 verses of the ESV Bible -->
+~~[ESV API | ESV.org](https://api.esv.org/)~~
 
 ## Similar Projects
 
