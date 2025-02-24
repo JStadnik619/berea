@@ -244,3 +244,9 @@ def print_verses(params):
         
         else:
             print_passage_by_format(params, verse_records)
+    
+    
+    # TODO: Use FTS4 SQLite extension to search bible for particular words/phrases
+    # TODO: Fuzzy search? (eg. sanctify, sanctification, sanctity)
+    def search_bible():
+        pass
