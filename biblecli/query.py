@@ -95,6 +95,18 @@ def list_multiline_verse(verse):
     return lines
 
 
+def print_single_or_multiline_verse(verse_record):
+    # Print single line verse
+    if len(verse_record[0]) <= 80:
+        print(verse_record[0])
+    
+    # Split the verse into multiple lines if it's too long
+    else:
+        lines = list_multiline_verse(verse_record[0])
+        for line in lines:
+            print(line)
+
+
 def print_markdown_excerpt(verse_records, params):
     """Generate Markdown excerpt for the verses.
 
@@ -105,13 +117,7 @@ def print_markdown_excerpt(verse_records, params):
     print('###\n')
     print('______________________________________________________________________\n')
     for row in verse_records:
-        # Split the verse into multiple lines if it's too long
-        if len(row[0]) > 80:
-            lines = list_multiline_verse(row[0])
-            for line in lines:
-                print(line)
-        else:
-            print(row[0])
+        print_single_or_multiline_verse(row)
     print(create_empty_markdown_link(params))
     print('\n______________________________________________________________________')
 
@@ -120,7 +126,7 @@ def print_passage_by_format(params, verse_records):
     match params['format']: 
         case 'txt':
             for row in verse_records:
-                print(row[0])
+                print_single_or_multiline_verse(row)
 
         case 'md':
             print_markdown_excerpt(verse_records, params)
