@@ -26,8 +26,8 @@ def parse_biblecli_args():
     parser.add_argument(
         '-t', '--translation',
         # TODO: parse choices from /data
-        choices=['KJV', 'BSB'],
-        default='KJV'
+        choices=['BSB', 'KJV'],
+        default='BSB'
     )
     
     # TODO: Make the default format configurable
