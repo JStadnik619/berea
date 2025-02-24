@@ -77,7 +77,7 @@ def create_empty_markdown_link(params):
     """
     link = (
         f"([{params['book']} {params['chapter']}:"
-        f"{params['verse']} {params['translation']}]()])"
+        f"{params['verse']} {params['translation']}]())"
     )
     return link
 
