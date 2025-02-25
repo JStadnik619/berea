@@ -40,7 +40,6 @@ def parse_biblecli_args():
     return parser.parse_args()
 
 
-# TODO: markdown output format
 def main():
     args = parse_biblecli_args()
     

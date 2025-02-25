@@ -75,10 +75,16 @@ def create_empty_markdown_link(params):
     """Creates an empty link since mapping a book's abbreviation to
     a URL path variable would be overly complex.
     """
-    link = (
-        f"([{params['book']} {params['chapter']}:"
-        f"{params['verse']} {params['translation']}]())"
-    )
+    link = f"([{params['book']}"
+    
+    if params['chapter']:
+        link += f" {params['chapter']}"
+        
+        if params['verse']:
+            link += f":{params['verse']}"
+    
+    link += f" {params['translation']}]())"
+    
     return link
 
 
@@ -111,6 +117,7 @@ def print_single_or_multiline_verse(verse_record):
             print(line)
 
 
+# TODO: Print contiguous paragraphs instead of line by line
 def print_markdown_excerpt(verse_records, params):
     """Generate Markdown excerpt for the verses.
 
@@ -126,6 +133,7 @@ def print_markdown_excerpt(verse_records, params):
     print('\n______________________________________________________________________')
 
 
+# TODO: Print contiguous paragraphs instead of line by line
 def print_passage_by_format(params, verse_records):
     match params['format']: 
         case 'txt':
