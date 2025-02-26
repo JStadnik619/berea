@@ -105,6 +105,7 @@ def list_multiline_verse(verse):
     return lines
 
 
+# TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
 def print_single_or_multiline_verse(verse_record):
     # Print single line verse
     if len(verse_record[0]) <= 80:
@@ -117,6 +118,19 @@ def print_single_or_multiline_verse(verse_record):
             print(line)
 
 
+# TODO: Replace consecutive spaces with single spaces
+# TODO: Input line length?
+def print_wall_of_text(verse_records): 
+    verses = ''
+    for row in verse_records:
+        verses += row[0].strip() + ' '
+    
+    verses_split = list_multiline_verse(verses)
+    wrapped_verses = '\n'.join(verses_split)
+    
+    print(wrapped_verses)
+
+
 # TODO: Print contiguous paragraphs instead of line by line
 def print_markdown_excerpt(verse_records, params):
     """Generate Markdown excerpt for the verses.
@@ -127,18 +141,17 @@ def print_markdown_excerpt(verse_records, params):
     """
     print('###\n')
     print('______________________________________________________________________\n')
-    for row in verse_records:
-        print_single_or_multiline_verse(row)
+    print_wall_of_text(verse_records)
     print(create_empty_markdown_link(params))
     print('\n______________________________________________________________________')
 
 
-# TODO: Print contiguous paragraphs instead of line by line
+# TODO: Print paragraphs from Bible format
+# TODO: Parse USFM tags to create more readable passages/newlines
 def print_passage_by_format(params, verse_records):
     match params['format']: 
         case 'txt':
-            for row in verse_records:
-                print_single_or_multiline_verse(row)
+             print_wall_of_text(verse_records)
 
         case 'md':
             print_markdown_excerpt(verse_records, params)
