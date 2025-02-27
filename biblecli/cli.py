@@ -36,6 +36,10 @@ def parse_biblecli_args():
         choices=['txt', 'md'],
         default='txt'
     )
+    parser.add_argument(
+        '-n', '--verse_numbers',
+        action='store_true'
+    )
     
     return parser.parse_args()
 

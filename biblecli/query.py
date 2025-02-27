@@ -120,10 +120,13 @@ def print_single_or_multiline_verse(verse_record):
 
 # TODO: Replace consecutive spaces with single spaces
 # TODO: Input line length?
-def print_wall_of_text(verse_records): 
+def print_wall_of_text(verse_records, verse_numbers=False): 
     verses = ''
     for row in verse_records:
-        verses += row[0].strip() + ' '
+        if verse_numbers:
+            verses += str(row['verse']) + ' '
+        
+        verses += row['text'].strip() + ' '
     
     verses_split = list_multiline_verse(verses)
     wrapped_verses = '\n'.join(verses_split)
@@ -131,7 +134,7 @@ def print_wall_of_text(verse_records):
     print(wrapped_verses)
 
 
-# TODO: Print contiguous paragraphs instead of line by line
+# TODO: Print paragraphs from Bible format
 def print_markdown_excerpt(verse_records, params):
     """Generate Markdown excerpt for the verses.
 
@@ -151,24 +154,29 @@ def print_markdown_excerpt(verse_records, params):
 def print_passage_by_format(params, verse_records):
     match params['format']: 
         case 'txt':
-             print_wall_of_text(verse_records)
+            print_wall_of_text(verse_records, params['verse_numbers'])
 
         case 'md':
             print_markdown_excerpt(verse_records, params)
 
 
-def print_book(params):
-    database = f"{get_source_root()}/data/{params['translation']}.db"
+def get_bible_cursor(translation):
+    database = f"{get_source_root()}/data/{translation}.db"
     conn = sqlite3.connect(database)
+    conn.row_factory = sqlite3.Row
     # TODO: Use context manager?
-    cursor = conn.cursor()
+    return conn.cursor()
+
+
+def print_book(params):
+    cursor = get_bible_cursor(params['translation'])
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
     if params['book']:
     
         cursor.execute("""
-        SELECT text FROM verses
+        SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         """, params)
@@ -179,17 +187,14 @@ def print_book(params):
 
 
 def print_chapter(params):
-    database = f"{get_source_root()}/data/{params['translation']}.db"
-    conn = sqlite3.connect(database)
-    # TODO: Use context manager?
-    cursor = conn.cursor()
+    cursor = get_bible_cursor(params['translation'])
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
     if params['book']:
     
         cursor.execute("""
-        SELECT text FROM verses
+        SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         AND chapter = :chapter
@@ -206,17 +211,14 @@ def print_chapter(params):
 
 
 def print_verse(params):
-    database = f"{get_source_root()}/data/{params['translation']}.db"
-    conn = sqlite3.connect(database)
-    # TODO: Use context manager?
-    cursor = conn.cursor()
+    cursor = get_bible_cursor(params['translation'])
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
     if params['book']:
     
         cursor.execute("""
-        SELECT text FROM verses
+        SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         AND chapter = :chapter
@@ -237,10 +239,7 @@ def print_verses(params):
     """
     Print a range of verses, eg. 5-7. 
     """
-    database = f"{get_source_root()}/data/{params['translation']}.db"
-    conn = sqlite3.connect(database)
-    # TODO: Use context manager?
-    cursor = conn.cursor()
+    cursor = get_bible_cursor(params['translation'])
     
     params['book'] = get_book_from_abbreviation(params['book'])
     
@@ -251,7 +250,7 @@ def print_verses(params):
         params['verse_end'] = verses[1]
         
         cursor.execute("""
-        SELECT text FROM verses
+        SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         AND chapter = :chapter
