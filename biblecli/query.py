@@ -43,12 +43,12 @@ def valid_books(translation):
 
 
 def clean_book_name(book):
-    cleaned_name = book.title()
-    # Database names use proper title case
-    # eg. 'Song of Solomon' and 'Revelation of John'
-    if 'Of' in cleaned_name:
-        cleaned_name = cleaned_name.replace('Of', 'of')
-    return cleaned_name
+        cleaned_name = book.title()
+        # Database names use proper title case
+        # eg. 'Song of Solomon' and 'Revelation of John'
+        if 'Of' in cleaned_name:
+            cleaned_name = cleaned_name.replace('Of', 'of')
+        return cleaned_name
 
 
 # TODO: Create a table for these mappings in the db upon download
@@ -71,23 +71,6 @@ def get_book_from_abbreviation(book):
         print(msg)
 
 
-def create_empty_markdown_link(params):
-    """Creates an empty link since mapping a book's abbreviation to
-    a URL path variable would be overly complex.
-    """
-    link = f"([{params['book']}"
-    
-    if params['chapter']:
-        link += f" {params['chapter']}"
-        
-        if params['verse']:
-            link += f":{params['verse']}"
-    
-    link += f" {params['translation']}]())"
-    
-    return link
-
-
 def list_multiline_verse(verse):
     lines = []
     
@@ -105,119 +88,130 @@ def list_multiline_verse(verse):
     return lines
 
 
-# TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
-def print_single_or_multiline_verse(verse_record):
-    # Print single line verse
-    if len(verse_record[0]) <= 80:
-        print(verse_record[0])
-    
-    # Split the verse into multiple lines if it's too long
-    else:
-        lines = list_multiline_verse(verse_record[0])
-        for line in lines:
-            print(line)
+class BibleClient:
+    def __init__(self, book, chapter, verse, translation, format, verse_numbers):
+        self.book = self.book = get_book_from_abbreviation(book)
+        self.chapter = chapter
+        self.verse = verse
+        self.translation = translation
+        self.format = format
+        self.verse_numbers = verse_numbers
+        self.cursor = self.get_bible_cursor()
 
-
-# TODO: Replace consecutive spaces with single spaces
-# TODO: Input line length?
-def print_wall_of_text(verse_records, verse_numbers=False): 
-    verses = ''
-    for row in verse_records:
-        if verse_numbers:
-            verses += str(row['verse']) + ' '
+    def create_empty_markdown_link(self):
+        """Creates an empty link since mapping a book's abbreviation to
+        a URL path variable would be overly complex.
+        """
+        link = f"([{self.book}"
         
-        verses += row['text'].strip() + ' '
+        if self.chapter:
+            link += f" {self.chapter}"
+            
+            if self.verse:
+                link += f":{self.verse}"
+        
+        link += f" {self.translation}]())"
+        
+        return link
+
+    # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
+    def print_single_or_multiline_verse(verse_record):
+        # Print single line verse
+        if len(verse_record[0]) <= 80:
+            print(verse_record[0])
+        
+        # Split the verse into multiple lines if it's too long
+        else:
+            lines = list_multiline_verse(verse_record[0])
+            for line in lines:
+                print(line)
+
+    # TODO: Replace consecutive spaces with single spaces
+    # TODO: Input line length?
+    def print_wall_of_text(self, verse_records): 
+        verses = ''
+        for row in verse_records:
+            if self.verse_numbers:
+                verses += str(row['verse']) + ' '
+            
+            verses += row['text'].strip() + ' '
+        
+        verses_split = list_multiline_verse(verses)
+        wrapped_verses = '\n'.join(verses_split)
+        
+        print(wrapped_verses)
+
+    # TODO: Print paragraphs from Bible format
+    def print_markdown_excerpt(self, verse_records):
+        """Generate Markdown excerpt for the verses.
+
+        Args:
+            verse_records (_type_): _description_
+            params (_type_): _description_
+        """
+        print('###\n')
+        print('______________________________________________________________________\n')
+        self.print_wall_of_text(verse_records)
+        print(self.create_empty_markdown_link())
+        print('\n______________________________________________________________________')
+
+    # TODO: Print paragraphs from Bible format
+    # TODO: Parse USFM tags to create more readable passages/newlines
+    def print_passage_by_format(self, verse_records):
+        match self.format: 
+            case 'txt':
+                self.print_wall_of_text(verse_records)
+
+            case 'md':
+                self.print_markdown_excerpt(verse_records)
+
+    def get_bible_cursor(self):
+        database = f"{get_source_root()}/data/{self.translation}.db"
+        conn = sqlite3.connect(database)
+        conn.row_factory = sqlite3.Row
+        # TODO: Use context manager?
+        return conn.cursor()
+
+    def print_book(self):
+        params = {'book': self.book}
     
-    verses_split = list_multiline_verse(verses)
-    wrapped_verses = '\n'.join(verses_split)
-    
-    print(wrapped_verses)
-
-
-# TODO: Print paragraphs from Bible format
-def print_markdown_excerpt(verse_records, params):
-    """Generate Markdown excerpt for the verses.
-
-    Args:
-        verse_records (_type_): _description_
-        params (_type_): _description_
-    """
-    print('###\n')
-    print('______________________________________________________________________\n')
-    print_wall_of_text(verse_records)
-    print(create_empty_markdown_link(params))
-    print('\n______________________________________________________________________')
-
-
-# TODO: Print paragraphs from Bible format
-# TODO: Parse USFM tags to create more readable passages/newlines
-def print_passage_by_format(params, verse_records):
-    match params['format']: 
-        case 'txt':
-            print_wall_of_text(verse_records, params['verse_numbers'])
-
-        case 'md':
-            print_markdown_excerpt(verse_records, params)
-
-
-def get_bible_cursor(translation):
-    database = f"{get_source_root()}/data/{translation}.db"
-    conn = sqlite3.connect(database)
-    conn.row_factory = sqlite3.Row
-    # TODO: Use context manager?
-    return conn.cursor()
-
-
-def print_book(params):
-    cursor = get_bible_cursor(params['translation'])
-    
-    params['book'] = get_book_from_abbreviation(params['book'])
-    
-    if params['book']:
-    
-        cursor.execute("""
+        self.cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         """, params)
 
-        verse_records = cursor.fetchall()
+        verse_records = self.cursor.fetchall()
         
-        print_passage_by_format(params, verse_records)
+        self.print_passage_by_format(verse_records)
 
-
-def print_chapter(params):
-    cursor = get_bible_cursor(params['translation'])
-    
-    params['book'] = get_book_from_abbreviation(params['book'])
-    
-    if params['book']:
-    
-        cursor.execute("""
+    def print_chapter(self):
+        params = {'book': self.book, 'chapter': self.chapter}
+        
+        self.cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         AND chapter = :chapter
         """, params)
 
-        verse_records = cursor.fetchall()
+        verse_records = self.cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid chapter: {params['book']} {params['chapter']}"
+            msg = f"Invalid chapter: {self.book} {self.chapter}"
             print(msg)
         
         else:
-            print_passage_by_format(params, verse_records)
+            self.print_passage_by_format(verse_records)
 
-
-def print_verse(params):
-    cursor = get_bible_cursor(params['translation'])
-    
-    params['book'] = get_book_from_abbreviation(params['book'])
-    
-    if params['book']:
-    
-        cursor.execute("""
+    def print_verse(self):
+        params = {
+            'book': self.book,
+            'chapter': self.chapter,
+            'verse': self.verse
+        }
+        
+        self.cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
@@ -225,31 +219,33 @@ def print_verse(params):
         AND verse = :verse
         """, params)
 
-        verse_records = cursor.fetchall()
+        verse_records = self.cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid verse: {params['book']} {params['chapter']}:{params['verse']}"
+            msg = f"Invalid verse: {self.book} {self.chapter}:{self.verse}"
             print(msg)
         
         else:
-            print_passage_by_format(params, verse_records)
+            self.print_passage_by_format(verse_records)
 
-
-def print_verses(params):
-    """
-    Print a range of verses, eg. 5-7. 
-    """
-    cursor = get_bible_cursor(params['translation'])
-    
-    params['book'] = get_book_from_abbreviation(params['book'])
-    
-    if params['book']:
-    
-        verses = params['verse'].split('-')
-        params['verse_start'] = verses[0]
-        params['verse_end'] = verses[1]
+    def print_verses(self):
+        """
+        Print a range of verses, eg. 5-7. 
+        """
         
-        cursor.execute("""
+        verses = self.verse.split('-')
+        self.verse_start = verses[0]
+        self.verse_end = verses[1]
+        
+        params = {
+            'book': self.book,
+            'chapter': self.chapter,
+            'verse_start': self.verse_start,
+            'verse_end': self.verse_end,
+        }
+        
+        
+        self.cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
@@ -257,20 +253,19 @@ def print_verses(params):
         AND verse BETWEEN :verse_start AND :verse_end
         """, params)
 
-        verse_records = cursor.fetchall()
+        verse_records = self.cursor.fetchall()
         
         if len(verse_records) == 0:
             msg = (
-                f"Invalid verses: {params['book']} "
-                f"{params['chapter']}:{params['verse_start']}-{params['verse_end']}"
+                f"Invalid verses: {self.book} "
+                f"{self.chapter}:{self.verse_start}-{self.verse_end}"
             )
             print(msg)
         
         else:
-            print_passage_by_format(params, verse_records)
-    
-    
-    # TODO: Use FTS4 SQLite extension to search bible for particular words/phrases
-    # TODO: Fuzzy search? (eg. sanctify, sanctification, sanctity)
-    def search_bible():
-        pass
+            self.print_passage_by_format(verse_records)
+        
+        # TODO: Use FTS4 SQLite extension to search bible for particular words/phrases
+        # TODO: Fuzzy search? (eg. sanctify, sanctification, sanctity)
+        def search_bible():
+            pass
