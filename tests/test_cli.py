@@ -8,7 +8,7 @@ from biblecli.cli import main
     "msg, args, output", 
     [
         (
-            "Reading a single verse failed",
+            "Printing a single verse failed",
             ['john', '3', '16'],
             (
                 "For God so loved the world that He gave His one and only Son, that everyone\n"
@@ -16,7 +16,7 @@ from biblecli.cli import main
             )
         ),
         (
-            "Reading a multiple verses failed",
+            "Printing multiple verses failed",
             ['john', '3', '16-18'],
             (
                 "For God so loved the world that He gave His one and only Son, that everyone\n"
@@ -28,7 +28,19 @@ from biblecli.cli import main
             )
         ),
         (
-            "Reading a chapter failed",
+            "Printing multiple verses with verse numbers failed",
+            ['john', '3', '16-18', '-n'],
+            (
+                "16 For God so loved the world that He gave His one and only Son, that everyone\n"
+                "who believes in Him shall not perish but have eternal life. 17 For God did not\n"
+                "send His Son into the world to condemn the world, but to save the world\n"
+                "through Him. 18 Whoever believes in Him is not condemned, but whoever does not\n"
+                "believe has already been condemned, because he has not believed in the name of\n"
+                "God’s one and only Son. "
+            )
+        ),
+        (
+            "Printing a chapter failed",
             ['psa', '117'],
             (
                 "Praise the LORD, all you nations! Extol Him, all you peoples! For great is His\n"
@@ -37,7 +49,16 @@ from biblecli.cli import main
             )
         ),
         (
-            "Reading a book failed",
+            "Printing a chapter with verse numbers failed",
+            ['psa', '117', '-n'],
+            (
+                "1 Praise the LORD, all you nations! Extol Him, all you peoples! 2 For great is\n"
+                "His loving devotion toward us, and the faithfulness of the LORD endures\n"
+                "forever.   Hallelujah! "
+            )
+        ),
+        (
+            "Printing a book failed",
             ['3john'],
             (
                 "The elder,  To the beloved Gaius, whom I love in the truth: Beloved, I pray\n"
@@ -61,6 +82,34 @@ from biblecli.cli import main
                 "to write to you, but I would prefer not to do so with pen and ink. Instead, I\n"
                 "hope to see you soon and speak with you face to face.  Peace to you.  The\n"
                 "friends here send you greetings.  Greet each of our friends there by name. "
+            )
+        ),
+        (
+            "Printing a book with verse numbers failed",
+            ['3john', '-n'],
+            (
+                "1 The elder,  To the beloved Gaius, whom I love in the truth: 2 Beloved, I\n"
+                "pray that in every way you may prosper and enjoy good health, as your soul\n"
+                "also prospers. 3 For I was overjoyed when the brothers came and testified\n"
+                "about your devotion to the truth, in which you continue to walk. 4 I have no\n"
+                "greater joy than to hear that my children are walking in the truth. 5 Beloved,\n"
+                "you are faithful in what you are doing for the brothers, and especially since\n"
+                "they are strangers to you. 6 They have testified to the church about your\n"
+                "love. You will do well to send them on their way in a manner worthy of God. 7\n"
+                "For they went out on behalf of the Name, accepting nothing from the Gentiles.\n"
+                "8 Therefore we ought to support such men, so that we may be fellow workers for\n"
+                "the truth. 9 I have written to the church about this, but Diotrephes, who\n"
+                "loves to be first, will not accept our instruction. 10 So if I come, I will\n"
+                "call attention to his malicious slander against us. And unsatisfied with that,\n"
+                "he refuses to welcome the brothers and forbids those who want to do so, even\n"
+                "putting them out of the church. 11 Beloved, do not imitate what is evil, but\n"
+                "what is good. The one who does good is of God; the one who does evil has not\n"
+                "seen God. 12 Demetrius has received a good testimony from everyone, and from\n"
+                "the truth itself. We also testify for him, and you know that our testimony is\n"
+                "true. 13 I have many things to write to you, but I would prefer not to do so\n"
+                "with pen and ink. 14 Instead, I hope to see you soon and speak with you face\n"
+                "to face.  Peace to you.  The friends here send you greetings.  Greet each of\n"
+                "our friends there by name. "
             )
         ),
         (
