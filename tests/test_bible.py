@@ -1,6 +1,6 @@
 import pytest
 
-from biblecli.query import list_multiline_verse
+from biblecli.bible import list_multiline_verse
 
 
 @pytest.mark.parametrize(

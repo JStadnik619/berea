@@ -1,7 +1,7 @@
 import argparse
 
 from biblecli import __version__
-from biblecli.query import BibleClient
+from biblecli.bible import BibleClient
 
 
 # Example: python -m biblecli.cli Genesis 3 3
