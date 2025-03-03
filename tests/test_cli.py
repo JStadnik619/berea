@@ -113,6 +113,14 @@ from biblecli.cli import main
             )
         ),
         (
+            "Printing a different translation failed",
+            ['john', '3', '16', '-t', 'KJV'],
+            (
+                "For God so loved the world, that he gave his only begotten Son, that whosoever\n"
+                "believeth in him should not perish, but have everlasting life. "
+            )    
+        ),
+        (
             "Creating a Markdown excerpt failed",
             ['john', '3', '16', '-f', 'md'],
             (
