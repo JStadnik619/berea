@@ -69,8 +69,7 @@ def get_book_from_abbreviation(book):
                 return book_name
         
         msg = f"Invalid input {book=}."
-        print(msg)
-        sys.exit()
+        sys.exit(msg)
 
 
 def list_multiline_verse(verse):
