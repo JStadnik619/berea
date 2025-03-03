@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import json
+import sys
 
 
 def get_source_root():
@@ -69,6 +70,7 @@ def get_book_from_abbreviation(book):
         
         msg = f"Invalid input {book=}."
         print(msg)
+        sys.exit()
 
 
 def list_multiline_verse(verse):
