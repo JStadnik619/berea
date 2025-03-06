@@ -1,7 +1,70 @@
-<!-- TODO: Also map Bible versions to abbreviations? -->
-# Book Abbreviations
+# Bible CLI: faster than flipping a page
 
-- Book abbreviations are case-insensitive and mapped many-to-one to books
+## Installation
+<!-- TODO: Publish app on pypi -->
+
+Clone the repo to your machine:
+
+```
+git clone git@github.com:JStadnik619/bible-cli.git
+```
+
+Navigate to the repo's directory and install `biblecli` in your Python environment:
+
+```
+pip install .
+```
+
+## Usage
+
+Look up a verse:
+
+```
+bible john 3 16
+```
+
+Look up a passage:
+
+```
+bible matthew 5 1-11
+```
+
+Look up a chapter:
+
+```
+bible psalm 117
+```
+
+Look up a book:
+
+```
+bible 3john
+```
+
+[BSB](https://berean.bible/index.html) is the default translation. Different translations can be selected via the `-t, --translation` flag:
+
+<!-- TODO: Add more public domain translations -->
+
+```
+bible john 3 16 -t KJV
+```
+
+Line numbers can be toggled on using the `-n, --numbers` flag.
+
+```
+bible matthew 5 1-11 -n
+```
+
+The output format is specified using the `-f --format` flag (default: `txt` or plaintext).
+
+```
+bible matthew 5 1-11 -f md
+```
+
+### Book Abbreviations
+<!-- TODO: Also map Bible versions to abbreviations? -->
+
+Books can be referenced using the following titles and abbreviations (case-insensitive).
 
 <!-- TODO: Map abbreviations to their usage in external Bibles/apps (eg. bible.com, MacArthur Study Bible) -->
 <!-- TODO: Map books to abbreviations upon download from bible_databases -->
@@ -74,11 +137,11 @@ Jude: jude, jud, jd
 Revelation of John: revelation, rev, re, the revelation
 ```
 
-# Resources
+## Resources
 
+<!-- TODO: Add subparser for downloading additional translations-->
 [scrollmapper/bible_databases: Bible versions and cross-reference databases.](https://github.com/scrollmapper/bible_databases)
 
-<!-- TODO: I should get authorization from Crossway before publishing this app -->
 <!-- Users may not copy or download more than 500 verses of the ESV Bible -->
 ~~[ESV API | ESV.org](https://api.esv.org/)~~
 
