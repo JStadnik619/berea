@@ -132,6 +132,10 @@ class BibleClient:
     def print_wall_of_text(self, verse_records): 
         verses = ''
         for row in verse_records:
+            # Skip empty verses so orphaned verse numbers or extra whitespace
+            # is not displayed
+            if not row['text']:
+                continue
             if self.verse_numbers:
                 verses += str(row['verse']) + ' '
             

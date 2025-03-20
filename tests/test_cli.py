@@ -132,6 +132,21 @@ from biblecli.cli import main
                 "______________________________________________________________________"
             )
         ),
+        # The BSB contains empty verses for cross-references to verses present
+        # in some manuscripts
+        (
+            "Skipping empty verses failed",
+            ['mark', '9', '43-47', '-n'],
+            (
+                "43 If your hand causes you to sin, cut it off. It is better for you to enter\n"
+                "life crippled than to have two hands and go into hell, into the unquenchable\n"
+                "fire. 45 If your foot causes you to sin, cut it off. It is better for you to\n"
+                "enter life lame than to have two feet and be thrown into hell. 47 And if your\n"
+                "eye causes you to sin, pluck it out. It is better for you to enter the kingdom\n"
+                "of God with one eye than to have two eyes and be thrown into hell, "
+            )
+        )
+
     ]
 )
 def test_main(monkeypatch, capsys, msg, args, output):
