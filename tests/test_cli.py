@@ -146,7 +146,6 @@ from biblecli.cli import main
                 "of God with one eye than to have two eyes and be thrown into hell, "
             )
         )
-
     ]
 )
 def test_main(monkeypatch, capsys, msg, args, output):

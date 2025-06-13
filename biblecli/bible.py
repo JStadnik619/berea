@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import json
+import csv
 import sys
 
 
@@ -72,6 +73,17 @@ def get_book_from_abbreviation(book):
         sys.exit(msg)
 
 
+def import_resource_books(resource='step_bible'):
+    books = []
+    
+    with open(f'{get_source_root()}/data/{resource}_books.csv') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            books.append(row['abbreviation'])
+    
+    return books
+
+
 def list_multiline_verse(verse):
     lines = []
     
@@ -89,8 +101,13 @@ def list_multiline_verse(verse):
     return lines
 
 
+def parse_verses_str(verses):
+    verses_split = verses.split('-')
+    return verses_split[0], verses_split[1]
+
+
 class BibleClient:
-    def __init__(self, book, chapter, verse, translation, format, verse_numbers):
+    def __init__(self, book, chapter, verse, translation, format='txt', verse_numbers=False):
         self.book = self.book = get_book_from_abbreviation(book)
         self.chapter = chapter
         self.verse = verse
@@ -99,20 +116,112 @@ class BibleClient:
         self.verse_numbers = verse_numbers
         self.cursor = self.get_bible_cursor()
 
-    def create_empty_markdown_link(self):
-        """Creates an empty link since mapping a book's abbreviation to
-        a URL path variable would be overly complex.
+    def create_link_label(self):
+        """Creates a link label, eg. `Isaiah 14:12-20`
         """
-        link = f"([{self.book}"
+        label = self.book
         
         if self.chapter:
-            link += f" {self.chapter}"
+            label += f" {self.chapter}"
             
             if self.verse:
-                link += f":{self.verse}"
+                label += f":{self.verse}"
         
-        link += f" {self.translation}]())"
+        label += f" {self.translation}"
         
+        return label
+    
+    def create_abbreviations_table(self):
+        self.cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS abbreviations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            abbreviation TEXT,
+            FOREIGN KEY (book_id) REFERENCES books(id)
+        );
+        """)
+        
+        # TODO: open book_abbreviations.json
+        
+        # TODO: Create a single query to add all book abbreviations 
+
+    def create_resource_tables(self):
+        self.cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS resources (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT
+        );
+        """)
+        
+        self.cursor.execute(f"""
+        INSERT INTO resources (name) VALUES (
+            stepbible.org
+        );
+        """)
+        
+        self.cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS resources_abbreviations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            resource_id INTEGER,
+            abbreviation_id INTEGER
+        );
+        """)
+        
+        resource = 'STEP Bible'
+        books = import_resource_books()
+        
+        # SELECT STEP Bible and abbreviation ids
+        self.cursor.execute(f"""
+        INSERT INTO resources_abbreviations (name) VALUES (
+            stepbible.org
+        );
+        """)
+    
+    def get_book_abbreviation_by_resource(self, resource):
+        """Get a book's abbreviation used by a specific resource.
+        """
+   
+        params = {
+            'book': self.book,
+            'resource': resource,
+        }
+        
+        # TODO: Implement these tables in db
+        self.cursor.execute("""
+            SELECT name FROM abbreviations
+            JOIN books ON abbreviations.book_id = books.id
+            JOIN resource_abbreviations ON resource_abbreviations.abbreviation_id = abbreviations.id
+            JOIN resources ON resource_abbreviations.resource_id = resources.id
+            WHERE books.name = :book
+            AND resources.name = :resource
+            """, params)
+        
+        # Assuming a resource only has one abbreviation for a given book and translation
+        return self.cursor.fetchone()[0]
+    
+    # TODO: Link format depends on resource
+    def create_link(self, resource='stepbible.org'):
+        book_abbrev = self.get_book_abbreviation_by_resource(self.book, resource)
+        
+        link = self.book
+        
+        if self.verse:
+
+            # Parse verses if multiple provided
+            if self.verse.contains('-'):
+                verse_start, verse_end = parse_verses_str(self.verse)
+                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{self.chapter}.{verse_start}-{book_abbrev}.{self.chapter}.{verse_end}&options=VNHUG"
+                
+            else:
+                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{self.chapter}.{self.verse}&options=NVHUG"
+        
+        elif self.chapter:
+            link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{self.chapter}&options=NVHUG"
+        
+        # Make link for whole book
+        else:
+            link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}&options=NVHUG"
+        
+        # TODO: Ping link and raise error if not valid?
         return link
 
     # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
@@ -157,7 +266,7 @@ class BibleClient:
         print('###\n')
         print('______________________________________________________________________\n')
         self.print_wall_of_text(verse_records)
-        print(self.create_empty_markdown_link())
+        print(f"([{self.create_link_label()}]({self.create_link()}))")
         print('\n______________________________________________________________________')
 
     # TODO: Print paragraphs from Bible format
@@ -238,17 +347,14 @@ class BibleClient:
         Print a range of verses, eg. 5-7. 
         """
         
-        verses = self.verse.split('-')
-        self.verse_start = verses[0]
-        self.verse_end = verses[1]
+        verse_start, verse_end = parse_verses_str(self.verse)
         
         params = {
             'book': self.book,
             'chapter': self.chapter,
-            'verse_start': self.verse_start,
-            'verse_end': self.verse_end,
+            'verse_start': verse_start,
+            'verse_end': verse_end,
         }
-        
         
         self.cursor.execute("""
         SELECT verse, text FROM verses
@@ -263,7 +369,7 @@ class BibleClient:
         if len(verse_records) == 0:
             msg = (
                 f"Invalid verses: {self.book} "
-                f"{self.chapter}:{self.verse_start}-{self.verse_end}"
+                f"{self.chapter}:{verse_start}-{verse_end}"
             )
             print(msg)
         
