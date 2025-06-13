@@ -43,8 +43,8 @@ def test_list_multiline_verse(verse, verse_list):
         ),
     ]
 )
-def test_create_link(book, chapter, verse, translation, expected_link):
-    bible = BibleClient(book, chapter, verse, translation, 'md')
-    actual_link = bible.create_link()
-    assert actual_link == expected_link
+def test_create_link(msg, book, chapter, verse, translation, expected_link):
+    bible = BibleClient(translation)
+    actual_link = bible.create_link(book, chapter, verse)
+    assert actual_link == expected_link, msg
     # TODO: assert url is valid (returns 200 status)

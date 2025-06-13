@@ -107,25 +107,29 @@ def parse_verses_str(verses):
 
 
 class BibleClient:
-    def __init__(self, book, chapter, verse, translation, format='txt', verse_numbers=False):
-        self.book = get_book_from_abbreviation(book)
-        self.chapter = chapter
-        self.verse = verse
+    # print args:
+    # book, chapter, verse, format='txt', verse_numbers=False
+    def __init__(self, translation):
         self.translation = translation
-        self.format = format
-        self.verse_numbers = verse_numbers
         self.cursor = self.get_bible_cursor()
+    
+    def get_bible_cursor(self):
+        database = f"{get_source_root()}/data/{self.translation}.db"
+        conn = sqlite3.connect(database)
+        conn.row_factory = sqlite3.Row
+        # TODO: Use context manager?
+        return conn.cursor()
 
-    def create_link_label(self):
+    def create_link_label(self, book, chapter=None, verse=None):
         """Creates a link label, eg. `Isaiah 14:12-20`
         """
-        label = self.book
+        label = book
         
-        if self.chapter:
-            label += f" {self.chapter}"
+        if chapter:
+            label += f" {chapter}"
             
-            if self.verse:
-                label += f":{self.verse}"
+            if verse:
+                label += f":{verse}"
         
         label += f" {self.translation}"
         
@@ -205,12 +209,12 @@ class BibleClient:
         );
         """)
     
-    def get_book_abbreviation_by_resource(self, resource):
+    def get_book_abbreviation_by_resource(self, book, resource):
         """Get a book's abbreviation used by a specific resource.
         """
    
         params = {
-            'book': self.book,
+            'book': book,
             'resource': resource,
         }
         
@@ -228,23 +232,22 @@ class BibleClient:
         return self.cursor.fetchone()[0]
     
     # TODO: Link format depends on resource
-    def create_link(self, resource='stepbible.org'):
-        book_abbrev = self.get_book_abbreviation_by_resource(self.book, resource)
+    def create_link(self, book, chapter=None, verse=None, resource='stepbible.org'):
+        book_abbrev = self.get_book_abbreviation_by_resource(book, resource)
         
-        link = self.book
+        link = ''
         
-        if self.verse:
-
+        if verse:
             # Parse verses if multiple provided
-            if self.verse.contains('-'):
-                verse_start, verse_end = parse_verses_str(self.verse)
-                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{self.chapter}.{verse_start}-{book_abbrev}.{self.chapter}.{verse_end}&options=VNHUG"
+            if verse.contains('-'):
+                verse_start, verse_end = parse_verses_str(verse)
+                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{chapter}.{verse_start}-{book_abbrev}.{chapter}.{verse_end}&options=VNHUG"
                 
             else:
-                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{self.chapter}.{self.verse}&options=NVHUG"
+                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{chapter}.{verse}&options=NVHUG"
         
-        elif self.chapter:
-            link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{self.chapter}&options=NVHUG"
+        elif chapter:
+            link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{chapter}&options=NVHUG"
         
         # Make link for whole book
         else:
@@ -267,14 +270,14 @@ class BibleClient:
 
     # TODO: Replace consecutive spaces with single spaces
     # TODO: Input line length?
-    def print_wall_of_text(self, verse_records): 
+    def print_wall_of_text(self, verse_records, verse_numbers=False): 
         verses = ''
         for row in verse_records:
             # Skip empty verses so orphaned verse numbers or extra whitespace
             # is not displayed
             if not row['text']:
                 continue
-            if self.verse_numbers:
+            if verse_numbers:
                 verses += str(row['verse']) + ' '
             
             verses += row['text'].strip() + ' '
@@ -285,7 +288,7 @@ class BibleClient:
         print(wrapped_verses)
 
     # TODO: Print paragraphs from Bible format
-    def print_markdown_excerpt(self, verse_records):
+    def print_markdown_excerpt(self, verse_records, book, chapter, verse):
         """Generate Markdown excerpt for the verses.
 
         Args:
@@ -295,28 +298,25 @@ class BibleClient:
         print('###\n')
         print('______________________________________________________________________\n')
         self.print_wall_of_text(verse_records)
-        print(f"([{self.create_link_label()}]({self.create_link()}))")
+        print(
+            f"([{self.create_link_label(book, chapter, verse,)}]"
+            f"({self.create_link(book, chapter, verse,)}))"
+        )
         print('\n______________________________________________________________________')
 
     # TODO: Print paragraphs from Bible format
     # TODO: Parse USFM tags to create more readable passages/newlines
-    def print_passage_by_format(self, verse_records):
-        match self.format: 
+    def print_passage_by_format(self, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
+        match format: 
             case 'txt':
-                self.print_wall_of_text(verse_records)
+                self.print_wall_of_text(verse_records, verse_numbers)
 
             case 'md':
-                self.print_markdown_excerpt(verse_records)
+                self.print_markdown_excerpt(verse_records, book, chapter, verse)
 
-    def get_bible_cursor(self):
-        database = f"{get_source_root()}/data/{self.translation}.db"
-        conn = sqlite3.connect(database)
-        conn.row_factory = sqlite3.Row
-        # TODO: Use context manager?
-        return conn.cursor()
-
-    def print_book(self):
-        params = {'book': self.book}
+    def print_book(self, book, format, verse_numbers):
+        book = get_book_from_abbreviation(book)
+        params = {'book': book}
     
         self.cursor.execute("""
         SELECT verse, text FROM verses
@@ -326,10 +326,16 @@ class BibleClient:
 
         verse_records = self.cursor.fetchall()
         
-        self.print_passage_by_format(verse_records)
+        self.print_passage_by_format(
+            format,
+            verse_records,
+            verse_numbers=verse_numbers,
+            book=book
+        )
 
-    def print_chapter(self):
-        params = {'book': self.book, 'chapter': self.chapter}
+    def print_chapter(self, book, chapter, format, verse_numbers):
+        book = get_book_from_abbreviation(book)
+        params = {'book': book, 'chapter': chapter}
         
         self.cursor.execute("""
         SELECT verse, text FROM verses
@@ -341,17 +347,24 @@ class BibleClient:
         verse_records = self.cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid chapter: {self.book} {self.chapter}"
+            msg = f"Invalid chapter: {book} {chapter}"
             print(msg)
         
         else:
-            self.print_passage_by_format(verse_records)
+            self.print_passage_by_format(
+                format,
+                verse_records,
+                verse_numbers=verse_numbers,
+                book=book,
+                chapter=chapter
+            )
 
-    def print_verse(self):
+    def print_verse(self, book, chapter, verse, format, verse_numbers):
+        book = get_book_from_abbreviation(book)
         params = {
-            'book': self.book,
-            'chapter': self.chapter,
-            'verse': self.verse
+            'book': book,
+            'chapter': chapter,
+            'verse': verse
         }
         
         self.cursor.execute("""
@@ -365,22 +378,29 @@ class BibleClient:
         verse_records = self.cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid verse: {self.book} {self.chapter}:{self.verse}"
+            msg = f"Invalid verse: {book} {chapter}:{verse}"
             print(msg)
         
         else:
-            self.print_passage_by_format(verse_records)
+            self.print_passage_by_format(
+                format,
+                verse_records,
+                verse_numbers=verse_numbers,
+                book=book,
+                chapter=chapter,
+                verse=verse
+            )
 
-    def print_verses(self):
+    def print_verses(self, book, chapter, verse, format, verse_numbers):
         """
         Print a range of verses, eg. 5-7. 
         """
-        
-        verse_start, verse_end = parse_verses_str(self.verse)
+        book = get_book_from_abbreviation(book)
+        verse_start, verse_end = parse_verses_str(verse)
         
         params = {
-            'book': self.book,
-            'chapter': self.chapter,
+            'book': book,
+            'chapter': chapter,
             'verse_start': verse_start,
             'verse_end': verse_end,
         }
@@ -397,13 +417,20 @@ class BibleClient:
         
         if len(verse_records) == 0:
             msg = (
-                f"Invalid verses: {self.book} "
-                f"{self.chapter}:{verse_start}-{verse_end}"
+                f"Invalid verses: {book} "
+                f"{chapter}:{verse_start}-{verse_end}"
             )
             print(msg)
         
         else:
-            self.print_passage_by_format(verse_records)
+            self.print_passage_by_format(
+                format,
+                verse_records,
+                verse_numbers=verse_numbers,
+                book=book,
+                chapter=chapter,
+                verse=verse
+            )
         
         # TODO: Use FTS4 SQLite extension to search bible for particular words/phrases
         # TODO: Fuzzy search? (eg. sanctify, sanctification, sanctity)

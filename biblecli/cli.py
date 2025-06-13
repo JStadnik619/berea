@@ -46,18 +46,34 @@ def main():
     args = parse_biblecli_args()
     
     if args is not None:
-        params = vars(args)
-        
-        bible = BibleClient(**params)
+
+        bible = BibleClient(args.translation)
 
         if not args.chapter:
-            bible.print_book()
+            bible.print_book(args.book, args.format, args.verse_numbers)
         elif not args.verse:
-           bible.print_chapter()
+           bible.print_chapter(
+               args.book,
+               args.chapter,
+               args.format,
+               args.verse_numbers
+            )
         elif '-' in args.verse:
-            bible.print_verses()
+            bible.print_verses(
+                args.book,
+                args.chapter,
+                args.verse,
+                args.format,
+                args.verse_numbers
+            )
         else:
-           bible.print_verse()
+           bible.print_verse(
+               args.book,
+               args.chapter,
+               args.verse,
+               args.format,
+               args.verse_numbers
+            )
 
 
 if __name__ == "__main__":
