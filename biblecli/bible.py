@@ -140,9 +140,20 @@ class BibleClient:
         );
         """)
         
-        # TODO: open book_abbreviations.json
+        books_to_abbreviations = {}
+        
+        with open(f'{get_source_root()}/data/book_abbreviations.json') as file:
+            books_to_abbreviations = dict(json.load(file))
+        
+        # TODO: Get book ids from books table
         
         # TODO: Create a single query to add all book abbreviations 
+        # This is the named style used with executemany():
+        data = (
+            {},
+        )
+        self.cursor.executemany("INSERT INTO abbreviations VALUES(:abbreviation, :book_id)", data)
+        
 
     def create_resource_tables(self):
         self.cursor.execute(f"""
