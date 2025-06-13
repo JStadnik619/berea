@@ -108,7 +108,7 @@ def parse_verses_str(verses):
 
 class BibleClient:
     def __init__(self, book, chapter, verse, translation, format='txt', verse_numbers=False):
-        self.book = self.book = get_book_from_abbreviation(book)
+        self.book = get_book_from_abbreviation(book)
         self.chapter = chapter
         self.verse = verse
         self.translation = translation
@@ -131,10 +131,19 @@ class BibleClient:
         
         return label
     
+    # def get_books(self):
+    #     self.cursor.execute("""
+    #     SELECT id, name FROM books
+    #     JOIN books ON verses.book_id = books.id
+    #     WHERE books.name = :book
+    #     AND chapter = :chapter
+    #     """, params)
+    
     def create_abbreviations_table(self):
         self.cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS abbreviations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            book_id INTEGER,
             abbreviation TEXT,
             FOREIGN KEY (book_id) REFERENCES books(id)
         );
@@ -144,15 +153,24 @@ class BibleClient:
         
         with open(f'{get_source_root()}/data/book_abbreviations.json') as file:
             books_to_abbreviations = dict(json.load(file))
-        
-        # TODO: Get book ids from books table
-        
+    
         # TODO: Create a single query to add all book abbreviations 
-        # This is the named style used with executemany():
-        data = (
-            {},
-        )
-        self.cursor.executemany("INSERT INTO abbreviations VALUES(:abbreviation, :book_id)", data)
+        
+        for book, abbreviations in books_to_abbreviations.items():
+            for abbreviation in abbreviations:
+                params = {
+                    'abbreviation': abbreviation,
+                    'book': book,
+                }
+                
+                self.cursor.execute(f"""
+                INSERT INTO abbreviations (abbreviation, book_id)
+                SELECT :abbreviation, books.id
+                FROM books
+                WHERE books.name = :book;
+                """, params)
+                
+        # self.cursor.executemany("INSERT INTO abbreviations VALUES(:abbreviation, :book_id)", data)
         
 
     def create_resource_tables(self):
