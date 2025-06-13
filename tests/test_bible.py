@@ -1,6 +1,6 @@
 import pytest
 
-from biblecli.bible import list_multiline_verse
+from biblecli.bible import list_multiline_verse, BibleClient
 
 
 @pytest.mark.parametrize(
@@ -31,3 +31,20 @@ from biblecli.bible import list_multiline_verse
 )
 def test_list_multiline_verse(verse, verse_list):
     assert list_multiline_verse(verse) == verse_list
+
+
+@pytest.mark.parametrize(
+    "msg, book, chapter, verse, translation, expected_link",
+    [
+        (
+            "Creating link for a single verse failed",
+            "john", "3", "16", "BSB",
+            "https://www.stepbible.org/?q=version=BSB@reference=John.3.16&options=NHVUG"
+        ),
+    ]
+)
+def test_create_link(book, chapter, verse, translation, expected_link):
+    bible = BibleClient(book, chapter, verse, translation, 'md')
+    actual_link = bible.create_link()
+    assert actual_link == expected_link
+    # TODO: assert url is valid (returns 200 status)
