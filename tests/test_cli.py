@@ -128,7 +128,7 @@ from biblecli.cli import main
                 "______________________________________________________________________\n\n"
                 "For God so loved the world that He gave His one and only Son, that everyone\n"
                 "who believes in Him shall not perish but have eternal life. \n"
-                "([John 3:16 BSB]())\n\n"
+                "([John 3:16 BSB](https://www.stepbible.org/?q=version=BSB@reference=john.3.16&options=NVHUG))\n\n"
                 "______________________________________________________________________"
             )
         ),

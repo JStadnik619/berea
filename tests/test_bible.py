@@ -1,3 +1,5 @@
+import urllib.request
+
 import pytest
 
 from biblecli.bible import list_multiline_verse, BibleClient
@@ -33,13 +35,43 @@ def test_list_multiline_verse(verse, verse_list):
     assert list_multiline_verse(verse) == verse_list
 
 
+def valid_url(url):
+    try:
+        with urllib.request.urlopen(url) as response:
+            if response.status == 200:
+                return True
+            else:
+                return False
+    except urllib.error.HTTPError as e:
+        print("HTTP error:", e.code)
+        return False
+    except urllib.error.URLError as e:
+        print("URL error:", e.reason)
+        return False
+
+
 @pytest.mark.parametrize(
     "msg, book, chapter, verse, translation, expected_link",
     [
         (
             "Creating link for a single verse failed",
-            "john", "3", "16", "BSB",
-            "https://www.stepbible.org/?q=version=BSB@reference=John.3.16&options=NHVUG"
+            "John", "3", "16", "BSB",
+            "https://www.stepbible.org/?q=version=BSB@reference=john.3.16&options=NVHUG"
+        ),
+        (
+            "Creating link for multiple verses failed",
+            "John", "3", "16-18", "BSB",
+            "https://www.stepbible.org/?q=version=BSB@reference=john.3.16-john.3.18&options=NVHUG"
+        ),
+        (
+            "Creating link for a chapter failed",
+            "Psalms", "117", None, "BSB",
+            "https://www.stepbible.org/?q=version=BSB@reference=psalm.117&options=NVHUG"
+        ),
+        (
+            "Creating link for a book",
+            "III John", None, None, "BSB",
+            "https://www.stepbible.org/?q=version=BSB@reference=3john&options=NVHUG"
         ),
     ]
 )
@@ -47,4 +79,15 @@ def test_create_link(msg, book, chapter, verse, translation, expected_link):
     bible = BibleClient(translation)
     actual_link = bible.create_link(book, chapter, verse)
     assert actual_link == expected_link, msg
-    # TODO: assert url is valid (returns 200 status)
+    assert valid_url(actual_link)
+
+
+def test_validate_resource_abbreviations():
+    """Creating links from the resource's book abbreviations yields valid URLs."""
+    bible = BibleClient('BSB')
+    
+    books = bible.cursor.execute("SELECT * FROM books").fetchall()
+    
+    for book in books:
+        link = bible.create_link(book['name'])
+        assert valid_url(link), f"{book['name']} produced invalid link: {link}"

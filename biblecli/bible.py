@@ -112,6 +112,7 @@ class BibleClient:
     def __init__(self, translation):
         self.translation = translation
         self.cursor = self.get_bible_cursor()
+        self.database = f"{get_source_root()}/data/{self.translation}.db"
     
     def get_bible_cursor(self):
         database = f"{get_source_root()}/data/{self.translation}.db"
@@ -135,14 +136,6 @@ class BibleClient:
         
         return label
     
-    # def get_books(self):
-    #     self.cursor.execute("""
-    #     SELECT id, name FROM books
-    #     JOIN books ON verses.book_id = books.id
-    #     WHERE books.name = :book
-    #     AND chapter = :chapter
-    #     """, params)
-    
     def create_abbreviations_table(self):
         self.cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS abbreviations (
@@ -160,6 +153,11 @@ class BibleClient:
     
         # TODO: Create a single query to add all book abbreviations 
         
+        # Create a conn to commit inserts and close 
+        conn = sqlite3.connect(self.database)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
         for book, abbreviations in books_to_abbreviations.items():
             for abbreviation in abbreviations:
                 params = {
@@ -167,27 +165,21 @@ class BibleClient:
                     'book': book,
                 }
                 
-                self.cursor.execute(f"""
+                cursor.execute(f"""
                 INSERT INTO abbreviations (abbreviation, book_id)
                 SELECT :abbreviation, books.id
                 FROM books
                 WHERE books.name = :book;
                 """, params)
-                
-        # self.cursor.executemany("INSERT INTO abbreviations VALUES(:abbreviation, :book_id)", data)
         
+        conn.commit()
+        conn.close()
 
     def create_resource_tables(self):
         self.cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT
-        );
-        """)
-        
-        self.cursor.execute(f"""
-        INSERT INTO resources (name) VALUES (
-            stepbible.org
         );
         """)
         
@@ -199,15 +191,41 @@ class BibleClient:
         );
         """)
         
-        resource = 'STEP Bible'
-        books = import_resource_books()
+        # Create a conn to commit inserts and close 
+        conn = sqlite3.connect(self.database)
+        cursor = conn.cursor()
         
-        # SELECT STEP Bible and abbreviation ids
-        self.cursor.execute(f"""
-        INSERT INTO resources_abbreviations (name) VALUES (
-            stepbible.org
+        # TODO: Insert STEP Bible dynamically
+        resource='STEP Bible'
+        cursor.execute(f"""
+        INSERT INTO resources (name) VALUES (
+            'STEP Bible'
         );
         """)
+        
+        conn.commit()
+        conn.close()
+        
+        abbreviations = import_resource_books()
+        
+        conn = sqlite3.connect(self.database)
+        cursor = conn.cursor()
+        
+        for abbreviation in abbreviations:
+            params = {
+                'abbreviation': abbreviation.lower(),
+            }
+            
+            # TODO: Select STEP Bible id dynamically
+            cursor.execute(f"""
+            INSERT INTO resources_abbreviations (resource_id, abbreviation_id)
+            SELECT 1, abbreviations.id
+            FROM abbreviations
+            WHERE abbreviations.abbreviation = :abbreviation;
+            """, params)
+        
+        conn.commit()
+        conn.close()
     
     def get_book_abbreviation_by_resource(self, book, resource):
         """Get a book's abbreviation used by a specific resource.
@@ -218,12 +236,11 @@ class BibleClient:
             'resource': resource,
         }
         
-        # TODO: Implement these tables in db
         self.cursor.execute("""
-            SELECT name FROM abbreviations
+            SELECT abbreviation FROM abbreviations
             JOIN books ON abbreviations.book_id = books.id
-            JOIN resource_abbreviations ON resource_abbreviations.abbreviation_id = abbreviations.id
-            JOIN resources ON resource_abbreviations.resource_id = resources.id
+            JOIN resources_abbreviations ON resources_abbreviations.abbreviation_id = abbreviations.id
+            JOIN resources ON resources_abbreviations.resource_id = resources.id
             WHERE books.name = :book
             AND resources.name = :resource
             """, params)
@@ -232,16 +249,16 @@ class BibleClient:
         return self.cursor.fetchone()[0]
     
     # TODO: Link format depends on resource
-    def create_link(self, book, chapter=None, verse=None, resource='stepbible.org'):
+    def create_link(self, book, chapter=None, verse=None, resource='STEP Bible'):
         book_abbrev = self.get_book_abbreviation_by_resource(book, resource)
         
         link = ''
         
         if verse:
             # Parse verses if multiple provided
-            if verse.contains('-'):
+            if '-' in verse:
                 verse_start, verse_end = parse_verses_str(verse)
-                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{chapter}.{verse_start}-{book_abbrev}.{chapter}.{verse_end}&options=VNHUG"
+                link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{chapter}.{verse_start}-{book_abbrev}.{chapter}.{verse_end}&options=NVHUG"
                 
             else:
                 link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}.{chapter}.{verse}&options=NVHUG"
@@ -252,8 +269,7 @@ class BibleClient:
         # Make link for whole book
         else:
             link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}&options=NVHUG"
-        
-        # TODO: Ping link and raise error if not valid?
+
         return link
 
     # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
