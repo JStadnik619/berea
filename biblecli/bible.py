@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import urllib.request
 import json
 import csv
 import sys
@@ -7,22 +8,6 @@ import sys
 
 def get_source_root():
     return os.path.realpath(os.path.dirname(__file__))
-
-
-# TODO: Run this when downloading new translation from the CLI
-def rename_tables(translation):
-    """Rename tables for consistent schema across downloaded translations.
-    """
-    database = f'{get_source_root()}/data/{translation}.db'
-    conn = sqlite3.connect(database)
-    # TODO: Use context manager?
-    cursor = conn.cursor()
-    
-    tables = ['books', 'verses']
-    for table in tables:
-        # SQLite doesn't bind parameters for schema objects
-        sql = f"ALTER TABLE {translation}_{table} RENAME TO {table};"
-        cursor.execute(sql)
 
 
 # TODO: Add abbreviations and short names to books table, add to returned list
@@ -111,33 +96,38 @@ class BibleClient:
     # book, chapter, verse, format='txt', verse_numbers=False
     def __init__(self, translation):
         self.translation = translation
-        self.cursor = self.get_bible_cursor()
         self.database = f"{get_source_root()}/data/{self.translation}.db"
     
+    def download_raw_bible(self):
+        url = f"https://github.com/scrollmapper/bible_databases/raw/refs/heads/master/formats/sqlite/{self.translation}.db"
+
+        try:
+            urllib.request.urlretrieve(url, self.database)
+            print(f"Downloaded: {self.database}")
+        except Exception as e:
+            print(f"Failed to download file: {e}")
+    
     def get_bible_cursor(self):
-        database = f"{get_source_root()}/data/{self.translation}.db"
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(self.database)
         conn.row_factory = sqlite3.Row
         # TODO: Use context manager?
         return conn.cursor()
-
-    def create_link_label(self, book, chapter=None, verse=None):
-        """Creates a link label, eg. `Isaiah 14:12-20`
+    
+    def rename_tables(self):
+        """Rename tables for consistent schema across downloaded translations.
         """
-        label = book
+        cursor = self.get_bible_cursor()
         
-        if chapter:
-            label += f" {chapter}"
-            
-            if verse:
-                label += f":{verse}"
-        
-        label += f" {self.translation}"
-        
-        return label
+        tables = ['books', 'verses']
+        for table in tables:
+            # SQLite doesn't bind parameters for schema objects
+            sql = f"ALTER TABLE {self.translation}_{table} RENAME TO {table};"
+            cursor.execute(sql)
     
     def create_abbreviations_table(self):
-        self.cursor.execute(f"""
+        cursor = self.get_bible_cursor()
+
+        cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS abbreviations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             book_id INTEGER,
@@ -176,14 +166,16 @@ class BibleClient:
         conn.close()
 
     def create_resource_tables(self):
-        self.cursor.execute(f"""
+        cursor = self.get_bible_cursor()
+
+        cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT
         );
         """)
         
-        self.cursor.execute(f"""
+        cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS resources_abbreviations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             resource_id INTEGER,
@@ -227,16 +219,38 @@ class BibleClient:
         conn.commit()
         conn.close()
     
+    def create_bible_db(self):
+        self.download_raw_bible()
+        self.rename_tables()
+        self.create_abbreviations_table()
+        self.create_resource_tables()
+    
+    def create_link_label(self, book, chapter=None, verse=None):
+        """Creates a link label, eg. `Isaiah 14:12-20`
+        """
+        label = book
+        
+        if chapter:
+            label += f" {chapter}"
+            
+            if verse:
+                label += f":{verse}"
+        
+        label += f" {self.translation}"
+        
+        return label
+    
     def get_book_abbreviation_by_resource(self, book, resource):
         """Get a book's abbreviation used by a specific resource.
         """
+        cursor = self.get_bible_cursor()
    
         params = {
             'book': book,
             'resource': resource,
         }
         
-        self.cursor.execute("""
+        cursor.execute("""
             SELECT abbreviation FROM abbreviations
             JOIN books ON abbreviations.book_id = books.id
             JOIN resources_abbreviations ON resources_abbreviations.abbreviation_id = abbreviations.id
@@ -246,7 +260,7 @@ class BibleClient:
             """, params)
         
         # Assuming a resource only has one abbreviation for a given book and translation
-        return self.cursor.fetchone()[0]
+        return cursor.fetchone()[0]
     
     # TODO: Link format depends on resource
     def create_link(self, book, chapter=None, verse=None, resource='STEP Bible'):
@@ -331,16 +345,18 @@ class BibleClient:
                 self.print_markdown_excerpt(verse_records, book, chapter, verse)
 
     def print_book(self, book, format, verse_numbers):
+        cursor = self.get_bible_cursor()
+        # TODO: Use db table
         book = get_book_from_abbreviation(book)
         params = {'book': book}
     
-        self.cursor.execute("""
+        cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         """, params)
 
-        verse_records = self.cursor.fetchall()
+        verse_records = cursor.fetchall()
         
         self.print_passage_by_format(
             format,
@@ -350,17 +366,19 @@ class BibleClient:
         )
 
     def print_chapter(self, book, chapter, format, verse_numbers):
+        cursor = self.get_bible_cursor()
+        # TODO: Use db table
         book = get_book_from_abbreviation(book)
         params = {'book': book, 'chapter': chapter}
         
-        self.cursor.execute("""
+        cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
         AND chapter = :chapter
         """, params)
 
-        verse_records = self.cursor.fetchall()
+        verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
             msg = f"Invalid chapter: {book} {chapter}"
@@ -376,6 +394,8 @@ class BibleClient:
             )
 
     def print_verse(self, book, chapter, verse, format, verse_numbers):
+        cursor = self.get_bible_cursor()
+        # TODO: Use db table
         book = get_book_from_abbreviation(book)
         params = {
             'book': book,
@@ -383,7 +403,7 @@ class BibleClient:
             'verse': verse
         }
         
-        self.cursor.execute("""
+        cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
@@ -391,7 +411,7 @@ class BibleClient:
         AND verse = :verse
         """, params)
 
-        verse_records = self.cursor.fetchall()
+        verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
             msg = f"Invalid verse: {book} {chapter}:{verse}"
@@ -411,6 +431,8 @@ class BibleClient:
         """
         Print a range of verses, eg. 5-7. 
         """
+        cursor = self.get_bible_cursor()
+        # TODO: Use db table
         book = get_book_from_abbreviation(book)
         verse_start, verse_end = parse_verses_str(verse)
         
@@ -421,7 +443,7 @@ class BibleClient:
             'verse_end': verse_end,
         }
         
-        self.cursor.execute("""
+        cursor.execute("""
         SELECT verse, text FROM verses
         JOIN books ON verses.book_id = books.id
         WHERE books.name = :book
@@ -429,7 +451,7 @@ class BibleClient:
         AND verse BETWEEN :verse_start AND :verse_end
         """, params)
 
-        verse_records = self.cursor.fetchall()
+        verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
             msg = (

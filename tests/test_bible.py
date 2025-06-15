@@ -1,8 +1,9 @@
 import urllib.request
+import os
 
 import pytest
 
-from biblecli.bible import list_multiline_verse, BibleClient
+from biblecli.bible import list_multiline_verse, BibleClient, get_source_root
 
 
 @pytest.mark.parametrize(
@@ -86,8 +87,41 @@ def test_validate_resource_abbreviations():
     """Creating links from the resource's book abbreviations yields valid URLs."""
     bible = BibleClient('BSB')
     
-    books = bible.cursor.execute("SELECT * FROM books").fetchall()
+    books = bible.get_bible_cursor().execute("SELECT * FROM books").fetchall()
     
     for book in books:
         link = bible.create_link(book['name'])
         assert valid_url(link), f"{book['name']} produced invalid link: {link}"
+
+
+# TODO: Parametrize for relevant english translations
+def test_create_bible_db(monkeypatch, tmp_path):
+    translation = 'Tyndale'
+    bible = BibleClient(translation)
+    bible.database = f"{tmp_path}/{translation}.db"
+
+    bible.create_bible_db()
+
+    cursor = bible.get_bible_cursor()
+
+    assert os.path.isfile(bible.database), 'Downloading the translation database failed.'
+
+    actual_tables = [row['name'] for row in cursor.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()]
+
+    table_record_counts = {
+        'books': 66,
+        'verses': 31102,
+    }
+
+    msg = 'Renaming the database tables failed.'
+    renamed_tables = table_record_counts.keys()
+    assert set(renamed_tables).issubset(actual_tables), msg
+
+    for table, expected_records_count in table_record_counts.items():
+        sql = f"SELECT COUNT(*) FROM {table};"
+        actual_records_count = cursor.execute(sql).fetchone()[0]
+        assert actual_records_count == expected_records_count, f"'{table}' table does not contain expected record count."
+
+    created_tables = ['abbreviations', 'resources', 'resources_abbreviations']
+    for expected_table in created_tables:
+        assert expected_table in actual_tables, f"'{expected_table}' table does not exist."
