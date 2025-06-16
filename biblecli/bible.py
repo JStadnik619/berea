@@ -1,32 +1,10 @@
 import sqlite3
-import os
 import urllib.request
 import json
 import csv
 import sys
 
-
-def get_source_root():
-    return os.path.realpath(os.path.dirname(__file__))
-
-
-# TODO: Add abbreviations and short names to books table, add to returned list
-def valid_books(translation):
-    database = f'{get_source_root()}/data/{translation}.db'
-    conn = sqlite3.connect(database)
-    # TODO: Use context manager?
-    cursor = conn.cursor()
-    
-    cursor.execute("SELECT name FROM books")
-
-    records = cursor.fetchall()
-    
-    books = []
-    
-    for row in records:
-        books.append(row[0])
-        
-    return books
+from biblecli.utils import get_source_root
 
 
 def clean_book_name(book):
@@ -74,7 +52,8 @@ def parse_verses_str(verses):
 class BibleClient:
     def __init__(self, translation):
         self.translation = translation
-        self.database = f"{get_source_root()}/data/{self.translation}.db"
+        # Use a gitignored subdirectory
+        self.database = f"{get_source_root()}/data/db/{self.translation}.db"
     
     def download_raw_bible(self):
         url = f"https://github.com/scrollmapper/bible_databases/raw/refs/heads/master/formats/sqlite/{self.translation}.db"
