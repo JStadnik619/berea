@@ -94,9 +94,16 @@ def test_validate_resource_abbreviations():
         assert valid_url(link), f"{book['name']} produced invalid link: {link}"
 
 
-# TODO: Parametrize for relevant english translations
-def test_create_bible_db(monkeypatch, tmp_path):
-    translation = 'Tyndale'
+@pytest.mark.parametrize(
+    "translation",
+    [
+        ('KJV'),
+        ('BSB'),
+        ('RLT'),        
+        ('UKJV'),        
+    ]
+)
+def test_create_bible_db(tmp_path, translation):
     bible = BibleClient(translation)
     bible.database = f"{tmp_path}/{translation}.db"
 

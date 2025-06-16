@@ -38,26 +38,6 @@ def clean_book_name(book):
         return cleaned_name
 
 
-# TODO: Create a table for these mappings in the db upon download
-def get_book_from_abbreviation(book):
-    books_to_abbreviations = {}
-    with open(f'{get_source_root()}/data/book_abbreviations.json') as file:
-        books_to_abbreviations = dict(json.load(file))
-    
-    cleaned_book_name = clean_book_name(book)
-        
-    if cleaned_book_name in books_to_abbreviations.keys():
-        return cleaned_book_name
-    
-    else:
-        for book_name, abbreviations in books_to_abbreviations.items():
-            if book.lower() in abbreviations:
-                return book_name
-        
-        msg = f"Invalid input {book=}."
-        sys.exit(msg)
-
-
 def import_resource_books(resource='step_bible'):
     books = []
     
@@ -92,8 +72,6 @@ def parse_verses_str(verses):
 
 
 class BibleClient:
-    # print args:
-    # book, chapter, verse, format='txt', verse_numbers=False
     def __init__(self, translation):
         self.translation = translation
         self.database = f"{get_source_root()}/data/{self.translation}.db"
@@ -107,6 +85,7 @@ class BibleClient:
         except Exception as e:
             print(f"Failed to download file: {e}")
     
+    # TODO: Close out the conn when it's released
     def get_bible_cursor(self):
         conn = sqlite3.connect(self.database)
         conn.row_factory = sqlite3.Row
@@ -141,8 +120,6 @@ class BibleClient:
         with open(f'{get_source_root()}/data/book_abbreviations.json') as file:
             books_to_abbreviations = dict(json.load(file))
     
-        # TODO: Create a single query to add all book abbreviations 
-        
         # Create a conn to commit inserts and close 
         conn = sqlite3.connect(self.database)
         conn.row_factory = sqlite3.Row
@@ -262,6 +239,32 @@ class BibleClient:
         # Assuming a resource only has one abbreviation for a given book and translation
         return cursor.fetchone()[0]
     
+    def get_book_from_abbreviation(self, book):
+        cleaned_book_name = clean_book_name(book)
+        cursor = self.get_bible_cursor()
+        
+        # Use full book name if that was passed in
+        book_row = cursor.execute(
+            """SELECT * FROM books WHERE books.name = ?;""",
+            (cleaned_book_name,)).fetchone()
+        
+        if book_row:
+            return cleaned_book_name
+        
+        # Get full book name using abbreviation
+        else:
+            book_row = cursor.execute("""
+            SELECT * FROM books
+            JOIN abbreviations ON abbreviations.book_id = books.id
+            WHERE abbreviations.abbreviation = ?;
+            """, (book,)).fetchone()
+            
+            if book_row:
+                return book_row['name']
+            else:
+                msg = f"Invalid input {book=}."
+                sys.exit(msg)
+    
     # TODO: Link format depends on resource
     def create_link(self, book, chapter=None, verse=None, resource='STEP Bible'):
         book_abbrev = self.get_book_abbreviation_by_resource(book, resource)
@@ -346,8 +349,7 @@ class BibleClient:
 
     def print_book(self, book, format, verse_numbers):
         cursor = self.get_bible_cursor()
-        # TODO: Use db table
-        book = get_book_from_abbreviation(book)
+        book = self.get_book_from_abbreviation(book)
         params = {'book': book}
     
         cursor.execute("""
@@ -367,8 +369,7 @@ class BibleClient:
 
     def print_chapter(self, book, chapter, format, verse_numbers):
         cursor = self.get_bible_cursor()
-        # TODO: Use db table
-        book = get_book_from_abbreviation(book)
+        book = self.get_book_from_abbreviation(book)
         params = {'book': book, 'chapter': chapter}
         
         cursor.execute("""
@@ -395,8 +396,7 @@ class BibleClient:
 
     def print_verse(self, book, chapter, verse, format, verse_numbers):
         cursor = self.get_bible_cursor()
-        # TODO: Use db table
-        book = get_book_from_abbreviation(book)
+        book = self.get_book_from_abbreviation(book)
         params = {
             'book': book,
             'chapter': chapter,
@@ -432,8 +432,7 @@ class BibleClient:
         Print a range of verses, eg. 5-7. 
         """
         cursor = self.get_bible_cursor()
-        # TODO: Use db table
-        book = get_book_from_abbreviation(book)
+        book = self.get_book_from_abbreviation(book)
         verse_start, verse_end = parse_verses_str(verse)
         
         params = {
