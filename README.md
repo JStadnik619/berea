@@ -43,8 +43,6 @@ bible 3john
 
 [BSB](https://berean.bible/index.html) is the default translation. Different translations can be selected via the `-t, --translation` flag:
 
-<!-- TODO: Add more public domain translations -->
-
 ```
 bible john 3 16 -t KJV
 ```
@@ -66,8 +64,6 @@ bible matthew 5 1-11 -f md
 
 Books can be referenced using the following titles and abbreviations (case-insensitive).
 
-<!-- TODO: Map abbreviations to their usage in external Bibles/apps (eg. bible.com, MacArthur Study Bible) -->
-<!-- TODO: Map books to abbreviations upon download from bible_databases -->
 ```
 Genesis: genesis, gen, ge, gn
 Exodus: exodus, ex, exod, exo
@@ -139,7 +135,6 @@ Revelation of John: revelation, rev, re, the revelation
 
 ## Resources
 
-<!-- TODO: Add subparser for downloading additional translations-->
 [scrollmapper/bible_databases: Bible versions and cross-reference databases.](https://github.com/scrollmapper/bible_databases)
 
 <!-- Users may not copy or download more than 500 verses of the ESV Bible -->
