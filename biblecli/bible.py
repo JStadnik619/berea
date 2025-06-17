@@ -329,7 +329,6 @@ class BibleClient:
         print('\n______________________________________________________________________')
 
     # TODO: Print paragraphs from Bible format
-    # TODO: Parse USFM tags to create more readable passages/newlines
     def print_passage_by_format(self, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
         match format: 
             case 'txt':
