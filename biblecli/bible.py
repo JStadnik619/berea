@@ -1,8 +1,10 @@
 import sqlite3
 import urllib.request
+from urllib.error import HTTPError
 import json
 import csv
 import sys
+import os
 
 from biblecli.utils import get_source_root
 
@@ -61,8 +63,14 @@ class BibleClient:
         try:
             urllib.request.urlretrieve(url, self.database)
             print(f"Downloaded: {self.database}")
-        except Exception as e:
-            print(f"Failed to download file: {e}")
+            
+        except HTTPError:
+            link = "https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140"
+            msg = (
+                f"Translation '{self.translation}' does not exist.\n"
+                f"Check the following link for available translations:\n{link}"
+            )
+            sys.exit(msg)
     
     # TODO: Close out the conn when it's released
     def get_bible_cursor(self):
@@ -180,6 +188,10 @@ class BibleClient:
         self.rename_tables()
         self.create_abbreviations_table()
         self.create_resource_tables()
+    
+    def delete_translation(self):
+        os.remove(self.database)
+        print(f"Deleted transation '{self.translation}'.")
     
     def create_link_label(self, book, chapter=None, verse=None):
         """Creates a link label, eg. `Isaiah 14:12-20`

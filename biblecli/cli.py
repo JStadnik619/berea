@@ -25,7 +25,6 @@ def add_reference_parser(subparsers):
     # TODO: Make the default translation configurable
     reference_parser.add_argument(
         '-t', '--translation',
-        # TODO: parse choices from /data/db
         choices=DOWNLOADED_TRANSLATIONS,
         default='BSB'
     )
@@ -50,8 +49,19 @@ def add_download_parser(subparsers):
     
     download_parser.add_argument(
         'translation',
-        # choices=[],
         default='KJV'
+    )
+    
+    
+def add_delete_parser(subparsers):
+    delete_parser = subparsers.add_parser(
+        'delete',
+        help="Delete a bible translation"
+    )
+    
+    delete_parser.add_argument(
+        'translation',
+        choices=DOWNLOADED_TRANSLATIONS
     )
 
 
@@ -63,27 +73,33 @@ def parse_biblecli_args():
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     add_reference_parser(subparsers)
     add_download_parser(subparsers)
+    add_delete_parser(subparsers)
     
     return parser.parse_args()
 
 
 def main():
+    if len(sys.argv) < 2:
+        sys.argv = ['bible', '--help']
+    
     # Set reference as the default command
-    if sys.argv[1] not in ['reference', 'download', '--help', '-h']:
+    commands = ['reference', 'download', 'delete', '--help', '-h']
+    
+    if sys.argv[1] not in commands:
         sys.argv.insert(1, 'reference')
     
     args = parse_biblecli_args()
     
-    if args is not None:
-
-        bible = BibleClient(args.translation)
-        command = args.command
-        
-        if command == 'download':
+    bible = BibleClient(args.translation)
+    
+    match args.command:
+        case 'download':
             bible.create_bible_db()
         
-        else:
-
+        case 'delete':
+            bible.delete_translation()
+    
+        case 'reference': 
             if not args.chapter:
                 bible.print_book(args.book, args.format, args.verse_numbers)
             elif not args.verse:
