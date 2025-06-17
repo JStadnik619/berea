@@ -1,7 +1,9 @@
 import pytest
 import sys
+import os
 
-from biblecli.cli import main
+from biblecli.cli import main, DOWNLOADED_TRANSLATIONS
+from biblecli.utils import get_source_root
 
 
 @pytest.mark.parametrize(
@@ -148,7 +150,7 @@ from biblecli.cli import main
         )
     ]
 )
-def test_main(monkeypatch, capsys, msg, args, output):
+def test_reference(monkeypatch, capsys, msg, args, output):
     args.insert(0, 'bible')
     monkeypatch.setattr(sys, 'argv', args)
     
@@ -156,3 +158,26 @@ def test_main(monkeypatch, capsys, msg, args, output):
     
     captured = capsys.readouterr()
     assert captured.out == output + '\n', msg
+
+
+@pytest.mark.parametrize(
+    "translation",
+    [
+        ('KJV'),
+        ('BSB'),
+        ('RLT'),        
+        ('UKJV'),        
+    ]
+)
+def test_download(monkeypatch, translation):
+    if translation in DOWNLOADED_TRANSLATIONS:
+        monkeypatch.setattr(sys, 'argv', ['bible', 'delete', translation])
+        main()
+    
+    args = ['bible', 'download']
+    args.append(translation)
+    monkeypatch.setattr(sys, 'argv', args)
+    
+    main()
+    
+    assert os.path.isfile(f"{get_source_root()}/data/db/{translation}.db")
