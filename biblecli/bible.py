@@ -458,8 +458,21 @@ class BibleClient:
                 chapter=chapter,
                 verse=verse
             )
+    
+    # TODO: Output txt, markdown table, csv format
+    def search(self, phrase):
+        cursor = self.get_bible_cursor()
         
-        # TODO: Use FTS4 SQLite extension to search bible for particular words/phrases
-        # TODO: Fuzzy search? (eg. sanctify, sanctification, sanctity)
-        def search_bible():
-            pass
+        cursor.execute("""
+        SELECT books.name AS book, chapter, verse, text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE verses.text LIKE ?;
+        """, (f"%{phrase}%",))
+        
+        verse_records = cursor.fetchall()
+        
+        print(f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n")
+        
+        for verse in verse_records:
+            # TODO: Use/rename create_link_label? (omit translation)
+            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
