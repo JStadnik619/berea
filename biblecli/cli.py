@@ -44,7 +44,7 @@ def add_reference_parser(subparsers):
 def add_download_parser(subparsers):
     download_parser = subparsers.add_parser(
         'download',
-        help="Download a bible translation"
+        help="Download a Bible translation"
     )
     
     download_parser.add_argument(
@@ -56,12 +56,30 @@ def add_download_parser(subparsers):
 def add_delete_parser(subparsers):
     delete_parser = subparsers.add_parser(
         'delete',
-        help="Delete a bible translation"
+        help="Delete a Bible translation"
     )
     
     delete_parser.add_argument(
         'translation',
         choices=DOWNLOADED_TRANSLATIONS
+    )
+    
+    
+def add_search_parser(subparsers):
+    search_parser = subparsers.add_parser(
+        'search',
+        help="Search for a specific phrase in a Bible translation"
+    )
+    
+    search_parser.add_argument(
+        'phrase',
+        help="Phrase to search"
+    )
+    
+    search_parser.add_argument(
+        'translation',
+        choices=DOWNLOADED_TRANSLATIONS,
+        help="A downloaded Bible translation"
     )
 
 
@@ -74,6 +92,7 @@ def parse_biblecli_args():
     add_reference_parser(subparsers)
     add_download_parser(subparsers)
     add_delete_parser(subparsers)
+    add_search_parser(subparsers)
     
     return parser.parse_args()
 
@@ -83,7 +102,14 @@ def main():
         sys.argv = ['bible', '--help']
     
     # Set reference as the default command
-    commands = ['reference', 'download', 'delete', '--help', '-h']
+    commands = [
+        'reference',
+        'download',
+        'delete',
+        'search',
+        '--help',
+        '-h',
+    ]
     
     if sys.argv[1] not in commands:
         sys.argv.insert(1, 'reference')
@@ -125,6 +151,9 @@ def main():
                     args.format,
                     args.verse_numbers
                     )
+            
+        case 'search':
+            bible.search(args.phrase)
 
 
 if __name__ == "__main__":

@@ -181,3 +181,51 @@ def test_download(monkeypatch, translation):
     main()
     
     assert os.path.isfile(f"{get_source_root()}/data/db/{translation}.db")
+
+
+@pytest.mark.parametrize(
+    "msg, phrase, translation, output",
+    [
+        (
+            "Searching a phrase with a single occurrence failed",
+            'rescue my soul',
+            'BSB',
+            (
+                "1 occurrences of 'rescue my soul' in the BSB Bible:\n"
+                "___\n"
+                "\nPsalms 35:17:\n"
+                "How long, O Lord, will You look on? Rescue my soul from their ravages, my precious life from these lions. \n"
+                "___\n"
+            )
+        ),
+        (
+            "Searching a phrase with multiple occurrences failed",
+            'sheep gate',
+            'BSB',
+            (
+                "4 occurrences of 'sheep gate' in the BSB Bible:\n"
+                "___\n\n"
+                "Nehemiah 3:1:\n"
+                "At the Sheep Gate, Eliashib the high priest and his fellow priests began rebuilding. They dedicated it and installed its doors. After building as far as the Tower of the Hundred and the Tower of Hananel, they dedicated the wall. \n"
+                "___\n\n"
+                "Nehemiah 3:32:\n"
+                "And between the upper room above the corner and the Sheep Gate, the goldsmiths and merchants made repairs. \n"
+                "___\n\n"
+                "Nehemiah 12:39:\n"
+                "over the Gate of Ephraim, the Jeshanah Gate, the Fish Gate, the Tower of Hananel, and the Tower of the Hundred, as far as the Sheep Gate. And they stopped at the Gate of the Guard. \n"
+                "___\n\n"
+                "John 5:2:\n"
+                "Now there is in Jerusalem near the Sheep Gate a pool with five covered colonnades, which in Hebrew is called Bethesda. \n"
+                "___\n"
+            )
+        ),
+    ]
+)
+def test_search(monkeypatch, capsys, msg, phrase, translation, output):
+    args = ['bible', 'search', phrase, translation]
+    monkeypatch.setattr(sys, 'argv', args)
+    
+    main()
+    
+    captured = capsys.readouterr()
+    assert captured.out == output + '\n', msg
