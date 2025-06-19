@@ -460,7 +460,7 @@ class BibleClient:
             )
     
     # TODO: Output txt, markdown table, csv format
-    def search(self, phrase):
+    def search_bible(self, phrase):
         cursor = self.get_bible_cursor()
         
         cursor.execute("""
@@ -472,6 +472,77 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         print(f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n")
+        
+        for verse in verse_records:
+            # TODO: Use/rename create_link_label? (omit translation)
+            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+    
+    # TODO: ot or nt
+     def search_testament(self, testament):
+        cursor = self.get_bible_cursor()
+
+        # TODO: List of NT books
+        # TODO: Query books IN or NOT IN NT
+        
+        cursor.execute("""
+        SELECT books.name AS book, chapter, verse, text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE verses.text LIKE ?;
+        """, (f"%{phrase}%",))
+        
+        verse_records = cursor.fetchall()
+        
+        print(f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n")
+        
+        for verse in verse_records:
+            # TODO: Use/rename create_link_label? (omit translation)
+            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+    
+    def search_book(self, phrase, book):
+        cursor = self.get_bible_cursor()
+
+        book = self.get_book_from_abbreviation(book)
+        params = {
+            'phrase': f"%{phrase}%",
+            'book': book,
+            }
+        
+        cursor.execute("""
+        SELECT books.name AS book, chapter, verse, text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE verses.text LIKE :phrase
+        AND book = :book;
+        """, params)
+        
+        verse_records = cursor.fetchall()
+        
+        print(f"{len(verse_records)} occurrences of '{phrase}' in {book} ({self.translation}):\n___\n")
+        
+        for verse in verse_records:
+            # TODO: Use/rename create_link_label? (omit translation)
+            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+
+    def search_chapter(self, phrase, book, chapter):
+        cursor = self.get_bible_cursor()
+
+        book = self.get_book_from_abbreviation(book)
+        params = {
+            'phrase': f"%{phrase}%",
+            'book': book,
+            'chapter': chapter,
+            }
+        
+        cursor.execute("""
+        SELECT books.name AS book, chapter, verse, text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE verses.text LIKE :phrase
+        AND book = :book
+        AND chapter = :chapter;
+        """, params)
+        
+        verse_records = cursor.fetchall()
+        
+        print(f"{len(verse_records)} occurrences of '{phrase}' in {book} {chapter} ({self.translation}):\n___\n")
         
         for verse in verse_records:
             # TODO: Use/rename create_link_label? (omit translation)

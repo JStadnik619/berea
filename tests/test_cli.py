@@ -219,6 +219,7 @@ def test_download(monkeypatch, translation):
                 "___\n"
             )
         ),
+        # TODO: OT, NT, book, chapter
     ]
 )
 def test_search(monkeypatch, capsys, msg, phrase, translation, output):

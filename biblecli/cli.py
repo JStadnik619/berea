@@ -75,11 +75,19 @@ def add_search_parser(subparsers):
         'phrase',
         help="Phrase to search"
     )
+
+    search_parser.add_argument(
+        'book',
+        nargs='?'
+    )
+
+    search_parser.add_argument('chapter', nargs='?')
+    search_parser.add_argument('verse', nargs='?')
     
     search_parser.add_argument(
-        'translation',
+        '-t', '--translation',
         choices=DOWNLOADED_TRANSLATIONS,
-        help="A downloaded Bible translation"
+        default='BSB'
     )
 
 
@@ -153,7 +161,12 @@ def main():
                     )
             
         case 'search':
-            bible.search(args.phrase)
+            if args.chapter:
+                bible.search_chapter(args.phrase, args.book, args.chapter)
+            elif args.book:
+                bible.search_book(args.phrase, args.book)
+            else:
+                bible.search_bible(args.phrase)
 
 
 if __name__ == "__main__":
