@@ -51,6 +51,10 @@ def parse_verses_str(verses):
     return verses_split[0], verses_split[1]
 
 
+def list_to_sql(data):
+    return "('" + "','".join(data) + "')"
+
+
 class BibleClient:
     def __init__(self, translation):
         self.translation = translation
@@ -477,22 +481,68 @@ class BibleClient:
             # TODO: Use/rename create_link_label? (omit translation)
             print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
     
-    # TODO: ot or nt
-     def search_testament(self, testament):
+    def search_testament(self, phrase, testament):
         cursor = self.get_bible_cursor()
 
-        # TODO: List of NT books
-        # TODO: Query books IN or NOT IN NT
+        new_testament = [
+            'Matthew',
+            'Mark',
+            'Luke',
+            'John',
+            'Acts',
+            'Romans',
+            'I Corinthians',
+            'II Corinthians',
+            'Galatians',
+            'Ephesians',
+            'Philippians',
+            'Colossians',
+            'I Thessalonians',
+            'II Thessalonians',
+            'I Timothy',
+            'II Timothy',
+            'Titus',
+            'Philemon',
+            'Hebrews',
+            'James',
+            'I Peter',
+            'II Peter',
+            'I John',
+            'II John',
+            'III John',
+            'Jude',
+            'Revelation of John'
+        ]
+
+        nt_sql_list = list_to_sql(new_testament)
+
+        if testament == 'nt':
+
+            sql = f"""
+            SELECT books.name AS book, chapter, verse, text FROM verses
+            JOIN books ON verses.book_id = books.id
+            WHERE verses.text LIKE ?
+            AND books.name IN {nt_sql_list};
+            """
         
-        cursor.execute("""
-        SELECT books.name AS book, chapter, verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE verses.text LIKE ?;
-        """, (f"%{phrase}%",))
+        elif testament == 'ot': 
+
+            sql = f"""
+            SELECT books.name AS book, chapter, verse, text FROM verses
+            JOIN books ON verses.book_id = books.id
+            WHERE verses.text LIKE ?
+            AND books.name NOT IN {nt_sql_list};
+            """
         
+        else:
+            sys.exit(f"Invalid {testament=}.")
+        
+        # Bind phrase since it's user input
+        cursor.execute(sql, (f"%{phrase}%",))
         verse_records = cursor.fetchall()
-        
-        print(f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n")
+
+        testament = 'New Testament' if testament == 'nt' else 'Old Testament'
+        print(f"{len(verse_records)} occurrences of '{phrase}' in the {testament} ({self.translation}):\n___\n")
         
         for verse in verse_records:
             # TODO: Use/rename create_link_label? (omit translation)

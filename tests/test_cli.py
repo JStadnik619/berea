@@ -184,24 +184,22 @@ def test_download(monkeypatch, translation):
 
 
 @pytest.mark.parametrize(
-    "msg, phrase, translation, output",
+    "msg, args, output",
     [
         (
             "Searching a phrase with a single occurrence failed",
-            'rescue my soul',
-            'BSB',
+            ['rescue my soul', '-t', 'BSB'],
             (
                 "1 occurrences of 'rescue my soul' in the BSB Bible:\n"
-                "___\n"
-                "\nPsalms 35:17:\n"
+                "___\n\n"
+                "Psalms 35:17:\n"
                 "How long, O Lord, will You look on? Rescue my soul from their ravages, my precious life from these lions. \n"
                 "___\n"
             )
         ),
         (
             "Searching a phrase with multiple occurrences failed",
-            'sheep gate',
-            'BSB',
+            ['sheep gate', '-t', 'BSB'],
             (
                 "4 occurrences of 'sheep gate' in the BSB Bible:\n"
                 "___\n\n"
@@ -219,11 +217,72 @@ def test_download(monkeypatch, translation):
                 "___\n"
             )
         ),
-        # TODO: OT, NT, book, chapter
+        (
+            "Searching a phrase in the Old Testament failed",
+            ['holy spirit', '-OT'],
+            (
+                "3 occurrences of 'holy spirit' in the Old Testament (BSB):\n"
+                "___\n\n"
+                "Psalms 51:11:\n"
+                "Cast me not away from Your presence; take not Your Holy Spirit from me. \n"
+                "___\n\n"
+                "Isaiah 63:10:\n"
+                "But they rebelled and grieved His Holy Spirit. So He turned and became their enemy, and He Himself fought against them.   \n"
+                "___\n\n"
+                "Isaiah 63:11:\n"
+                "Then His people remembered the days of old, the days of Moses. Where is He who brought them through the sea with the shepherds of His flock? Where is the One who set His Holy Spirit among them, \n"
+                "___\n"
+            )
+        ),
+        (
+            "Searching a phrase in the New Testament failed",
+            ['ghost', '-NT'],
+            (
+                "2 occurrences of 'ghost' in the New Testament (BSB):\n"
+                "___\n\n"
+                "Matthew 14:26:\n"
+                "When the disciples saw Him walking on the sea, they were terrified. “It’s a ghost!” they said, and cried out in fear. \n"
+                "___\n\n"
+                "Mark 6:49:\n"
+                "but when they saw Him walking on the sea, they cried out, thinking He was a ghost— \n"
+                "___\n"
+            )
+        ),
+        (
+            "Searching a phrase in a book failed",
+            ['lying spirit', '2chr'],
+            (
+                "2 occurrences of 'lying spirit' in II Chronicles (BSB):\n"
+                "___\n\n"
+                "II Chronicles 18:21:\n"
+                "And he replied, ‘I will go out and be a lying spirit in the mouths of all his prophets.’  ‘You will surely entice him and prevail,’ said the LORD. ‘Go and do it.’ \n"
+                "___\n\n"
+                "II Chronicles 18:22:\n"
+                "So you see, the LORD has put a lying spirit in the mouths of these prophets of yours, and the LORD has pronounced disaster against you.” \n"
+                "___\n"
+            )
+        ),
+        (
+            "Searching a phrase in a chapter failed",
+            ['lampstands', 'rev', '1'],
+            (
+                "3 occurrences of 'lampstands' in Revelation of John 1 (BSB):\n"
+                "___\n\n"
+                "Revelation of John 1:12:\n"
+                "Then I turned to see the voice that was speaking with me. And having turned, I saw seven golden lampstands, \n"
+                "___\n\n"
+                "Revelation of John 1:13:\n"
+                "and among the lampstands was One like the Son of Man, dressed in a long robe, with a golden sash around His chest. \n"
+                "___\n\n"
+                "Revelation of John 1:20:\n"
+                "This is the mystery of the seven stars you saw in My right hand and of the seven golden lampstands: The seven stars are the angels of the seven churches, and the seven lampstands are the seven churches. \n"
+                "___\n"
+            )
+        ),
     ]
 )
-def test_search(monkeypatch, capsys, msg, phrase, translation, output):
-    args = ['bible', 'search', phrase, translation]
+def test_search(monkeypatch, capsys, msg, args, output):
+    args = ['bible', 'search'] +  args
     monkeypatch.setattr(sys, 'argv', args)
     
     main()

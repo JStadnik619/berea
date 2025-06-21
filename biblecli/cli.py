@@ -90,6 +90,16 @@ def add_search_parser(subparsers):
         default='BSB'
     )
 
+    search_parser.add_argument(
+        '-NT', '--new_testament',
+        action='store_true'
+    )
+
+    search_parser.add_argument(
+        '-OT', '--old_testament',
+        action='store_true'
+    )
+
 
 def parse_biblecli_args():
     description = "A CLI for looking up passages of Scripture."
@@ -165,6 +175,10 @@ def main():
                 bible.search_chapter(args.phrase, args.book, args.chapter)
             elif args.book:
                 bible.search_book(args.phrase, args.book)
+            elif args.new_testament:
+                bible.search_testament(args.phrase , 'nt')
+            elif args.old_testament:
+                bible.search_testament(args.phrase , 'ot')
             else:
                 bible.search_bible(args.phrase)
 
