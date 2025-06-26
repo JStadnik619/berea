@@ -1,15 +1,33 @@
+import configparser
 import sys
 import argparse
 
 from biblecli import __version__
-from biblecli.utils import get_downloaded_translations
+from biblecli.utils import get_downloaded_translations, get_source_root
 from biblecli.bible import BibleClient
 
 
-DOWNLOADED_TRANSLATIONS = get_downloaded_translations()
+class CLIConfig:
+    config = configparser.ConfigParser()
+    path = f"{get_source_root()}/data/db/config.ini"
+    
+    @classmethod
+    def set_default_translation(cls, translation):
+        if not cls.config.has_section('Defaults'):
+            cls.config.add_section('Defaults')
+        
+        cls.config.set('Defaults', 'translation', translation)
+        
+        with open(cls.path, 'w') as config_file:
+            cls.config.write(config_file)
+    
+    @classmethod
+    def get_default_translation(cls):
+        cls.config.read(cls.path)
+        return cls.config.get('Defaults', 'translation', fallback=None)
 
 
-def add_reference_parser(subparsers):
+def add_reference_parser(subparsers, downloaded_translations):
     reference_parser = subparsers.add_parser(
         'reference',
         help="Reference a passage from the Bible (default command)"
@@ -25,8 +43,8 @@ def add_reference_parser(subparsers):
     # TODO: Make the default translation configurable
     reference_parser.add_argument(
         '-t', '--translation',
-        choices=DOWNLOADED_TRANSLATIONS,
-        default='BSB'
+        choices=downloaded_translations,
+        default=CLIConfig.get_default_translation()
     )
     
     # TODO: Make the default format configurable
@@ -53,7 +71,7 @@ def add_download_parser(subparsers):
     )
     
     
-def add_delete_parser(subparsers):
+def add_delete_parser(subparsers, downloaded_translations):
     delete_parser = subparsers.add_parser(
         'delete',
         help="Delete a Bible translation"
@@ -61,11 +79,11 @@ def add_delete_parser(subparsers):
     
     delete_parser.add_argument(
         'translation',
-        choices=DOWNLOADED_TRANSLATIONS
+        choices=downloaded_translations
     )
     
     
-def add_search_parser(subparsers):
+def add_search_parser(subparsers, downloaded_translations):
     search_parser = subparsers.add_parser(
         'search',
         help="Search for a specific phrase in a Bible translation"
@@ -86,8 +104,8 @@ def add_search_parser(subparsers):
     
     search_parser.add_argument(
         '-t', '--translation',
-        choices=DOWNLOADED_TRANSLATIONS,
-        default='BSB'
+        choices=downloaded_translations,
+        default=CLIConfig.get_default_translation()
     )
 
     search_parser.add_argument(
@@ -101,16 +119,19 @@ def add_search_parser(subparsers):
     )
 
 
-def parse_biblecli_args():
+# TODO: add_config_parser
+
+
+def parse_biblecli_args(downloaded_translations):
     description = "A CLI for looking up passages of Scripture."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     
     subparsers = parser.add_subparsers(title="Commands", dest="command")
-    add_reference_parser(subparsers)
+    add_reference_parser(subparsers, downloaded_translations)
     add_download_parser(subparsers)
-    add_delete_parser(subparsers)
-    add_search_parser(subparsers)
+    add_delete_parser(subparsers, downloaded_translations)
+    add_search_parser(subparsers, downloaded_translations)
     
     return parser.parse_args()
 
@@ -132,16 +153,22 @@ def main():
     if sys.argv[1] not in commands:
         sys.argv.insert(1, 'reference')
     
-    args = parse_biblecli_args()
+    downloaded_translations = get_downloaded_translations()
+    args = parse_biblecli_args(downloaded_translations)
     
     bible = BibleClient(args.translation)
     
     match args.command:
         case 'download':
+            # Save first downloaded translation as the default
+            if not downloaded_translations:
+                CLIConfig.set_default_translation(args.translation)
+            
             bible.create_bible_db()
         
         case 'delete':
             bible.delete_translation()
+            # TODO: Update default translation if necessary or delete config
     
         case 'reference': 
             if not args.chapter:

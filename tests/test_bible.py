@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from biblecli.bible import list_multiline_verse, BibleClient, get_source_root
+from biblecli.bible import list_multiline_verse, BibleClient
 
 
 @pytest.mark.parametrize(

@@ -2,8 +2,8 @@ import pytest
 import sys
 import os
 
-from biblecli.cli import main, DOWNLOADED_TRANSLATIONS
-from biblecli.utils import get_source_root
+from biblecli.cli import main
+from biblecli.utils import get_source_root, get_downloaded_translations
 
 
 @pytest.mark.parametrize(
@@ -170,7 +170,7 @@ def test_reference(monkeypatch, capsys, msg, args, output):
     ]
 )
 def test_download(monkeypatch, translation):
-    if translation in DOWNLOADED_TRANSLATIONS:
+    if translation in get_downloaded_translations():
         monkeypatch.setattr(sys, 'argv', ['bible', 'delete', translation])
         main()
     
