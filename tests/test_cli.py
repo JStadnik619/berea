@@ -165,6 +165,7 @@ def test_reference(monkeypatch, capsys, msg, args, output):
     [
         ('KJV'),
         ('BSB'),
+        ('LEB'),
         ('RLT'),        
         ('UKJV'),        
     ]

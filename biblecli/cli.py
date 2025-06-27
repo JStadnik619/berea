@@ -1,15 +1,69 @@
-import configparser
 import sys
+import os
+import configparser
 import argparse
 
 from biblecli import __version__
-from biblecli.utils import get_downloaded_translations, get_source_root
+from biblecli.utils import get_downloaded_translations
 from biblecli.bible import BibleClient
+
+
+def get_config_path():
+    system_platform = sys.platform
+    
+    # Check if a virtual environment is active
+    if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
+        # Set path to the root of the venv
+        venv_root = sys.prefix
+        
+        if system_platform == 'win32':
+            return os.path.join(venv_root, 'biblecli.ini')
+        else:  # Linux, macOS
+            return os.path.join(venv_root, 'biblecli.conf')
+    
+    # No venv, use OS's standard path for config
+    else:
+        if system_platform == 'win32':
+            return os.path.join(os.environ.get('APPDATA', ''), 'biblecli', 'biblecli.ini')
+        elif system_platform == 'darwin':  # macOS
+            return os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'biblecli', 'biblecli.conf')
+        elif system_platform == 'linux':
+            return os.path.join(os.path.expanduser('~'), '.config', 'biblecli', 'biblecli.conf')
+        
+        else:
+            sys.exit(f"Unsupported platform: {system_platform}")
 
 
 class CLIConfig:
     config = configparser.ConfigParser()
-    path = f"{get_source_root()}/data/db/config.ini"
+    path = get_config_path()
+    
+    @classmethod
+    def set_config_path(cls):
+        system_platform = sys.platform
+        
+        # Check if a virtual environment is active
+        if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
+            # Set path to the root of the venv
+            venv_root = sys.prefix
+            
+            if system_platform == 'win32':
+                return os.path.join(venv_root, 'biblecli.ini')
+            else:  # Linux, macOS
+                return os.path.join(venv_root, 'biblecli.conf')
+        
+        # No venv, use OS's path for config
+        else:
+            if system_platform == 'win32':
+                return os.path.join(os.environ.get('APPDATA', ''), 'biblecli', 'biblecli.ini')
+            elif system_platform == 'darwin':  # macOS
+                return os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'biblecli', 'biblecli.conf')
+            elif system_platform == 'linux':
+                return os.path.join(os.path.expanduser('~'), '.config', 'biblecli', 'biblecli.conf')
+            
+            else:
+                sys.exit(f"Unsupported platform: {system_platform}")
+            
     
     @classmethod
     def set_default_translation(cls, translation):
