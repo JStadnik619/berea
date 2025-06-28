@@ -188,6 +188,7 @@ def main():
         'delete',
         'search',
         'config',
+        '--version',
         '--help',
         '-h',
     ]
