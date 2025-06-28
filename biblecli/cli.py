@@ -39,33 +39,6 @@ class CLIConfig:
     path = get_config_path()
     
     @classmethod
-    def set_config_path(cls):
-        system_platform = sys.platform
-        
-        # Check if a virtual environment is active
-        if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
-            # Set path to the root of the venv
-            venv_root = sys.prefix
-            
-            if system_platform == 'win32':
-                return os.path.join(venv_root, 'biblecli.ini')
-            else:  # Linux, macOS
-                return os.path.join(venv_root, 'biblecli.conf')
-        
-        # No venv, use OS's path for config
-        else:
-            if system_platform == 'win32':
-                return os.path.join(os.environ.get('APPDATA', ''), 'biblecli', 'biblecli.ini')
-            elif system_platform == 'darwin':  # macOS
-                return os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'biblecli', 'biblecli.conf')
-            elif system_platform == 'linux':
-                return os.path.join(os.path.expanduser('~'), '.config', 'biblecli', 'biblecli.conf')
-            
-            else:
-                sys.exit(f"Unsupported platform: {system_platform}")
-            
-    
-    @classmethod
     def set_default_translation(cls, translation):
         if not cls.config.has_section('Defaults'):
             cls.config.add_section('Defaults')
@@ -94,7 +67,6 @@ def add_reference_parser(subparsers, downloaded_translations):
     reference_parser.add_argument('chapter', nargs='?')
     reference_parser.add_argument('verse', nargs='?')
     
-    # TODO: Make the default translation configurable
     reference_parser.add_argument(
         '-t', '--translation',
         choices=downloaded_translations,
@@ -173,7 +145,21 @@ def add_search_parser(subparsers, downloaded_translations):
     )
 
 
-# TODO: add_config_parser
+def add_config_parser(subparsers, downloaded_translations):
+    config_parser = subparsers.add_parser(
+        'config',
+        help="Configure default settings"
+    )
+
+    config_parser.add_argument(
+        'parameter',
+        choices=['translation']
+    )
+
+    config_parser.add_argument(
+        'value',
+        choices=downloaded_translations
+    )
 
 
 def parse_biblecli_args(downloaded_translations):
@@ -186,6 +172,7 @@ def parse_biblecli_args(downloaded_translations):
     add_download_parser(subparsers)
     add_delete_parser(subparsers, downloaded_translations)
     add_search_parser(subparsers, downloaded_translations)
+    add_config_parser(subparsers, downloaded_translations)
     
     return parser.parse_args()
 
@@ -200,6 +187,7 @@ def main():
         'download',
         'delete',
         'search',
+        'config',
         '--help',
         '-h',
     ]
@@ -209,7 +197,11 @@ def main():
     
     downloaded_translations = get_downloaded_translations()
     args = parse_biblecli_args(downloaded_translations)
-    
+
+    if args.command == 'config':
+        CLIConfig.set_default_translation(args.value)
+        sys.exit('Default translation updated.')
+
     bible = BibleClient(args.translation)
     
     match args.command:
@@ -222,7 +214,14 @@ def main():
         
         case 'delete':
             bible.delete_translation()
-            # TODO: Update default translation if necessary or delete config
+
+            # Update config if no other translation is downloaded
+            if [args.translation] == downloaded_translations:
+                CLIConfig.set_default_translation('None')
+            
+            # Update config if default translation is deleted
+            if args.translation == CLIConfig.get_default_translation():
+                CLIConfig.set_default_translation(downloaded_translations[0])
     
         case 'reference': 
             if not args.chapter:
