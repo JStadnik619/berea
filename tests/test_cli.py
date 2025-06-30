@@ -220,7 +220,7 @@ def test_download(monkeypatch, translation):
         ),
         (
             "Searching a phrase in the Old Testament failed",
-            ['holy spirit', '-OT'],
+            ['holy spirit', '-OT', '-t', 'BSB'],
             (
                 "3 occurrences of 'holy spirit' in the Old Testament (BSB):\n"
                 "___\n\n"
@@ -237,7 +237,7 @@ def test_download(monkeypatch, translation):
         ),
         (
             "Searching a phrase in the New Testament failed",
-            ['ghost', '-NT'],
+            ['ghost', '-NT', '-t', 'BSB'],
             (
                 "2 occurrences of 'ghost' in the New Testament (BSB):\n"
                 "___\n\n"
@@ -251,7 +251,7 @@ def test_download(monkeypatch, translation):
         ),
         (
             "Searching a phrase in a book failed",
-            ['lying spirit', '2chr'],
+            ['lying spirit', '2chr', '-t', 'BSB'],
             (
                 "2 occurrences of 'lying spirit' in II Chronicles (BSB):\n"
                 "___\n\n"
@@ -265,7 +265,7 @@ def test_download(monkeypatch, translation):
         ),
         (
             "Searching a phrase in a chapter failed",
-            ['lampstands', 'rev', '1'],
+            ['lampstands', 'rev', '1', '-t', 'BSB'],
             (
                 "3 occurrences of 'lampstands' in Revelation of John 1 (BSB):\n"
                 "___\n\n"
