@@ -57,6 +57,7 @@ class CLIConfig:
 def add_reference_parser(subparsers, downloaded_translations):
     reference_parser = subparsers.add_parser(
         'reference',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         help="Reference a passage from the Bible (default command)"
     )
     
@@ -70,7 +71,8 @@ def add_reference_parser(subparsers, downloaded_translations):
     reference_parser.add_argument(
         '-t', '--translation',
         choices=downloaded_translations,
-        default=CLIConfig.get_default_translation()
+        default=CLIConfig.get_default_translation(),
+        help='Bible translation used to display passage'
     )
     
     # TODO: Make the default format configurable
@@ -112,6 +114,7 @@ def add_delete_parser(subparsers, downloaded_translations):
 def add_search_parser(subparsers, downloaded_translations):
     search_parser = subparsers.add_parser(
         'search',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         help="Search for a specific phrase in a Bible translation"
     )
     
@@ -131,7 +134,8 @@ def add_search_parser(subparsers, downloaded_translations):
     search_parser.add_argument(
         '-t', '--translation',
         choices=downloaded_translations,
-        default=CLIConfig.get_default_translation()
+        default=CLIConfig.get_default_translation(),
+        help='Bible translation used to search phrase'
     )
 
     search_parser.add_argument(
