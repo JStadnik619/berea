@@ -290,3 +290,8 @@ def test_search(monkeypatch, capsys, msg, args, output):
     
     captured = capsys.readouterr()
     assert captured.out == output + '\n', msg
+
+
+# TODO:
+def test_config():
+    assert False
