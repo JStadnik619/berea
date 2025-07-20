@@ -149,3 +149,5 @@ Revelation of John: revelation, rev, re, the revelation
 [maxwelljens/bibel: Bible command line interface utility](https://github.com/maxwelljens/bibel)
 
 [dtjm/bible: Command-line tool for reading the Bible](https://github.com/dtjm/bible)
+
+[BibleJS/BibleApp: :book: Bible.JS CLI client. Read the Holy Bible via the command line.](https://github.com/BibleJS/BibleApp)
