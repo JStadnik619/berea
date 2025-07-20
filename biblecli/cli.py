@@ -205,7 +205,8 @@ def main():
 
     if args.command == 'config':
         CLIConfig.set_default_translation(args.value)
-        sys.exit('Default translation updated.')
+        print('Default translation updated.')
+        return 
 
     bible = BibleClient(args.translation)
     
