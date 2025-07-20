@@ -2,7 +2,7 @@ import pytest
 import sys
 import os
 
-from biblecli.cli import main
+from biblecli.cli import main, CLIConfig
 from biblecli.utils import get_source_root, get_downloaded_translations
 
 
@@ -160,6 +160,49 @@ def test_reference(monkeypatch, capsys, msg, args, output):
     assert captured.out == output + '\n', msg
 
 
+def translation_exists(translation):
+    return os.path.isfile(f"{get_source_root()}/data/db/{translation}.db")
+
+
+def test_delete(monkeypatch):
+    default_translation = CLIConfig.get_default_translation()
+    monkeypatch.setattr(sys, 'argv', ['bible', 'delete', default_translation])
+    main()
+    
+    assert not translation_exists(default_translation)
+    
+    downloaded_translations = get_downloaded_translations()
+    
+    msg = "Failed to update config after deleting default translation"
+    new_default_translation = CLIConfig.get_default_translation()
+    assert new_default_translation == downloaded_translations[0]
+    
+    # Delete remaining translations
+    for translation in downloaded_translations:
+        monkeypatch.setattr(sys, 'argv', ['bible', 'delete', translation])
+        main()
+    
+        assert not translation_exists(translation)
+    
+    msg = "Failed to update config if no other translation is downloaded"
+    assert CLIConfig.get_default_translation() == 'None'
+
+
+def test_download_sets_default_translation(monkeypatch):
+    # Delete remaining translations if any exist
+    downloaded_translations = get_downloaded_translations()
+    if downloaded_translations:
+        for translation in downloaded_translations:
+            monkeypatch.setattr(sys, 'argv', ['bible', 'delete', translation])
+            main()
+    
+    monkeypatch.setattr(sys, 'argv', ['bible', 'download', 'BSB'])
+    main()
+    
+    msg = "Failed to set first download as the default translation"
+    assert CLIConfig.get_default_translation() == 'BSB', msg
+
+
 @pytest.mark.parametrize(
     "translation",
     [
@@ -181,7 +224,7 @@ def test_download(monkeypatch, translation):
     
     main()
     
-    assert os.path.isfile(f"{get_source_root()}/data/db/{translation}.db")
+    assert translation_exists(translation)
 
 
 @pytest.mark.parametrize(
@@ -292,6 +335,21 @@ def test_search(monkeypatch, capsys, msg, args, output):
     assert captured.out == output + '\n', msg
 
 
-# TODO:
-def test_config():
-    assert False
+@pytest.mark.parametrize(
+    "translation",
+    [
+        ('KJV'),
+        ('LEB'),
+        ('RLT'),        
+        ('UKJV'),      
+        ('BSB'), 
+    ]
+)
+def test_config_default_translation(monkeypatch, translation):
+    args = ['bible', 'config', 'translation', translation]
+    monkeypatch.setattr(sys, 'argv', args)
+    
+    main()
+    
+    msg = "Setting the default translation failed"
+    assert CLIConfig.get_default_translation() == translation, msg
