@@ -2,16 +2,18 @@ import sys
 import os
 import configparser
 import argparse
-
-from biblecli import __version__
+# BUG: ImportError: cannot import name '__version__' from 'biblecli' (unknown location)
+# from biblecli import __version__
 from biblecli.utils import get_downloaded_translations
 from biblecli.bible import BibleClient
 
 
+# TODO: Remove this
 def get_config_path():
     system_platform = sys.platform
     
     # Check if a virtual environment is active
+    # BUG: This doesn't work if biblecli is also installed globally?
     if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
         # Set path to the root of the venv
         venv_root = sys.prefix
@@ -26,6 +28,7 @@ def get_config_path():
         if system_platform == 'win32':
             return os.path.join(os.environ.get('APPDATA', ''), 'biblecli', 'biblecli.ini')
         elif system_platform == 'darwin':  # macOS
+            # TODO: Create biblecli directory if it doesn't exist?
             return os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'biblecli', 'biblecli.conf')
         elif system_platform == 'linux':
             return os.path.join(os.path.expanduser('~'), '.config', 'biblecli', 'biblecli.conf')
@@ -36,6 +39,7 @@ def get_config_path():
 
 class CLIConfig:
     config = configparser.ConfigParser()
+    # TODO: Use get_app_data_path() instead
     path = get_config_path()
     
     @classmethod
@@ -45,6 +49,7 @@ class CLIConfig:
         
         cls.config.set('Defaults', 'translation', translation)
         
+        # BUG: This raises FileNotFoundError: [Errno 2] No such file or directory: '/Users/jamiestadnik/Library/Application Support/biblecli/biblecli.conf'
         with open(cls.path, 'w') as config_file:
             cls.config.write(config_file)
     
@@ -169,7 +174,8 @@ def add_config_parser(subparsers, downloaded_translations):
 def parse_biblecli_args(downloaded_translations):
     description = "A CLI for looking up passages of Scripture."
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+    # parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+    parser.add_argument('--version', action='version', version=f'%(prog)s 0.0.1')  # TODO: use __version__
     
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     add_reference_parser(subparsers, downloaded_translations)

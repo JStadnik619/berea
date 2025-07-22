@@ -6,7 +6,7 @@ import csv
 import sys
 import os
 
-from biblecli.utils import get_source_root
+from biblecli.utils import get_source_root, get_app_data_path
 
 
 def clean_book_name(book):
@@ -58,8 +58,8 @@ def list_to_sql(data):
 class BibleClient:
     def __init__(self, translation):
         self.translation = translation
-        # Use a gitignored subdirectory
-        self.database = f"{get_source_root()}/data/db/{self.translation}.db"
+        # Use venv path or platform app data path to store translation DBs
+        self.database = f"{get_app_data_path('translations')}/{self.translation}.db"
     
     def download_raw_bible(self):
         url = f"https://github.com/scrollmapper/bible_databases/raw/refs/heads/master/formats/sqlite/{self.translation}.db"

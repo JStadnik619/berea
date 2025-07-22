@@ -22,7 +22,6 @@ dynamic = ["version"]
 version = {attr = "biblecli.__version__"}
 
 [project.optional-dependencies]
-# TODO: requests
 dev = [
     "pytest>=7.3.2",
 ]

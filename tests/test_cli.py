@@ -3,7 +3,7 @@ import sys
 import os
 
 from biblecli.cli import main, CLIConfig
-from biblecli.utils import get_source_root, get_downloaded_translations
+from biblecli.utils import get_app_data_path, get_downloaded_translations
 
 
 @pytest.mark.parametrize(
@@ -161,7 +161,7 @@ def test_reference(monkeypatch, capsys, msg, args, output):
 
 
 def translation_exists(translation):
-    return os.path.isfile(f"{get_source_root()}/data/db/{translation}.db")
+    return os.path.isfile(f"{get_app_data_path('translations')}/{translation}.db")
 
 
 def test_delete(monkeypatch):

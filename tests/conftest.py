@@ -17,5 +17,5 @@ def download_translations():
     
     default_translation = CLIConfig.get_default_translation()
     
-    if default_translation is not 'BSB':
+    if default_translation != 'BSB':
         CLIConfig.set_default_translation('BSB')
