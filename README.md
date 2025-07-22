@@ -16,6 +16,26 @@ pip install .
 ```
 
 ## Usage
+### Manage Translations
+
+Once installed, the next step to download a Bible translation:
+
+```
+bible download KJV
+```
+
+Translations are downloaded from [github.com/scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases), which includes 140 translations across several languages. Check the [available translations](https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140) for more information. One or more translations may be downloaded, with the first set as the default translation for the `reference` and `search` commands described below.
+
+Run the `config` command to manually set the default translation:
+
+```
+bible config translation BSB
+```
+
+The default translation must be set to a translation that has been downloaded.
+
+
+### Reference
 
 Look up a verse:
 
@@ -41,6 +61,7 @@ Look up a book:
 bible 3john
 ```
 
+<!-- TODO Update this -->
 [BSB](https://berean.bible/index.html) is the default translation. Different translations can be selected via the `-t, --translation` flag:
 
 ```
@@ -59,7 +80,7 @@ The output format is specified using the `-f --format` flag (default: `txt` or p
 bible matthew 5 1-11 -f md
 ```
 
-### Book Abbreviations
+#### Book Abbreviations
 <!-- TODO: Also map Bible versions to abbreviations? -->
 
 Books can be referenced using the following titles and abbreviations (case-insensitive).
@@ -132,6 +153,8 @@ III John: 3 john, 3john, 3 jhn, 3jhn, 3 jn, 3jn, 3j, 3rd john, third john
 Jude: jude, jud, jd
 Revelation of John: revelation, rev, re, the revelation
 ```
+
+### Search
 
 ## Resources
 
