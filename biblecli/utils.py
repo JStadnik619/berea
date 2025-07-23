@@ -13,6 +13,8 @@ def get_app_data_path(subdir=None):
     """
     app = 'biblecli'
     
+    # BUG: pip install . (not editable mode) in venv does not override path to global bible install if it exists
+    
     # Check if a virtual environment is active
     if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
         # Get path to venv/lib/python3.XX/site-packages/

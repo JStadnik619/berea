@@ -3,12 +3,14 @@ import os
 import configparser
 import argparse
 # BUG: ImportError: cannot import name '__version__' from 'biblecli' (unknown location)
-# from biblecli import __version__
+# Seems to be caused when in venv and biblecli dir is added to venv site-packages 
+from biblecli import __version__
 from biblecli.utils import get_downloaded_translations
 from biblecli.bible import BibleClient
 
 
 # TODO: Remove this
+# TODO: Just use biblecli.ini for every platform
 def get_config_path():
     system_platform = sys.platform
     
@@ -174,8 +176,8 @@ def add_config_parser(subparsers, downloaded_translations):
 def parse_biblecli_args(downloaded_translations):
     description = "A CLI for looking up passages of Scripture."
     parser = argparse.ArgumentParser(description=description)
-    # parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
-    parser.add_argument('--version', action='version', version=f'%(prog)s 0.0.1')  # TODO: use __version__
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+    # parser.add_argument('--version', action='version', version=f'%(prog)s 0.0.1')  # TODO: use __version__
     
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     add_reference_parser(subparsers, downloaded_translations)
