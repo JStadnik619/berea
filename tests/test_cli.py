@@ -170,7 +170,7 @@ def test_delete(monkeypatch):
     
     msg = "Failed to update config after deleting default translation"
     new_default_translation = CLIConfig.get_default_translation()
-    assert new_default_translation == downloaded_translations[0]
+    assert new_default_translation == downloaded_translations[0], msg
     
     # Delete remaining translations
     for translation in downloaded_translations:
