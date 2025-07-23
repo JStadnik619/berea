@@ -2,11 +2,12 @@ import sys
 import os
 import configparser
 import argparse
-# BUG: ImportError: cannot import name '__version__' from 'biblecli' (unknown location)
-# Seems to be caused when in venv and biblecli dir is added to venv site-packages 
-from biblecli import __version__
 from biblecli.utils import get_downloaded_translations
 from biblecli.bible import BibleClient
+
+
+# Version stored here to prevent editable install ImportError
+__version__ = '0.0.1'
 
 
 # TODO: Remove this

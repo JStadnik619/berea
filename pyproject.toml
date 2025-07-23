@@ -19,7 +19,7 @@ dependencies = []
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]
-version = {attr = "biblecli.__version__"}
+version = {attr = "biblecli.cli.__version__"}
 
 [project.optional-dependencies]
 dev = [
