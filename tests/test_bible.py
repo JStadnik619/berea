@@ -1,5 +1,4 @@
 import urllib.request
-import os
 
 import pytest
 
@@ -111,7 +110,8 @@ def test_create_bible_db(tmp_path, translation):
 
     cursor = bible.get_bible_cursor()
 
-    assert os.path.isfile(bible.database), 'Downloading the translation database failed.'
+    msg = 'Downloading the translation database failed.'
+    assert pytest.translation_exists(translation), msg
 
     actual_tables = [row['name'] for row in cursor.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()]
 

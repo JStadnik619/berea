@@ -1,9 +1,8 @@
 import pytest
 import sys
-import os
 
 from biblecli.cli import main, CLIConfig
-from biblecli.utils import get_app_data_path, get_downloaded_translations
+from biblecli.utils import get_downloaded_translations
 
 
 @pytest.mark.parametrize(
@@ -160,16 +159,12 @@ def test_reference(monkeypatch, capsys, msg, args, output):
     assert captured.out == output + '\n', msg
 
 
-def translation_exists(translation):
-    return os.path.isfile(f"{get_app_data_path('translations')}/{translation}.db")
-
-
 def test_delete(monkeypatch):
     default_translation = CLIConfig.get_default_translation()
     monkeypatch.setattr(sys, 'argv', ['bible', 'delete', default_translation])
     main()
     
-    assert not translation_exists(default_translation)
+    assert not pytest.translation_exists(default_translation)
     
     downloaded_translations = get_downloaded_translations()
     
@@ -182,10 +177,10 @@ def test_delete(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['bible', 'delete', translation])
         main()
     
-        assert not translation_exists(translation)
+        assert not pytest.translation_exists(translation)
     
     msg = "Failed to update config if no other translation is downloaded"
-    assert CLIConfig.get_default_translation() == 'None'
+    assert CLIConfig.get_default_translation() == 'None', msg
 
 
 def test_download_sets_default_translation(monkeypatch):
@@ -224,7 +219,7 @@ def test_download(monkeypatch, translation):
     
     main()
     
-    assert translation_exists(translation)
+    assert pytest.translation_exists(translation)
 
 
 @pytest.mark.parametrize(

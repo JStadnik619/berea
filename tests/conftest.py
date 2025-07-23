@@ -3,15 +3,21 @@ import os
 
 from biblecli.cli import CLIConfig
 from biblecli.bible import BibleClient
-from biblecli.utils import get_source_root
+from biblecli.utils import get_app_data_path
+
+
+def translation_exists(translation):
+    return os.path.isfile(f"{get_app_data_path('translations')}/{translation}.db")
+
+
+# TODO: Use a fixture or module if more helpers are needed
+pytest.translation_exists = translation_exists
 
 
 @pytest.fixture(scope='session', autouse=True)
 def download_translations():
     for translation in ['BSB', 'KJV']:
-        translation_exists = \
-            os.path.isfile(f"{get_source_root()}/data/db/{translation}.db")
-        if not translation_exists:
+        if not translation_exists(translation):
             bible = BibleClient(translation)
             bible.create_bible_db()
     
