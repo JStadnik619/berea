@@ -57,4 +57,4 @@ def get_downloaded_translations():
             if file.endswith('.db'):
                 downloaded_translations.append(file[:-3])
         
-        return downloaded_translations
+        return sorted(downloaded_translations)

@@ -102,10 +102,8 @@ def test_validate_resource_abbreviations():
         ('UKJV'),        
     ]
 )
-def test_create_bible_db(tmp_path, translation):
+def test_create_bible_db(translation):
     bible = BibleClient(translation)
-    bible.database = f"{tmp_path}/{translation}.db"
-
     bible.create_bible_db()
 
     cursor = bible.get_bible_cursor()
@@ -113,7 +111,8 @@ def test_create_bible_db(tmp_path, translation):
     msg = 'Downloading the translation database failed.'
     assert pytest.translation_exists(translation), msg
 
-    actual_tables = [row['name'] for row in cursor.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()]
+    sql = "SELECT name FROM sqlite_master WHERE type='table';"
+    actual_tables = [row['name'] for row in cursor.execute(sql).fetchall()]
 
     table_record_counts = {
         'books': 66,
@@ -127,8 +126,11 @@ def test_create_bible_db(tmp_path, translation):
     for table, expected_records_count in table_record_counts.items():
         sql = f"SELECT COUNT(*) FROM {table};"
         actual_records_count = cursor.execute(sql).fetchone()[0]
-        assert actual_records_count == expected_records_count, f"'{table}' table does not contain expected record count."
+        
+        msg = f"'{table}' table does not contain expected record count."
+        assert actual_records_count == expected_records_count, msg
 
     created_tables = ['abbreviations', 'resources', 'resources_abbreviations']
     for expected_table in created_tables:
-        assert expected_table in actual_tables, f"'{expected_table}' table does not exist."
+        msg =  f"'{expected_table}' table does not exist."
+        assert expected_table in actual_tables, msg

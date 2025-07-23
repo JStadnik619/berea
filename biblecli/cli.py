@@ -1,8 +1,7 @@
 import sys
-import os
 import configparser
 import argparse
-from biblecli.utils import get_downloaded_translations
+from biblecli.utils import get_downloaded_translations, get_app_data_path
 from biblecli.bible import BibleClient
 
 
@@ -10,40 +9,9 @@ from biblecli.bible import BibleClient
 __version__ = '0.0.1'
 
 
-# TODO: Remove this
-# TODO: Just use biblecli.ini for every platform
-def get_config_path():
-    system_platform = sys.platform
-    
-    # Check if a virtual environment is active
-    # BUG: This doesn't work if biblecli is also installed globally?
-    if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
-        # Set path to the root of the venv
-        venv_root = sys.prefix
-        
-        if system_platform == 'win32':
-            return os.path.join(venv_root, 'biblecli.ini')
-        else:  # Linux, macOS
-            return os.path.join(venv_root, 'biblecli.conf')
-    
-    # No venv, use OS's standard path for config
-    else:
-        if system_platform == 'win32':
-            return os.path.join(os.environ.get('APPDATA', ''), 'biblecli', 'biblecli.ini')
-        elif system_platform == 'darwin':  # macOS
-            # TODO: Create biblecli directory if it doesn't exist?
-            return os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'biblecli', 'biblecli.conf')
-        elif system_platform == 'linux':
-            return os.path.join(os.path.expanduser('~'), '.config', 'biblecli', 'biblecli.conf')
-        
-        else:
-            sys.exit(f"Unsupported platform: {system_platform}")
-
-
 class CLIConfig:
     config = configparser.ConfigParser()
-    # TODO: Use get_app_data_path() instead
-    path = get_config_path()
+    path = get_app_data_path() + '/biblecli.ini'
     
     @classmethod
     def set_default_translation(cls, translation):
@@ -52,7 +20,6 @@ class CLIConfig:
         
         cls.config.set('Defaults', 'translation', translation)
         
-        # BUG: This raises FileNotFoundError: [Errno 2] No such file or directory: '/Users/jamiestadnik/Library/Application Support/biblecli/biblecli.conf'
         with open(cls.path, 'w') as config_file:
             cls.config.write(config_file)
     
@@ -236,7 +203,7 @@ def main():
             
             # Update config if default translation is deleted
             if args.translation == CLIConfig.get_default_translation():
-                CLIConfig.set_default_translation(downloaded_translations[0])
+                CLIConfig.set_default_translation(get_downloaded_translations()[0])
     
         case 'reference': 
             if not args.chapter:
