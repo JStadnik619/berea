@@ -1,6 +1,7 @@
 # Bible CLI: faster than flipping a page
 
 ## Installation
+<!-- TODO: Install Python -->
 <!-- TODO: Publish app on pypi -->
 
 Clone the repo to your machine:
@@ -18,13 +19,13 @@ pip install .
 ## Usage
 ### Manage Translations
 
-Once installed, the next step to download a Bible translation:
+Once installed, the next step is to download a Bible translation:
 
 ```
 bible download KJV
 ```
 
-Translations are downloaded from [github.com/scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases), which includes 140 translations across several languages. Check the [available translations](https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140) for more information. One or more translations may be downloaded, with the first set as the default translation for the `reference` and `search` commands described below.
+Translations are downloaded from [github.com/scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases), which includes 140 translations across many languages. Check the [available translations](https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140) for more information. One or more translations may be downloaded. The first download is set as the default translation for the `reference` and `search` commands described below.
 
 Run the `config` command to manually set the default translation:
 
@@ -34,38 +35,54 @@ bible config translation BSB
 
 The default translation must be set to a translation that has been downloaded.
 
+To delete a translation, run the following command:
+
+```
+bible delete KJV
+```
 
 ### Reference
 
-Look up a verse:
+The `reference` command looks up a passage in the Bible, eg. a specific verse like so:
+
+```
+bible reference john 3 16
+```
+
+`reference` (the default command) is executed if no other command is specified:
 
 ```
 bible john 3 16
 ```
 
-Look up a passage:
+Similarly, reference a passage:
 
 ```
 bible matthew 5 1-11
 ```
 
-Look up a chapter:
+Reference a chapter:
 
 ```
 bible psalm 117
 ```
 
-Look up a book:
+Reference an entire book:
 
 ```
 bible 3john
 ```
 
-<!-- TODO Update this -->
-[BSB](https://berean.bible/index.html) is the default translation. Different translations can be selected via the `-t, --translation` flag:
+The default translation is used unless otherwise specified via the `-t, --translation` flag:
 
 ```
-bible john 3 16 -t KJV
+bible john 3 16 -t BSB
+```
+
+Downloaded translations are displayed in the `--translation` flag description of the `reference` help text:
+
+```
+bible reference --help
 ```
 
 Line numbers can be toggled on using the `-n, --numbers` flag.
@@ -74,7 +91,7 @@ Line numbers can be toggled on using the `-n, --numbers` flag.
 bible matthew 5 1-11 -n
 ```
 
-The output format is specified using the `-f --format` flag (default: `txt` or plaintext).
+The output format is specified using the `-f, --format` flag (default: `txt` or plaintext).
 
 ```
 bible matthew 5 1-11 -f md
@@ -85,6 +102,7 @@ bible matthew 5 1-11 -f md
 
 Books can be referenced using the following titles and abbreviations (case-insensitive).
 
+<!-- TODO: Update list? -->
 ```
 Genesis: genesis, gen, ge, gn
 Exodus: exodus, ex, exod, exo
@@ -154,6 +172,7 @@ Jude: jude, jud, jd
 Revelation of John: revelation, rev, re, the revelation
 ```
 
+<!-- TODO -->
 ### Search
 
 ## Resources
