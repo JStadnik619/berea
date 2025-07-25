@@ -50,15 +50,16 @@ def add_reference_parser(subparsers, downloaded_translations):
         help='Bible translation used to display passage'
     )
     
+    reference_parser.add_argument(
+        '-n', '--verse_numbers',
+        action='store_true'
+    )
+    
     # TODO: Make the default format configurable
     reference_parser.add_argument(
         '-f', '--format',
         choices=['txt', 'md'],
         default='txt'
-    )
-    reference_parser.add_argument(
-        '-n', '--verse_numbers',
-        action='store_true'
     )
 
 
