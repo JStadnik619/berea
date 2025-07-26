@@ -318,6 +318,20 @@ def test_download(monkeypatch, translation):
                 "___\n"
             )
         ),
+        (
+            "Searching a phrase in a passage with the New Testament flag should be invalid",
+            ['lampstands', 'rev', '1', '-NT'],
+            (
+                "Invalid search: cannot search a passage with the '-NT, --new_testament' flag."
+            )
+        ),
+        (
+            "Searching a phrase in a passage with the Old Testament flag should be invalid",
+            ['holy spirit', 'isa', '-OT'],
+            (
+                "Invalid search: cannot search a passage with the '-OT, --old_testament' flag."
+            )
+        ),
     ]
 )
 def test_search(monkeypatch, capsys, msg, args, output):

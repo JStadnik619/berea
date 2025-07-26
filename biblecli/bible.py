@@ -361,6 +361,7 @@ class BibleClient:
             book=book
         )
 
+    # TODO: Validate chapter?
     def print_chapter(self, book, chapter, format, verse_numbers):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
@@ -376,7 +377,7 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid chapter: {book} {chapter}"
+            msg = f"Invalid chapter: {book} {chapter}."
             print(msg)
         
         else:
@@ -388,6 +389,7 @@ class BibleClient:
                 chapter=chapter
             )
 
+    # TODO: Validate chapter?
     def print_verse(self, book, chapter, verse, format, verse_numbers):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
@@ -408,7 +410,7 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid verse: {book} {chapter}:{verse}"
+            msg = f"Invalid verse: {book} {chapter}:{verse}."
             print(msg)
         
         else:
@@ -421,6 +423,7 @@ class BibleClient:
                 verse=verse
             )
 
+    # TODO: Validate chapter?
     def print_verses(self, book, chapter, verse, format, verse_numbers):
         """
         Print a range of verses, eg. 5-7. 
@@ -449,7 +452,7 @@ class BibleClient:
         if len(verse_records) == 0:
             msg = (
                 f"Invalid verses: {book} "
-                f"{chapter}:{verse_start}-{verse_end}"
+                f"{chapter}:{verse_start}-{verse_end}."
             )
             print(msg)
         
@@ -572,6 +575,7 @@ class BibleClient:
             # TODO: Use/rename create_link_label? (omit translation)
             print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
 
+    # TODO: Validate chapter?
     def search_chapter(self, phrase, book, chapter):
         cursor = self.get_bible_cursor()
 

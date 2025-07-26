@@ -98,14 +98,9 @@ def add_search_parser(subparsers, downloaded_translations):
         'phrase',
         help="Phrase to search"
     )
-
-    search_parser.add_argument(
-        'book',
-        nargs='?'
-    )
-
+    
+    search_parser.add_argument('book', nargs='?')
     search_parser.add_argument('chapter', nargs='?')
-    search_parser.add_argument('verse', nargs='?')
     
     search_parser.add_argument(
         '-t', '--translation',
@@ -235,9 +230,31 @@ def main():
             
         case 'search':
             if args.chapter:
-                bible.search_chapter(args.phrase, args.book, args.chapter)
+                if args.new_testament:
+                    print(
+                        "Invalid search: cannot search a passage with the "
+                          "'-NT, --new_testament' flag."
+                    )
+                elif args.old_testament:
+                    print(
+                        "Invalid search: cannot search a passage with the "
+                          "'-OT, --old_testament' flag."
+                    )
+                else:
+                    bible.search_chapter(args.phrase, args.book, args.chapter)
             elif args.book:
-                bible.search_book(args.phrase, args.book)
+                if args.new_testament:
+                    print(
+                        "Invalid search: cannot search a passage with the "
+                          "'-NT, --new_testament' flag."
+                    )
+                elif args.old_testament:
+                    print(
+                        "Invalid search: cannot search a passage with the "
+                          "'-OT, --old_testament' flag."
+                    )
+                else:
+                    bible.search_book(args.phrase, args.book)
             elif args.new_testament:
                 bible.search_testament(args.phrase , 'nt')
             elif args.old_testament:
