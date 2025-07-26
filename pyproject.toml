@@ -1,4 +1,5 @@
 [build-system]
+# TODO: Use hatchling instead?
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 

@@ -98,11 +98,9 @@ bible matthew 5 1-11 -f md
 ```
 
 #### Book Abbreviations
-<!-- TODO: Also map Bible versions to abbreviations? -->
 
 Books can be referenced using the following titles and abbreviations (case-insensitive).
 
-<!-- TODO: Update list? -->
 ```
 Genesis: genesis, gen, ge, gn
 Exodus: exodus, ex, exod, exo
@@ -124,7 +122,7 @@ Esther: esther, est, esth, es
 Job: job, jb
 Psalms: psalms, ps, psalm, pslm, psa, psm, pss
 Proverbs: proverbs, prov, pro, prv, pr
-Ecclesiastes: ecclesiastes, eccles, eccle, ecc, ec, qoh
+Ecclesiastes: ecclesiastes, eccles, eccle, ecc, ec, eccl, qoh
 Song of Solomon: song of solomon, song, song of songs, sos, so, canticle of canticles, canticles, cant
 Isaiah: isaiah, isa, is
 Jeremiah: jeremiah, jer, je, jr
@@ -160,7 +158,7 @@ II Thessalonians: 2 thessalonians, 2thessalonians, 2 thess, 2thess, 2 thes, 2the
 I Timothy: 1 timothy, 1timothy, 1 tim, 1tim, 1 ti, 1ti, 1st timothy, 1st tim, first timothy, first tim
 II Timothy: 2 timothy, 2timothy, 2 tim, 2tim, 2 ti, 2ti, 2nd timothy, 2nd tim, second timothy, second tim
 Titus: titus, tit, ti
-Philemon: philemon, philem, phm, pm
+Philemon: philemon, philem, phm, pm, phlm
 Hebrews: hebrews, heb
 James: james, jas, jm
 I Peter: 1 peter, 1peter, 1 pet, 1pet, 1 pe, 1pe, 1 pt, 1pt, 1p, 1st peter, first peter
@@ -174,6 +172,46 @@ Revelation of John: revelation, rev, re, the revelation
 
 <!-- TODO -->
 ### Search
+
+The `search` command finds all occurrences of a phrase throughout the Bible:
+
+```
+bible search 'prince of peace'
+```
+
+Translation is specified via the `-t, --translation` flag:
+
+```
+bible search 'prince of peace' -t BSB
+```
+
+<!-- TODO: Search book -->
+```
+bible search martha john
+```
+
+<!-- TODO: Search chapter -->
+```
+bible search justification rom 4
+```
+
+<!-- TODO: Search NT -->
+```
+bible search ghost -NT
+```
+
+<!-- TODO: Search OT -->
+
+```
+bible search 'holy spirit' -OT
+```
+
+For large results sets, consider saving the output to a file:
+
+```
+bible search fulfilled -NT >> search_fulfilled.txt
+```
+<!-- TODO: Development -->
 
 ## Resources
 
