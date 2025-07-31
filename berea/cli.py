@@ -4,12 +4,10 @@ import argparse
 from berea.utils import get_downloaded_translations, get_app_data_path
 from berea.bible import BibleClient
 
-# BUG: On a fresh install, running reference or search before download creates None.db
-
 
 # Version stored here to prevent editable install ImportError
 # TODO: USE THIS VERSION 0.1.0 FOR FIRST PYPI RELEASE
-__version__ = '0.1.1'
+__version__ = '0.1.3'
 
 
 class CLIConfig:
@@ -144,7 +142,6 @@ def parse_berea_args(downloaded_translations):
     description = "Berea: A CLI for studying Scripture."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
-    # parser.add_argument('--version', action='version', version=f'%(prog)s 0.0.1')  # TODO: use __version__
     
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     add_reference_parser(subparsers, downloaded_translations)
