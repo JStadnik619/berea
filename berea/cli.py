@@ -185,87 +185,87 @@ def main():
 
     bible = BibleClient(args.translation)
     
-    match args.command:
-        case 'download':
-            # Save first downloaded translation as the default
-            if not downloaded_translations:
-                CLIConfig.set_default_translation(args.translation)
-            
-            bible.create_bible_db()
+    if args.command == 'download':
+        # Save first downloaded translation as the default
+        if not downloaded_translations:
+            CLIConfig.set_default_translation(args.translation)
         
-        case 'delete':
-            bible.delete_translation()
+        bible.create_bible_db()
+    
+    elif not downloaded_translations:
+        print(f"Error: Download a translation before invoking '{args.command}'.")
+        
+    elif args.command == 'delete':
+        bible.delete_translation()
 
-            # Update config if no other translation is downloaded
-            if [args.translation] == downloaded_translations:
-                CLIConfig.set_default_translation('None')
-            
-            # Update config if default translation is deleted
-            if args.translation == CLIConfig.get_default_translation():
-                CLIConfig.set_default_translation(get_downloaded_translations()[0])
+        # Update config if no other translation is downloaded
+        if [args.translation] == downloaded_translations:
+            CLIConfig.set_default_translation('None')
+        
+        # Update config if default translation is deleted
+        if args.translation == CLIConfig.get_default_translation():
+            CLIConfig.set_default_translation(get_downloaded_translations()[0])
 
-        # TODO: Exit if downloaded_translations is empty
-        case 'reference': 
-            if not args.chapter:
-                bible.print_book(args.book, args.format, args.verse_numbers)
-            elif not args.verse:
-                bible.print_chapter(
-                    args.book,
-                    args.chapter,
-                    args.format,
-                    args.verse_numbers
-                    )
-            elif '-' in args.verse:
-                bible.print_verses(
-                    args.book,
-                    args.chapter,
-                    args.verse,
-                    args.format,
-                    args.verse_numbers
+    elif args.command ==  'reference': 
+        if not args.chapter:
+            bible.print_book(args.book, args.format, args.verse_numbers)
+        elif not args.verse:
+            bible.print_chapter(
+                args.book,
+                args.chapter,
+                args.format,
+                args.verse_numbers
+                )
+        elif '-' in args.verse:
+            bible.print_verses(
+                args.book,
+                args.chapter,
+                args.verse,
+                args.format,
+                args.verse_numbers
+            )
+        else:
+            bible.print_verse(
+                args.book,
+                args.chapter,
+                args.verse,
+                args.format,
+                args.verse_numbers
+                )
+        
+    elif args.command ==  'search':
+        if args.chapter:
+            if args.new_testament:
+                print(
+                    "Invalid search: cannot search a passage with the "
+                    "'-NT, --new_testament' flag."
+                )
+            elif args.old_testament:
+                print(
+                    "Invalid search: cannot search a passage with the "
+                    "'-OT, --old_testament' flag."
                 )
             else:
-                bible.print_verse(
-                    args.book,
-                    args.chapter,
-                    args.verse,
-                    args.format,
-                    args.verse_numbers
-                    )
-        
-        # TODO: Exit if downloaded_translations is empty
-        case 'search':
-            if args.chapter:
-                if args.new_testament:
-                    print(
-                        "Invalid search: cannot search a passage with the "
-                          "'-NT, --new_testament' flag."
-                    )
-                elif args.old_testament:
-                    print(
-                        "Invalid search: cannot search a passage with the "
-                          "'-OT, --old_testament' flag."
-                    )
-                else:
-                    bible.search_chapter(args.phrase, args.book, args.chapter)
-            elif args.book:
-                if args.new_testament:
-                    print(
-                        "Invalid search: cannot search a passage with the "
-                          "'-NT, --new_testament' flag."
-                    )
-                elif args.old_testament:
-                    print(
-                        "Invalid search: cannot search a passage with the "
-                          "'-OT, --old_testament' flag."
-                    )
-                else:
-                    bible.search_book(args.phrase, args.book)
-            elif args.new_testament:
-                bible.search_testament(args.phrase , 'nt')
+                bible.search_chapter(args.phrase, args.book, args.chapter)
+        elif args.book:
+            if args.new_testament:
+                print(
+                    "Invalid search: cannot search a passage with the "
+                    "'-NT, --new_testament' flag."
+                )
             elif args.old_testament:
-                bible.search_testament(args.phrase , 'ot')
+                print(
+                    "Invalid search: cannot search a passage with the "
+                    "'-OT, --old_testament' flag."
+                )
             else:
-                bible.search_bible(args.phrase)
+                bible.search_book(args.phrase, args.book)
+        elif args.new_testament:
+            bible.search_testament(args.phrase , 'nt')
+        elif args.old_testament:
+            bible.search_testament(args.phrase , 'ot')
+        else:
+            bible.search_bible(args.phrase)
 
 
 if __name__ == "__main__":
