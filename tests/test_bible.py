@@ -2,7 +2,7 @@ import urllib.request
 
 import pytest
 
-from biblecli.bible import list_multiline_verse, BibleClient
+from berea.bible import list_multiline_verse, BibleClient
 
 
 @pytest.mark.parametrize(

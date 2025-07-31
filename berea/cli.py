@@ -1,17 +1,21 @@
 import sys
 import configparser
 import argparse
-from biblecli.utils import get_downloaded_translations, get_app_data_path
-from biblecli.bible import BibleClient
+from berea.utils import get_downloaded_translations, get_app_data_path
+from berea.bible import BibleClient
+
+# BUG: On a fresh install, running reference or search before download creates None.db
 
 
 # Version stored here to prevent editable install ImportError
-__version__ = '0.0.1'
+# TODO: USE THIS VERSION FOR FIRST PYPI RELEASE
+# __version__ = '0.1.0'
+__version__ = '0.1.1'  # REMOVE THIS 
 
 
 class CLIConfig:
     config = configparser.ConfigParser()
-    path = get_app_data_path() + '/biblecli.ini'
+    path = get_app_data_path() + '/berea.ini'
     
     @classmethod
     def set_default_translation(cls, translation):
@@ -137,8 +141,8 @@ def add_config_parser(subparsers, downloaded_translations):
     )
 
 
-def parse_biblecli_args(downloaded_translations):
-    description = "A CLI for looking up passages of Scripture."
+def parse_berea_args(downloaded_translations):
+    description = "Berea: A CLI for studying Scripture."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     # parser.add_argument('--version', action='version', version=f'%(prog)s 0.0.1')  # TODO: use __version__
@@ -173,7 +177,7 @@ def main():
         sys.argv.insert(1, 'reference')
     
     downloaded_translations = get_downloaded_translations()
-    args = parse_biblecli_args(downloaded_translations)
+    args = parse_berea_args(downloaded_translations)
 
     if args.command == 'config':
         CLIConfig.set_default_translation(args.value)
@@ -200,7 +204,8 @@ def main():
             # Update config if default translation is deleted
             if args.translation == CLIConfig.get_default_translation():
                 CLIConfig.set_default_translation(get_downloaded_translations()[0])
-    
+
+        # TODO: Exit if downloaded_translations is empty
         case 'reference': 
             if not args.chapter:
                 bible.print_book(args.book, args.format, args.verse_numbers)
@@ -227,7 +232,8 @@ def main():
                     args.format,
                     args.verse_numbers
                     )
-            
+        
+        # TODO: Exit if downloaded_translations is empty
         case 'search':
             if args.chapter:
                 if args.new_testament:

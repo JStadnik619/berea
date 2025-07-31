@@ -1,4 +1,4 @@
-# Bible CLI: faster than flipping a page
+# Berea: A CLI for studying Scripture
 
 ## Installation
 <!-- TODO: Install Python -->
@@ -7,10 +7,10 @@
 Clone the repo to your machine:
 
 ```
-git clone git@github.com:JStadnik619/bible-cli.git
+git clone git@github.com:JStadnik619/berea.git
 ```
 
-Navigate to the repo's directory and install `biblecli` in your Python environment:
+Navigate to the repo's directory and install `berea` in your Python environment:
 
 ```
 pip install .
@@ -222,7 +222,7 @@ bible search fulfilled -NT >> search_fulfilled.txt
 
 ## Similar Projects
 
-[vitorpio/pybible-cli: Bible reference CLI application](https://github.com/vitorpio/pybible-cli)
+[vitorpio/pyberea: Bible reference CLI application](https://github.com/vitorpio/pyberea)
 
 [nehemiaharchives/bbl: Read, search Holy Bible in command line](https://github.com/nehemiaharchives/bbl)
 

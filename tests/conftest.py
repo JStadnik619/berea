@@ -1,9 +1,9 @@
 import pytest
 import os
 
-from biblecli.cli import CLIConfig
-from biblecli.bible import BibleClient
-from biblecli.utils import get_app_data_path
+from berea.cli import CLIConfig
+from berea.bible import BibleClient
+from berea.utils import get_app_data_path
 
 
 def translation_exists(translation):

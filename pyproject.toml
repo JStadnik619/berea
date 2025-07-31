@@ -3,8 +3,10 @@
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+# TODO: add tags: bible, cli, scripture, verse, reference, lookup, search, find, download, translation
 [project]
-name = "biblecli"
+# TODO: berea
+name = "berea"
 authors = [
     {name = "Jamie Stadnik"},
 ]
@@ -20,15 +22,16 @@ dependencies = []
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]
-version = {attr = "biblecli.cli.__version__"}
+version = {attr = "berea.cli.__version__"}
 
+# TODO: Add hatch/hatchling
 [project.optional-dependencies]
 dev = [
     "pytest>=7.3.2",
 ]
 
 [project.scripts]
-bible = "biblecli.cli:main"
+bible = "berea.cli:main"
 
 # ... other project metadata fields as listed in:
 #     https://packaging.python.org/en/latest/guides/writing-pyproject-toml/

@@ -1,8 +1,8 @@
 import pytest
 import sys
 
-from biblecli.cli import main, CLIConfig
-from biblecli.utils import get_downloaded_translations
+from berea.cli import main, CLIConfig
+from berea.utils import get_downloaded_translations
 
 
 @pytest.mark.parametrize(

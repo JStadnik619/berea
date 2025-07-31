@@ -6,7 +6,7 @@ import csv
 import sys
 import os
 
-from biblecli.utils import get_source_root, get_app_data_path
+from berea.utils import get_source_root, get_app_data_path
 
 
 def clean_book_name(book):

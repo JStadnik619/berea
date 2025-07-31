@@ -11,7 +11,7 @@ def get_app_data_path(subdir=None):
     """
     Retrieve the venv or OS's directory for mutuable app data (translations or config).
     """
-    app = 'biblecli'
+    app = 'berea'
     
     # Check if a virtual environment is active
     if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
@@ -36,7 +36,7 @@ def get_app_data_path(subdir=None):
     if subdir:
             path = os.path.join(path, subdir)
     
-    # Create biblecli directory if it doesn't exist
+    # Create berea directory if it doesn't exist
     if not os.path.exists(path):
         os.makedirs(path)
         
