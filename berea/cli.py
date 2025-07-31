@@ -8,9 +8,8 @@ from berea.bible import BibleClient
 
 
 # Version stored here to prevent editable install ImportError
-# TODO: USE THIS VERSION FOR FIRST PYPI RELEASE
-# __version__ = '0.1.0'
-__version__ = '0.1.1'  # REMOVE THIS 
+# TODO: USE THIS VERSION 0.1.0 FOR FIRST PYPI RELEASE
+__version__ = '0.1.1'
 
 
 class CLIConfig:

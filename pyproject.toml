@@ -1,28 +1,22 @@
-[build-system]
-# TODO: Use hatchling instead?
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
-
-# TODO: add tags: bible, cli, scripture, verse, reference, lookup, search, find, download, translation
 [project]
-# TODO: berea
 name = "berea"
+description = "Berea: A CLI for studying Scripture."
 authors = [
     {name = "Jamie Stadnik"},
 ]
-description = "My package description"
 readme = "README.md"
 requires-python = ">=3.8"
+# TODO: add scripture, verse, reference, lookup, search, find, download, translation
 keywords = ["bible", "cli"]
 license = {text = "BSD-3-Clause"}  # TODO: Update this
+# TODO: Is this needed?
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
-dependencies = []
 dynamic = ["version"]
 
-[tool.setuptools.dynamic]
-version = {attr = "berea.cli.__version__"}
+[project.scripts]
+bible = "berea.cli:main"
 
 # TODO: Add hatch/hatchling
 [project.optional-dependencies]
@@ -30,8 +24,12 @@ dev = [
     "pytest>=7.3.2",
 ]
 
-[project.scripts]
-bible = "berea.cli:main"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-# ... other project metadata fields as listed in:
-#     https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+[tool.hatch.version]
+path = "berea/cli.py"
+pattern = "__version__ = ['\"](?P<version>[^'\"]+)['\"]"
+
+# BUG: pip uninstall does not remove translations or config

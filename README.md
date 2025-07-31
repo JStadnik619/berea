@@ -97,7 +97,6 @@ The output format is specified using the `-f, --format` flag (default: `txt` or 
 bible matthew 5 1-11 -f md
 ```
 
-<!-- TODO -->
 ### Search
 
 The `search` command finds all occurrences of a phrase throughout the Bible:
