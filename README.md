@@ -97,9 +97,54 @@ The output format is specified using the `-f, --format` flag (default: `txt` or 
 bible matthew 5 1-11 -f md
 ```
 
-#### Book Abbreviations
+<!-- TODO -->
+### Search
 
-Books can be referenced using the following titles and abbreviations (case-insensitive).
+The `search` command finds all occurrences of a phrase throughout the Bible:
+
+```
+bible search 'prince of peace'
+```
+
+Translation is specified via the `-t, --translation` flag:
+
+```
+bible search 'prince of peace' -t BSB
+```
+
+A phrase can be searched in a particular book:
+
+```
+bible search martha john
+```
+
+or a specific chapter:
+
+```
+bible search justification rom 4
+```
+
+Search a phrase within the New Testament:
+
+```
+bible search ghost -NT
+```
+
+or the Old Testament:
+
+```
+bible search 'holy spirit' -OT
+```
+
+For large results sets, consider saving the output to a file:
+
+```
+bible search fulfilled -NT >> search_fulfilled.txt
+```
+
+### Book Abbreviations
+
+Books are referenced using the following titles and abbreviations (case-insensitive).
 
 ```
 Genesis: genesis, gen, ge, gn
@@ -170,64 +215,4 @@ Jude: jude, jud, jd
 Revelation of John: revelation, rev, re, the revelation
 ```
 
-<!-- TODO -->
-### Search
-
-The `search` command finds all occurrences of a phrase throughout the Bible:
-
-```
-bible search 'prince of peace'
-```
-
-Translation is specified via the `-t, --translation` flag:
-
-```
-bible search 'prince of peace' -t BSB
-```
-
-<!-- TODO: Search book -->
-```
-bible search martha john
-```
-
-<!-- TODO: Search chapter -->
-```
-bible search justification rom 4
-```
-
-<!-- TODO: Search NT -->
-```
-bible search ghost -NT
-```
-
-<!-- TODO: Search OT -->
-
-```
-bible search 'holy spirit' -OT
-```
-
-For large results sets, consider saving the output to a file:
-
-```
-bible search fulfilled -NT >> search_fulfilled.txt
-```
 <!-- TODO: Development -->
-
-## Resources
-
-[scrollmapper/bible_databases: Bible versions and cross-reference databases.](https://github.com/scrollmapper/bible_databases)
-
-<!-- Users may not copy or download more than 500 verses of the ESV Bible -->
-~~[ESV API | ESV.org](https://api.esv.org/)~~
-
-## Similar Projects
-
-[vitorpio/pyberea: Bible reference CLI application](https://github.com/vitorpio/pyberea)
-
-[nehemiaharchives/bbl: Read, search Holy Bible in command line](https://github.com/nehemiaharchives/bbl)
-
-[maxwelljens/bibel: Bible command line interface utility](https://github.com/maxwelljens/bibel)
-
-[dtjm/bible: Command-line tool for reading the Bible](https://github.com/dtjm/bible)
-
-[BibleJS/BibleApp: :book: Bible.JS CLI client. Read the Holy Bible via the command line.](https://github.com/BibleJS/BibleApp)
