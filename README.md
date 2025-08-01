@@ -1,25 +1,15 @@
 # Berea: A CLI for studying Scripture
 
 ## Installation
-<!-- TODO: Install Python -->
-<!-- TODO: Publish app on pypi -->
-
-Clone the repo to your machine:
 
 ```
-git clone git@github.com:JStadnik619/berea.git
-```
-
-Navigate to the repo's directory and install `berea` in your Python environment:
-
-```
-pip install .
+pip install berea
 ```
 
 ## Usage
 ### Manage Translations
 
-Once installed, the next step is to download a Bible translation:
+Once installed, download a Bible translation:
 
 ```
 bible download KJV
@@ -33,7 +23,7 @@ Run the `config` command to manually set the default translation:
 bible config translation BSB
 ```
 
-The default translation must be set to a translation that has been downloaded.
+The default translation must be set to a downloaded translation.
 
 To delete a translation, run the following command:
 
@@ -85,7 +75,7 @@ Downloaded translations are displayed in the `--translation` flag description of
 bible reference --help
 ```
 
-Line numbers can be toggled on using the `-n, --numbers` flag.
+Verse numbers can be toggled on using the `-n, --numbers` flag.
 
 ```
 bible matthew 5 1-11 -n
@@ -215,3 +205,7 @@ Revelation of John: revelation, rev, re, the revelation
 ```
 
 <!-- TODO: Development -->
+
+___
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

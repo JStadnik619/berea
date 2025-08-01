@@ -6,19 +6,23 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.8"
-# TODO: add scripture, verse, reference, lookup, search, find, download, translation
-keywords = ["bible", "cli"]
-license = {text = "BSD-3-Clause"}  # TODO: Update this
-# TODO: Is this needed?
+keywords = ["bible", "cli", "scripture", "verse", "reference", "lookup", "search", "find"]
+license = "MIT"
+license-files = ["LICENSE"]
 classifiers = [
+    "Intended Audience :: Religion",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
 ]
 dynamic = ["version"]
 
+[project.urls]
+Homepage = "https://github.com/JStadnik619/berea"
+
 [project.scripts]
 bible = "berea.cli:main"
 
-# TODO: Add hatch/hatchling
 [project.optional-dependencies]
 dev = [
     "pytest>=7.3.2",
@@ -31,5 +35,3 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 path = "berea/cli.py"
 pattern = "__version__ = ['\"](?P<version>[^'\"]+)['\"]"
-
-# BUG: pip uninstall does not remove translations or config
