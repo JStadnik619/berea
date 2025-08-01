@@ -4,6 +4,9 @@ benchmark:
 build:
 	hatch build
 
+clean:
+	hatch clean dist
+
 publish-test:
 	hatch publish --repo test
 
