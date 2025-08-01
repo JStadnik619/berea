@@ -7,7 +7,7 @@ from berea.bible import BibleClient
 
 # Version stored here to prevent editable install ImportError
 # TODO: USE VERSION 0.1.0 FOR FIRST PYPI RELEASE
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 
 class CLIConfig:
@@ -28,6 +28,47 @@ class CLIConfig:
     def get_default_translation(cls):
         cls.config.read(cls.path)
         return cls.config.get('Defaults', 'translation', fallback=None)
+
+
+def add_download_parser(subparsers):
+    download_parser = subparsers.add_parser(
+        'download',
+        help="Download a Bible translation"
+    )
+    
+    download_parser.add_argument(
+        'translation',
+        default='KJV'
+    )
+    
+    
+def add_delete_parser(subparsers, downloaded_translations):
+    delete_parser = subparsers.add_parser(
+        'delete',
+        help="Delete a Bible translation"
+    )
+    
+    delete_parser.add_argument(
+        'translation',
+        choices=downloaded_translations
+    )
+
+
+def add_config_parser(subparsers, downloaded_translations):
+    config_parser = subparsers.add_parser(
+        'config',
+        help="Configure default settings"
+    )
+
+    config_parser.add_argument(
+        'parameter',
+        choices=['translation']
+    )
+
+    config_parser.add_argument(
+        'value',
+        choices=downloaded_translations
+    )
 
 
 def add_reference_parser(subparsers, downloaded_translations):
@@ -61,30 +102,6 @@ def add_reference_parser(subparsers, downloaded_translations):
         '-f', '--format',
         choices=['txt', 'md'],
         default='txt'
-    )
-
-
-def add_download_parser(subparsers):
-    download_parser = subparsers.add_parser(
-        'download',
-        help="Download a Bible translation"
-    )
-    
-    download_parser.add_argument(
-        'translation',
-        default='KJV'
-    )
-    
-    
-def add_delete_parser(subparsers, downloaded_translations):
-    delete_parser = subparsers.add_parser(
-        'delete',
-        help="Delete a Bible translation"
-    )
-    
-    delete_parser.add_argument(
-        'translation',
-        choices=downloaded_translations
     )
     
     
@@ -121,34 +138,17 @@ def add_search_parser(subparsers, downloaded_translations):
     )
 
 
-def add_config_parser(subparsers, downloaded_translations):
-    config_parser = subparsers.add_parser(
-        'config',
-        help="Configure default settings"
-    )
-
-    config_parser.add_argument(
-        'parameter',
-        choices=['translation']
-    )
-
-    config_parser.add_argument(
-        'value',
-        choices=downloaded_translations
-    )
-
-
 def parse_berea_args(downloaded_translations):
     description = "Berea: A CLI for studying Scripture."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     
     subparsers = parser.add_subparsers(title="Commands", dest="command")
-    add_reference_parser(subparsers, downloaded_translations)
     add_download_parser(subparsers)
     add_delete_parser(subparsers, downloaded_translations)
-    add_search_parser(subparsers, downloaded_translations)
     add_config_parser(subparsers, downloaded_translations)
+    add_reference_parser(subparsers, downloaded_translations)
+    add_search_parser(subparsers, downloaded_translations)
     
     return parser.parse_args()
 
@@ -157,18 +157,18 @@ def main():
     if len(sys.argv) < 2:
         sys.argv = ['bible', '--help']
     
-    # Set reference as the default command
     commands = [
-        'reference',
-        'download',
-        'delete',
-        'search',
-        'config',
-        '--version',
         '--help',
         '-h',
+        '--version',
+        'download',
+        'delete',
+        'config',
+        'reference',
+        'search',
     ]
     
+    # Set reference as the default command
     if sys.argv[1] not in commands:
         sys.argv.insert(1, 'reference')
     
