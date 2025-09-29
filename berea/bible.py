@@ -61,12 +61,13 @@ class BibleClient:
         # Use venv path or platform app data path to store translation DBs
         self.database = f"{get_app_data_path('translations')}/{self.translation}.db"
     
+    # TODO: Download from a fork
     def download_raw_bible(self):
         url = f"https://github.com/scrollmapper/bible_databases/raw/refs/heads/master/formats/sqlite/{self.translation}.db"
 
         try:
             urllib.request.urlretrieve(url, self.database)
-            print(f"Downloaded: {self.database}")
+            return f"Downloaded: {self.database}"
             
         except HTTPError:
             link = "https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140"
@@ -195,7 +196,7 @@ class BibleClient:
     
     def delete_translation(self):
         os.remove(self.database)
-        print(f"Deleted transation '{self.translation}'.")
+        return f"Deleted transation '{self.translation}'."
     
     def create_link_label(self, book, chapter=None, verse=None):
         """Creates a link label, eg. `Isaiah 14:12-20`
@@ -285,20 +286,18 @@ class BibleClient:
         return link
 
     # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
-    def print_single_or_multiline_verse(verse_record):
-        # Print single line verse
+    def list_single_or_multiline_verse(verse_record):
+        # Return list of single line verse
         if len(verse_record[0]) <= 80:
-            print(verse_record[0])
+            return verse_record[0]
         
         # Split the verse into multiple lines if it's too long
         else:
-            lines = list_multiline_verse(verse_record[0])
-            for line in lines:
-                print(line)
+            return list_multiline_verse(verse_record[0])
 
     # TODO: Replace consecutive spaces with single spaces
     # TODO: Input line length?
-    def print_wall_of_text(self, verse_records, verse_numbers=False): 
+    def verses_to_wall_of_text(self, verse_records, verse_numbers=False): 
         verses = ''
         for row in verse_records:
             # Skip empty verses so orphaned verse numbers or extra whitespace
@@ -313,35 +312,37 @@ class BibleClient:
         verses_split = list_multiline_verse(verses)
         wrapped_verses = '\n'.join(verses_split)
         
-        print(wrapped_verses)
+        return wrapped_verses
 
     # TODO: Print paragraphs from Bible format
-    def print_markdown_excerpt(self, verse_records, book, chapter, verse):
+    def create_markdown_excerpt(self, verse_records, book, chapter, verse):
         """Generate Markdown excerpt for the verses.
 
         Args:
             verse_records (_type_): _description_
             params (_type_): _description_
         """
-        print('###\n')
-        print('______________________________________________________________________\n')
-        self.print_wall_of_text(verse_records)
-        print(
-            f"([{self.create_link_label(book, chapter, verse,)}]"
-            f"({self.create_link(book, chapter, verse,)}))"
+        verse_text = self.verses_to_wall_of_text(verse_records)
+        return (
+            '###\n'
+            '\n______________________________________________________________________\n'
+            f"\n{verse_text}"
+            f"\n([{self.create_link_label(book, chapter, verse,)}]"
+            f"({self.create_link(book, chapter, verse,)}))\n"
+            '\n______________________________________________________________________'
         )
-        print('\n______________________________________________________________________')
+        
 
-    # TODO: Print paragraphs from Bible format
-    def print_passage_by_format(self, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
+    # TODO: Return paragraphs from Bible format
+    def create_passage_by_format(self, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
         match format: 
             case 'txt':
-                self.print_wall_of_text(verse_records, verse_numbers)
+                return self.verses_to_wall_of_text(verse_records, verse_numbers)
 
             case 'md':
-                self.print_markdown_excerpt(verse_records, book, chapter, verse)
+                return self.create_markdown_excerpt(verse_records, book, chapter, verse)
 
-    def print_book(self, book, format, verse_numbers):
+    def get_verses_by_book(self, book, format, verse_numbers):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
         params = {'book': book}
@@ -354,7 +355,7 @@ class BibleClient:
 
         verse_records = cursor.fetchall()
         
-        self.print_passage_by_format(
+        return self.create_passage_by_format(
             format,
             verse_records,
             verse_numbers=verse_numbers,
@@ -362,7 +363,7 @@ class BibleClient:
         )
 
     # TODO: Validate chapter?
-    def print_chapter(self, book, chapter, format, verse_numbers):
+    def get_verses_by_chapter(self, book, chapter, format, verse_numbers):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
         params = {'book': book, 'chapter': chapter}
@@ -377,11 +378,10 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid chapter: {book} {chapter}."
-            print(msg)
+            return f"Invalid chapter: {book} {chapter}."
         
         else:
-            self.print_passage_by_format(
+            return self.create_passage_by_format(
                 format,
                 verse_records,
                 verse_numbers=verse_numbers,
@@ -390,7 +390,7 @@ class BibleClient:
             )
 
     # TODO: Validate chapter?
-    def print_verse(self, book, chapter, verse, format, verse_numbers):
+    def get_verse(self, book, chapter, verse, format, verse_numbers):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
         params = {
@@ -414,7 +414,7 @@ class BibleClient:
             print(msg)
         
         else:
-            self.print_passage_by_format(
+            return self.create_passage_by_format(
                 format,
                 verse_records,
                 verse_numbers=verse_numbers,
@@ -424,7 +424,7 @@ class BibleClient:
             )
 
     # TODO: Validate chapter?
-    def print_verses(self, book, chapter, verse, format, verse_numbers):
+    def get_verses(self, book, chapter, verse, format, verse_numbers):
         """
         Print a range of verses, eg. 5-7. 
         """
@@ -450,14 +450,13 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = (
+            return (
                 f"Invalid verses: {book} "
                 f"{chapter}:{verse_start}-{verse_end}."
             )
-            print(msg)
         
         else:
-            self.print_passage_by_format(
+            return self.create_passage_by_format(
                 format,
                 verse_records,
                 verse_numbers=verse_numbers,
@@ -478,11 +477,13 @@ class BibleClient:
         
         verse_records = cursor.fetchall()
         
-        print(f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n")
+        output = f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n"
         
         for verse in verse_records:
             # TODO: Use/rename create_link_label? (omit translation)
-            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+        
+        return output
     
     def search_testament(self, phrase, testament):
         cursor = self.get_bible_cursor()
@@ -545,11 +546,13 @@ class BibleClient:
         verse_records = cursor.fetchall()
 
         testament = 'New Testament' if testament == 'nt' else 'Old Testament'
-        print(f"{len(verse_records)} occurrences of '{phrase}' in the {testament} ({self.translation}):\n___\n")
+        output = f"{len(verse_records)} occurrences of '{phrase}' in the {testament} ({self.translation}):\n___\n"
         
         for verse in verse_records:
             # TODO: Use/rename create_link_label? (omit translation)
-            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+        
+        return output
     
     def search_book(self, phrase, book):
         cursor = self.get_bible_cursor()
@@ -569,11 +572,13 @@ class BibleClient:
         
         verse_records = cursor.fetchall()
         
-        print(f"{len(verse_records)} occurrences of '{phrase}' in {book} ({self.translation}):\n___\n")
+        output = f"{len(verse_records)} occurrences of '{phrase}' in {book} ({self.translation}):\n___\n"
         
         for verse in verse_records:
             # TODO: Use/rename create_link_label? (omit translation)
-            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+        
+        return output
 
     # TODO: Validate chapter?
     def search_chapter(self, phrase, book, chapter):
@@ -596,8 +601,10 @@ class BibleClient:
         
         verse_records = cursor.fetchall()
         
-        print(f"{len(verse_records)} occurrences of '{phrase}' in {book} {chapter} ({self.translation}):\n___\n")
+        output = f"{len(verse_records)} occurrences of '{phrase}' in {book} {chapter} ({self.translation}):\n___\n"
         
         for verse in verse_records:
             # TODO: Use/rename create_link_label? (omit translation)
-            print(f"{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n")
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+        
+        return output
