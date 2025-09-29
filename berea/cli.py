@@ -3,6 +3,7 @@ import configparser
 import argparse
 from berea.utils import get_downloaded_translations, get_app_data_path
 from berea.bible import BibleClient
+from berea.render import render_reference_results
 
 
 # Version stored here to prevent editable install ImportError
@@ -203,32 +204,40 @@ def main():
         if args.translation == CLIConfig.get_default_translation():
             CLIConfig.set_default_translation(get_downloaded_translations()[0])
 
-    elif args.command ==  'reference': 
+    # TODO: try except BibleInputError
+
+    elif args.command ==  'reference':
+        verse_records = []
+         
         if not args.chapter:
-            output = bible.get_verses_by_book(args.book, args.format, args.verse_numbers)
+            verse_records = bible.get_verses_by_book(args.book)
         elif not args.verse:
-            output = bible.get_verses_by_chapter(
+            verse_records = bible.get_verses_by_chapter(
                 args.book,
-                args.chapter,
-                args.format,
-                args.verse_numbers
+                args.chapter
             )
         elif '-' in args.verse:
-            output = bible.get_verses(
+            verse_records = bible.get_verses(
                 args.book,
                 args.chapter,
-                args.verse,
-                args.format,
-                args.verse_numbers
+                args.verse
             )
         else:
-            output = bible.get_verse(
+            verse_records = bible.get_verse(
                 args.book,
                 args.chapter,
-                args.verse,
-                args.format,
-                args.verse_numbers
-                )
+                args.verse
+            )
+        
+        output = render_reference_results(
+            bible,
+            args.format,
+            verse_records,
+            args.verse_numbers,
+            args.book,
+            args.chapter,
+            args.verse
+        )
         
     elif args.command ==  'search':
         if args.chapter:

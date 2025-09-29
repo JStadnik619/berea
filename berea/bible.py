@@ -29,23 +29,6 @@ def import_resource_books(resource='step_bible'):
     return books
 
 
-def list_multiline_verse(verse):
-    lines = []
-    
-    next_line = verse
-    
-    while len(next_line) > 80:
-        # Split the verse if there's more than one line left
-        space_split = next_line[:79].rfind(' ')
-        lines.append(next_line[:space_split])
-        next_line = next_line[space_split:].lstrip()
-            
-    # Append last line of verse
-    lines.append(next_line)
-    
-    return lines
-
-
 def parse_verses_str(verses):
     verses_split = verses.split('-')
     return verses_split[0], verses_split[1]
@@ -53,6 +36,10 @@ def parse_verses_str(verses):
 
 def list_to_sql(data):
     return "('" + "','".join(data) + "')"
+
+
+class BibleInputError(ValueError):
+    pass
 
 
 class BibleClient:
@@ -75,7 +62,7 @@ class BibleClient:
                 f"Translation '{self.translation}' does not exist.\n"
                 f"Check the following link for available translations:\n{link}"
             )
-            sys.exit(msg)
+            raise BibleInputError(msg)
     
     # TODO: Close out the conn when it's released
     def get_bible_cursor(self):
@@ -198,21 +185,6 @@ class BibleClient:
         os.remove(self.database)
         return f"Deleted transation '{self.translation}'."
     
-    def create_link_label(self, book, chapter=None, verse=None):
-        """Creates a link label, eg. `Isaiah 14:12-20`
-        """
-        label = book
-        
-        if chapter:
-            label += f" {chapter}"
-            
-            if verse:
-                label += f":{verse}"
-        
-        label += f" {self.translation}"
-        
-        return label
-    
     def get_book_abbreviation_by_resource(self, book, resource):
         """Get a book's abbreviation used by a specific resource.
         """
@@ -232,6 +204,7 @@ class BibleClient:
             AND resources.name = :resource
             """, params)
         
+        # BUG: why is this failing? stale cursor from previous SELECT?
         # Assuming a resource only has one abbreviation for a given book and translation
         return cursor.fetchone()[0]
     
@@ -258,8 +231,7 @@ class BibleClient:
             if book_row:
                 return book_row['name']
             else:
-                msg = f"Invalid input {book=}."
-                sys.exit(msg)
+                raise BibleInputError(f"Invalid input {book=}.")
     
     # TODO: Link format depends on resource
     def create_link(self, book, chapter=None, verse=None, resource='STEP Bible'):
@@ -285,64 +257,7 @@ class BibleClient:
 
         return link
 
-    # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
-    def list_single_or_multiline_verse(verse_record):
-        # Return list of single line verse
-        if len(verse_record[0]) <= 80:
-            return verse_record[0]
-        
-        # Split the verse into multiple lines if it's too long
-        else:
-            return list_multiline_verse(verse_record[0])
-
-    # TODO: Replace consecutive spaces with single spaces
-    # TODO: Input line length?
-    def verses_to_wall_of_text(self, verse_records, verse_numbers=False): 
-        verses = ''
-        for row in verse_records:
-            # Skip empty verses so orphaned verse numbers or extra whitespace
-            # is not displayed
-            if not row['text']:
-                continue
-            if verse_numbers:
-                verses += str(row['verse']) + ' '
-            
-            verses += row['text'].strip() + ' '
-        
-        verses_split = list_multiline_verse(verses)
-        wrapped_verses = '\n'.join(verses_split)
-        
-        return wrapped_verses
-
-    # TODO: Print paragraphs from Bible format
-    def create_markdown_excerpt(self, verse_records, book, chapter, verse):
-        """Generate Markdown excerpt for the verses.
-
-        Args:
-            verse_records (_type_): _description_
-            params (_type_): _description_
-        """
-        verse_text = self.verses_to_wall_of_text(verse_records)
-        return (
-            '###\n'
-            '\n______________________________________________________________________\n'
-            f"\n{verse_text}"
-            f"\n([{self.create_link_label(book, chapter, verse,)}]"
-            f"({self.create_link(book, chapter, verse,)}))\n"
-            '\n______________________________________________________________________'
-        )
-        
-
-    # TODO: Return paragraphs from Bible format
-    def create_passage_by_format(self, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
-        match format: 
-            case 'txt':
-                return self.verses_to_wall_of_text(verse_records, verse_numbers)
-
-            case 'md':
-                return self.create_markdown_excerpt(verse_records, book, chapter, verse)
-
-    def get_verses_by_book(self, book, format, verse_numbers):
+    def get_verses_by_book(self, book):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
         params = {'book': book}
@@ -355,15 +270,10 @@ class BibleClient:
 
         verse_records = cursor.fetchall()
         
-        return self.create_passage_by_format(
-            format,
-            verse_records,
-            verse_numbers=verse_numbers,
-            book=book
-        )
+        return verse_records
 
     # TODO: Validate chapter?
-    def get_verses_by_chapter(self, book, chapter, format, verse_numbers):
+    def get_verses_by_chapter(self, book, chapter):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
         params = {'book': book, 'chapter': chapter}
@@ -378,19 +288,13 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            return f"Invalid chapter: {book} {chapter}."
+            raise BibleInputError(f"Invalid chapter: {book} {chapter}.")
         
         else:
-            return self.create_passage_by_format(
-                format,
-                verse_records,
-                verse_numbers=verse_numbers,
-                book=book,
-                chapter=chapter
-            )
+            return verse_records
 
     # TODO: Validate chapter?
-    def get_verse(self, book, chapter, verse, format, verse_numbers):
+    def get_verse(self, book, chapter, verse):
         cursor = self.get_bible_cursor()
         book = self.get_book_from_abbreviation(book)
         params = {
@@ -410,21 +314,13 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            msg = f"Invalid verse: {book} {chapter}:{verse}."
-            print(msg)
+            raise BibleInputError(f"Invalid verse: {book} {chapter}:{verse}.")
         
         else:
-            return self.create_passage_by_format(
-                format,
-                verse_records,
-                verse_numbers=verse_numbers,
-                book=book,
-                chapter=chapter,
-                verse=verse
-            )
+            return verse_records
 
     # TODO: Validate chapter?
-    def get_verses(self, book, chapter, verse, format, verse_numbers):
+    def get_verses(self, book, chapter, verse):
         """
         Print a range of verses, eg. 5-7. 
         """
@@ -450,20 +346,13 @@ class BibleClient:
         verse_records = cursor.fetchall()
         
         if len(verse_records) == 0:
-            return (
+            raise BibleInputError(
                 f"Invalid verses: {book} "
                 f"{chapter}:{verse_start}-{verse_end}."
             )
         
         else:
-            return self.create_passage_by_format(
-                format,
-                verse_records,
-                verse_numbers=verse_numbers,
-                book=book,
-                chapter=chapter,
-                verse=verse
-            )
+            return verse_records
     
     # TODO: Output txt, markdown table, csv format
     def search_bible(self, phrase):
@@ -539,7 +428,7 @@ class BibleClient:
             """
         
         else:
-            sys.exit(f"Invalid {testament=}.")
+            raise BibleInputError(f"Invalid {testament=}.")
         
         # Bind phrase since it's user input
         cursor.execute(sql, (f"%{phrase}%",))
