@@ -2,7 +2,7 @@ import sys
 import configparser
 import argparse
 from berea.utils import get_downloaded_translations, get_app_data_path
-from berea.bible import BibleClient
+from berea.bible import BibleClient, BibleInputError
 from berea.render import render_reference_results, render_search_results
 
 
@@ -188,7 +188,10 @@ def main():
         if not downloaded_translations:
             CLIConfig.set_default_translation(args.translation)
         
-        output = bible.create_bible_db()
+        try:
+            output = bible.create_bible_db()
+        except BibleInputError as ex:
+            output = str(ex)
     
     elif not downloaded_translations:
         output = f"Error: Download a translation before invoking '{args.command}'."
@@ -204,52 +207,53 @@ def main():
         if args.translation == CLIConfig.get_default_translation():
             CLIConfig.set_default_translation(get_downloaded_translations()[0])
 
-    # TODO: try except BibleInputError
-
     elif args.command ==  'reference':
         verse_records = []
-         
-        if not args.chapter:
-            verse_records = bible.get_verses_by_book(args.book)
-        elif not args.verse:
-            verse_records = bible.get_verses_by_chapter(
-                args.book,
-                args.chapter
-            )
-        elif '-' in args.verse:
-            verse_records = bible.get_verses(
-                args.book,
-                args.chapter,
-                args.verse
-            )
-        else:
-            verse_records = bible.get_verse(
-                args.book,
-                args.chapter,
-                args.verse
-            )
         
-        output = render_reference_results(
-            bible,
-            args.format,
-            verse_records,
-            args.verse_numbers,
-            args.book,
-            args.chapter,
-            args.verse
-        )
+        try:
+            if not args.chapter:
+                verse_records = bible.get_verses_by_book(args.book)
+            elif not args.verse:
+                verse_records = bible.get_verses_by_chapter(
+                    args.book,
+                    args.chapter
+                )
+            elif '-' in args.verse:
+                verse_records = bible.get_verses(
+                    args.book,
+                    args.chapter,
+                    args.verse
+                )
+            else:
+                verse_records = bible.get_verse(
+                    args.book,
+                    args.chapter,
+                    args.verse
+                )
+            
+            output = render_reference_results(
+                bible,
+                args.format,
+                verse_records,
+                args.verse_numbers,
+                args.book,
+                args.chapter,
+                args.verse
+            )
+        except BibleInputError as ex:
+            output = str(ex)
         
     elif args.command ==  'search':
         verse_records = []
         if args.chapter:
             if args.new_testament:
                 output = (
-                    "Invalid search: cannot search a passage with the "
+                    "Invalid search: cannot search a chapter with the "
                     "'-NT, --new_testament' flag."
                 )
             elif args.old_testament:
                 output = (
-                    "Invalid search: cannot search a passage with the "
+                    "Invalid search: cannot search a chapter with the "
                     "'-OT, --old_testament' flag."
                 )
             else:
@@ -257,12 +261,12 @@ def main():
         elif args.book:
             if args.new_testament:
                 output = (
-                    "Invalid search: cannot search a passage with the "
+                    "Invalid search: cannot search a book with the "
                     "'-NT, --new_testament' flag."
                 )
             elif args.old_testament:
                 output = (
-                    "Invalid search: cannot search a passage with the "
+                    "Invalid search: cannot search a book with the "
                     "'-OT, --old_testament' flag."
                 )
             else:

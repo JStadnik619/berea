@@ -162,7 +162,28 @@ from berea.utils import get_downloaded_translations
                 "eye causes you to sin, pluck it out. It is better for you to enter the kingdom\n"
                 "of God with one eye than to have two eyes and be thrown into hell, "
             )
-        )
+        ),
+        # Error path tests
+        (
+            "Failed to validate book input",
+            ['silmarillion'],
+            "Invalid input book='silmarillion'."
+        ),
+        (
+            "Failed to validate chapter input",
+            ['acts', '29'],
+            "Invalid chapter: Acts 29."
+        ),
+        (
+            "Failed to validate verse input",
+            ['acts', '28', '100'],
+            "Invalid verse: Acts 28:100."
+        ),
+        (
+            "Failed to validate verse input for multiple verses",
+            ['acts', '28', '100-200'],
+            "Invalid verses: Acts 28:100-200."
+        ),
     ]
 )
 def test_reference(monkeypatch, capsys, msg, args, output):
@@ -236,6 +257,27 @@ def test_download(monkeypatch, translation):
     main()
     
     assert pytest.translation_exists(translation)
+
+
+def test_download_error(monkeypatch, capsys):
+    # The ESV is not public domain
+    translation = 'ESV'
+    
+    args = ['bible', 'download']
+    args.append(translation)
+    monkeypatch.setattr(sys, 'argv', args)
+    
+    main()
+    
+    output = (
+        f"Translation '{translation}' does not exist.\n"
+        f"Check the following link for available translations:\n"
+        "https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140"
+    )
+    
+    captured = capsys.readouterr()
+    assert captured.out == output + '\n'
+    assert not pytest.translation_exists(translation)
 
 
 @pytest.mark.parametrize(
@@ -334,18 +376,19 @@ def test_download(monkeypatch, translation):
                 "___\n"
             )
         ),
+        # Error path tests
         (
-            "Searching a phrase in a passage with the New Testament flag should be invalid",
+            "Searching a phrase in a chapter with the New Testament flag should be invalid",
             ['lampstands', 'rev', '1', '-NT'],
             (
-                "Invalid search: cannot search a passage with the '-NT, --new_testament' flag."
+                "Invalid search: cannot search a chapter with the '-NT, --new_testament' flag."
             )
         ),
         (
-            "Searching a phrase in a passage with the Old Testament flag should be invalid",
+            "Searching a phrase in a book with the Old Testament flag should be invalid",
             ['holy spirit', 'isa', '-OT'],
             (
-                "Invalid search: cannot search a passage with the '-OT, --old_testament' flag."
+                "Invalid search: cannot search a book with the '-OT, --old_testament' flag."
             )
         ),
     ]

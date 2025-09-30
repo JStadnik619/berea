@@ -2,7 +2,7 @@ import urllib.request
 
 import pytest
 
-from berea.bible import BibleClient
+from berea.bible import BibleClient, BibleInputError
 
 
 
@@ -105,3 +105,12 @@ def test_create_bible_db(translation):
     for expected_table in created_tables:
         msg =  f"'{expected_table}' table does not exist."
         assert expected_table in actual_tables, msg
+
+
+def test_search_testament_error():
+    """This error is only reachable from BibleClient.
+    """
+    bible = BibleClient('BSB')
+    
+    with pytest.raises(BibleInputError, match="Invalid testament='secret'."):
+        bible.search_testament("That's all folks!", "secret")
