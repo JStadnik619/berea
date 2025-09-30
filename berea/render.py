@@ -71,6 +71,7 @@ def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse):
         params (_type_): _description_
     """
     verse_text = verses_to_wall_of_text(verse_records)
+    book = bible_client.get_book_from_abbreviation(book)
     output = (
         '###\n'
         '\n______________________________________________________________________\n'
@@ -84,9 +85,57 @@ def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse):
 
 # TODO: Return paragraphs from Bible format
 def render_reference_results(bible_client, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
+    """_summary_
+
+    Args:
+        bible_client (BibleClient): Used to create the link and label if needed.
+        format (_type_): _description_
+        verse_records (_type_): _description_
+        verse_numbers (bool, optional): _description_. Defaults to False.
+        book (_type_, optional): _description_. Defaults to None.
+        chapter (_type_, optional): _description_. Defaults to None.
+        verse (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     match format: 
         case 'txt':
             return verses_to_wall_of_text(verse_records, verse_numbers)
 
         case 'md':
             return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse)
+
+
+def render_search_results(
+    bible_client,
+    verse_records,
+    phrase,
+    testament=None,
+    book=None,
+    chapter=None
+):
+    if chapter:
+        book = bible_client.get_book_from_abbreviation(book)
+        output = f"{len(verse_records)} occurrences of '{phrase}' in {book} {chapter} ({bible_client.translation}):\n___\n"
+        for verse in verse_records:
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+        
+    elif book:
+        book = bible_client.get_book_from_abbreviation(book)
+        output = f"{len(verse_records)} occurrences of '{phrase}' in {book} ({bible_client.translation}):\n___\n"
+        for verse in verse_records:
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+            
+    elif testament:
+        testament = 'New Testament' if testament == 'nt' else 'Old Testament'
+        output = f"{len(verse_records)} occurrences of '{phrase}' in the {testament} ({bible_client.translation}):\n___\n"
+        for verse in verse_records:
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+            
+    else:
+        output = f"{len(verse_records)} occurrences of '{phrase}' in the {bible_client.translation} Bible:\n___\n"
+        for verse in verse_records:
+            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+
+    return output

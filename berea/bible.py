@@ -364,15 +364,7 @@ class BibleClient:
         WHERE verses.text LIKE ?;
         """, (f"%{phrase}%",))
         
-        verse_records = cursor.fetchall()
-        
-        output = f"{len(verse_records)} occurrences of '{phrase}' in the {self.translation} Bible:\n___\n"
-        
-        for verse in verse_records:
-            # TODO: Use/rename create_link_label? (omit translation)
-            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
-        
-        return output
+        return cursor.fetchall()
     
     def search_testament(self, phrase, testament):
         cursor = self.get_bible_cursor()
@@ -432,16 +424,7 @@ class BibleClient:
         
         # Bind phrase since it's user input
         cursor.execute(sql, (f"%{phrase}%",))
-        verse_records = cursor.fetchall()
-
-        testament = 'New Testament' if testament == 'nt' else 'Old Testament'
-        output = f"{len(verse_records)} occurrences of '{phrase}' in the {testament} ({self.translation}):\n___\n"
-        
-        for verse in verse_records:
-            # TODO: Use/rename create_link_label? (omit translation)
-            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
-        
-        return output
+        return cursor.fetchall()
     
     def search_book(self, phrase, book):
         cursor = self.get_bible_cursor()
@@ -459,15 +442,7 @@ class BibleClient:
         AND book = :book;
         """, params)
         
-        verse_records = cursor.fetchall()
-        
-        output = f"{len(verse_records)} occurrences of '{phrase}' in {book} ({self.translation}):\n___\n"
-        
-        for verse in verse_records:
-            # TODO: Use/rename create_link_label? (omit translation)
-            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
-        
-        return output
+        return cursor.fetchall()
 
     # TODO: Validate chapter?
     def search_chapter(self, phrase, book, chapter):
@@ -488,12 +463,4 @@ class BibleClient:
         AND chapter = :chapter;
         """, params)
         
-        verse_records = cursor.fetchall()
-        
-        output = f"{len(verse_records)} occurrences of '{phrase}' in {book} {chapter} ({self.translation}):\n___\n"
-        
-        for verse in verse_records:
-            # TODO: Use/rename create_link_label? (omit translation)
-            output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
-        
-        return output
+        return cursor.fetchall()

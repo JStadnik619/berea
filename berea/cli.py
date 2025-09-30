@@ -3,7 +3,7 @@ import configparser
 import argparse
 from berea.utils import get_downloaded_translations, get_app_data_path
 from berea.bible import BibleClient
-from berea.render import render_reference_results
+from berea.render import render_reference_results, render_search_results
 
 
 # Version stored here to prevent editable install ImportError
@@ -240,6 +240,7 @@ def main():
         )
         
     elif args.command ==  'search':
+        verse_records = []
         if args.chapter:
             if args.new_testament:
                 output = (
@@ -252,7 +253,7 @@ def main():
                     "'-OT, --old_testament' flag."
                 )
             else:
-                output = bible.search_chapter(args.phrase, args.book, args.chapter)
+                verse_records = bible.search_chapter(args.phrase, args.book, args.chapter)
         elif args.book:
             if args.new_testament:
                 output = (
@@ -265,13 +266,29 @@ def main():
                     "'-OT, --old_testament' flag."
                 )
             else:
-                output = bible.search_book(args.phrase, args.book)
+                verse_records = bible.search_book(args.phrase, args.book)
         elif args.new_testament:
-            output = bible.search_testament(args.phrase , 'nt')
+            verse_records = bible.search_testament(args.phrase , 'nt')
         elif args.old_testament:
-            output = bible.search_testament(args.phrase , 'ot')
+            verse_records = bible.search_testament(args.phrase , 'ot')
         else:
-            output = bible.search_bible(args.phrase)
+            verse_records = bible.search_bible(args.phrase)
+        
+        testament = None
+        if args.new_testament:
+            testament = 'nt'
+        elif args.old_testament:
+            testament = 'ot'
+        
+        if verse_records:
+            output = render_search_results(
+                bible,
+                verse_records,
+                args.phrase,
+                testament,
+                args.book,
+                args.chapter
+            )
     
     print(output)
 
