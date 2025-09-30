@@ -1,3 +1,4 @@
+# TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
 def list_multiline_verse(verse):
     lines = []
     
@@ -13,17 +14,6 @@ def list_multiline_verse(verse):
     lines.append(next_line)
 
     return lines
-
-
-# TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
-def list_single_or_multiline_verse(verse_record):
-    # Return list of single line verse
-    if len(verse_record[0]) <= 80:
-        return verse_record[0]
-    
-    # Split the verse into multiple lines if it's too long
-    else:
-        return list_multiline_verse(verse_record[0])
 
 
 # TODO: Replace consecutive spaces with single spaces
