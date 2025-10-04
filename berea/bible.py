@@ -48,16 +48,15 @@ class BibleClient:
         # Use venv path or platform app data path to store translation DBs
         self.database = f"{get_app_data_path('translations')}/{self.translation}.db"
     
-    # TODO: Download from a fork
     def download_raw_bible(self):
-        url = f"https://github.com/scrollmapper/bible_databases/raw/refs/heads/master/formats/sqlite/{self.translation}.db"
+        url = f"https://github.com/jstadnik619/bible_databases/raw/refs/heads/master/formats/sqlite/{self.translation}.db"
 
         try:
             urllib.request.urlretrieve(url, self.database)
             return f"Downloaded: {self.database}"
             
         except HTTPError:
-            link = "https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140"
+            link = "https://github.com/jstadnik619/bible_databases?tab=readme-ov-file#available-translations-140"
             msg = (
                 f"Translation '{self.translation}' does not exist.\n"
                 f"Check the following link for available translations:\n{link}"

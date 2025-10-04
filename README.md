@@ -15,7 +15,7 @@ Once installed, download a Bible translation:
 bible download KJV
 ```
 
-Translations are downloaded from [github.com/scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases), which includes 140 translations across many languages. Check the [available translations](https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140) for more information. One or more translations may be downloaded. The first download is set as the default translation for the `reference` and `search` commands described below.
+Translations are downloaded from [github.com/jstadnik619/bible_databases](https://github.com/jstadnik619/bible_databases), which includes 140 translations across many languages. Check the [available translations](https://github.com/jstadnik619/bible_databases?tab=readme-ov-file#available-translations-140) for more information. One or more translations may be downloaded. The first download is set as the default translation for the `reference` and `search` commands described below.
 
 Run the `config` command to manually set the default translation:
 

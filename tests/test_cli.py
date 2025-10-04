@@ -288,7 +288,7 @@ def test_download_error(monkeypatch, capsys):
     output = (
         f"Translation '{translation}' does not exist.\n"
         f"Check the following link for available translations:\n"
-        "https://github.com/scrollmapper/bible_databases?tab=readme-ov-file#available-translations-140"
+        "https://github.com/jstadnik619/bible_databases?tab=readme-ov-file#available-translations-140"
     )
     
     captured = capsys.readouterr()
