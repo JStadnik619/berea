@@ -18,7 +18,7 @@ def list_multiline_verse(verse):
 
 # TODO: Replace consecutive spaces with single spaces
 # TODO: Input line length?
-def verses_to_wall_of_text(verse_records, verse_numbers=False): 
+def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'): 
     verses = ''
     for row in verse_records:
         # Skip empty verses so orphaned verse numbers or extra whitespace
@@ -26,7 +26,10 @@ def verses_to_wall_of_text(verse_records, verse_numbers=False):
         if not row['text']:
             continue
         if verse_numbers:
-            verses += str(row['verse']) + ' '
+            if format == 'md':
+                verses += f"<sup>{str(row['verse'])}</sup> "
+            else:
+                verses += str(row['verse']) + ' '
         
         verses += row['text'].strip() + ' '
     
@@ -53,14 +56,14 @@ def create_link_label(translation, book, chapter=None, verse=None):
 
 
 # TODO: Print paragraphs from Bible format
-def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse):
+def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers=False):
     """Generate Markdown excerpt for the verses.
 
     Args:
         verse_records (_type_): _description_
         params (_type_): _description_
     """
-    verse_text = verses_to_wall_of_text(verse_records)
+    verse_text = verses_to_wall_of_text(verse_records, verse_numbers, 'md')
     book = bible_client.get_book_from_abbreviation(book)
     output = (
         '###\n'
@@ -94,7 +97,7 @@ def render_reference_results(bible_client, format, verse_records, verse_numbers=
             return verses_to_wall_of_text(verse_records, verse_numbers)
 
         case 'md':
-            return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse)
+            return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers)
 
 
 def render_search_results(

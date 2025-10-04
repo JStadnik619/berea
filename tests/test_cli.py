@@ -149,6 +149,22 @@ from berea.utils import get_downloaded_translations
                 "______________________________________________________________________"
             )
         ),
+        (
+            "Creating a Markdown excerpt with verse numbers failed",
+            ['john', '3', '16-18', '-f', 'md', '-n'],
+            (
+                "###\n\n"
+                "______________________________________________________________________\n\n"
+                "<sup>16</sup> For God so loved the world that He gave His one and only Son,\n"
+                "that everyone who believes in Him shall not perish but have eternal life.\n"
+                "<sup>17</sup> For God did not send His Son into the world to condemn the\n"
+                "world, but to save the world through Him. <sup>18</sup> Whoever believes in\n"
+                "Him is not condemned, but whoever does not believe has already been condemned,\n"
+                "because he has not believed in the name of God’s one and only Son. \n"
+                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=john.3.16-john.3.18&options=NVHUG))\n\n"
+                "______________________________________________________________________"
+            )
+        ),
         # The BSB contains empty verses for cross-references to verses present
         # in some manuscripts
         (
