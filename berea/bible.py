@@ -174,11 +174,28 @@ class BibleClient:
         conn.commit()
         conn.close()
     
+    def create_fts_verses_table(self):
+        cursor = self.get_bible_cursor()
+        cursor.execute("""
+        CREATE VIRTUAL TABLE fts_verses
+            USING fts5(book_id, chapter, verse, text);
+        """)
+
+        conn = sqlite3.connect(self.database)
+        cursor = conn.cursor()
+        cursor.execute("""
+        INSERT INTO fts_verses (book_id, chapter, verse, text)
+        SELECT book_id, chapter, verse, text FROM verses;
+        """)
+        conn.commit()
+        conn.close()
+    
     def create_bible_db(self):
         self.download_raw_bible()
         self.rename_tables()
         self.create_abbreviations_table()
         self.create_resource_tables()
+        self.create_fts_verses_table()
     
     def delete_translation(self):
         os.remove(self.database)
@@ -354,16 +371,45 @@ class BibleClient:
             return verse_records
     
     # TODO: Output txt, markdown table, csv format
+    # def search_bible(self, phrase):
+    #     cursor = self.get_bible_cursor()
+        
+    #     cursor.execute("""
+    #     SELECT books.name AS book, chapter, verse, text FROM verses
+    #     JOIN books ON verses.book_id = books.id
+    #     WHERE verses.text LIKE ?;
+    #     """, (f"%{phrase}%",))
+        
+    #     return cursor.fetchall()
+    
+    # TODO: FTS5 may require updating SQLite3 version
+    # TODO: FTS5 is enabled by specifying the "--enable-fts5" option when running the configure script
+    # Example: bible search berea -t LEB
     def search_bible(self, phrase):
         cursor = self.get_bible_cursor()
         
+        # Ordered by book, chapter, verse by default
         cursor.execute("""
-        SELECT books.name AS book, chapter, verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE verses.text LIKE ?;
-        """, (f"%{phrase}%",))
+        SELECT
+            books.name AS book,
+            chapter,
+            verse,
+            text
+        FROM fts_verses
+        JOIN books ON fts_verses.book_id = books.id
+        WHERE text MATCH ?;
+        """, (phrase,))
         
         return cursor.fetchall()
+        
+        # BUG: This query returns nothing, all subsequent queries in session return nothing
+        # cursor.execute("""
+        # SELECT
+        #     highlight(text, 2, '<b>, '</b>')
+        # FROM fts_verses('justified');
+        # """, (phrase,))
+        
+        # TODO: Try FTS5 Phrases to pass multiple tokens eg. justified, justify
     
     def search_testament(self, phrase, testament):
         cursor = self.get_bible_cursor()
