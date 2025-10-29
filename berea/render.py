@@ -100,6 +100,7 @@ def render_reference_results(bible_client, format, verse_records, verse_numbers=
             return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers)
 
 
+ # TODO: Output txt, markdown table, csv format
 def render_search_results(
     bible_client,
     verse_records,

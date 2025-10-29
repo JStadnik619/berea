@@ -370,46 +370,35 @@ class BibleClient:
         else:
             return verse_records
     
-    # TODO: Output txt, markdown table, csv format
-    # def search_bible(self, phrase):
-    #     cursor = self.get_bible_cursor()
-        
-    #     cursor.execute("""
-    #     SELECT books.name AS book, chapter, verse, text FROM verses
-    #     JOIN books ON verses.book_id = books.id
-    #     WHERE verses.text LIKE ?;
-    #     """, (f"%{phrase}%",))
-        
-    #     return cursor.fetchall()
-    
-    # TODO: FTS5 may require updating SQLite3 version
-    # TODO: FTS5 is enabled by specifying the "--enable-fts5" option when running the configure script
-    # Example: bible search berea -t LEB
-    def search_bible(self, phrase):
+    # TODO: FTS5 is enabled by specifying the "--enable-fts" option when running the configure script
+    # TODO: Toggle fts from the CLI?
+    def search_bible(self, phrase, fts=False):
         cursor = self.get_bible_cursor()
         
-        # Ordered by book, chapter, verse by default
-        cursor.execute("""
-        SELECT
-            books.name AS book,
-            chapter,
-            verse,
-            text
-        FROM fts_verses
-        JOIN books ON fts_verses.book_id = books.id
-        WHERE text MATCH ?;
-        """, (phrase,))
+        if fts:
+            # Uses ANSI escape codes to embolden matches
+            # TODO: Use <b>, </b> in render.py for md
+            # TODO: Order by rank?
+            cursor.execute("""
+            SELECT
+                books.name AS book,
+                chapter,
+                verse,
+                highlight(fts_verses, 3, '\033[1m', '\033[0m') AS text
+            FROM fts_verses
+            JOIN books ON fts_verses.book_id = books.id
+            WHERE fts_verses MATCH ?;
+            """, (phrase,))
+        
+        # Default to pattern matching
+        else:
+            cursor.execute("""
+            SELECT books.name AS book, chapter, verse, text FROM verses
+            JOIN books ON verses.book_id = books.id
+            WHERE verses.text LIKE ?;
+            """, (f"%{phrase}%",))
         
         return cursor.fetchall()
-        
-        # BUG: This query returns nothing, all subsequent queries in session return nothing
-        # cursor.execute("""
-        # SELECT
-        #     highlight(text, 2, '<b>, '</b>')
-        # FROM fts_verses('justified');
-        # """, (phrase,))
-        
-        # TODO: Try FTS5 Phrases to pass multiple tokens eg. justified, justify
     
     def search_testament(self, phrase, testament):
         cursor = self.get_bible_cursor()
