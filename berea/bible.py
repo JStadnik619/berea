@@ -376,15 +376,13 @@ class BibleClient:
         cursor = self.get_bible_cursor()
         
         if fts:
-            # Uses ANSI escape codes to embolden matches
-            # TODO: Use <b>, </b> in render.py for md
             # TODO: Order by rank?
             cursor.execute("""
             SELECT
                 books.name AS book,
                 chapter,
                 verse,
-                highlight(fts_verses, 3, '\033[1m', '\033[0m') AS text
+                highlight(fts_verses, 3, '<b>', '</b>') AS text
             FROM fts_verses
             JOIN books ON fts_verses.book_id = books.id
             WHERE fts_verses MATCH ?;

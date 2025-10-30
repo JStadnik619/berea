@@ -136,6 +136,11 @@ def add_search_parser(subparsers, downloaded_translations):
         '-OT', '--old_testament',
         action='store_true'
     )
+    
+    search_parser.add_argument(
+        '-F', '--full_text',
+        action='store_true'
+    )
 
 
 def parse_berea_args(downloaded_translations):
@@ -276,7 +281,7 @@ def main():
         elif args.old_testament:
             verse_records = bible.search_testament(args.phrase , 'ot')
         else:
-            verse_records = bible.search_bible(args.phrase)
+            verse_records = bible.search_bible(args.phrase, args.full_text)
         
         testament = None
         if args.new_testament:

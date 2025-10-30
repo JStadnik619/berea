@@ -131,5 +131,9 @@ def render_search_results(
         output = f"{len(verse_records)} occurrences of '{phrase}' in the {bible_client.translation} Bible:\n___\n"
         for verse in verse_records:
             output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
+    
+    # Replace highlight bold tags with ANSI escape codes
+    output = output.replace('<b>', '\033[1m')
+    output = output.replace('</b>', '\033[0m')
 
     return output

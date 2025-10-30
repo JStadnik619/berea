@@ -392,6 +392,32 @@ def test_download_error(monkeypatch, capsys):
                 "___\n"
             )
         ),
+        (
+            "Performing full-text search failed",
+            ['justified faith', '-F', '-t', 'BSB'],
+            (
+                "6 occurrences of 'justified faith' in the BSB Bible:\n"
+                "___\n\n"
+                "Romans 3:28:\n"
+                "For we maintain that a man is \x1b[1mjustified\x1b[0m by \x1b[1mfaith\x1b[0m apart from works of the law. \n"
+                "___\n\n"
+                "Romans 5:1:\n"
+                "Therefore, since we have been \x1b[1mjustified\x1b[0m through \x1b[1mfaith\x1b[0m, we have peace with God through our Lord Jesus Christ, \n"
+                "___\n\n"
+                "Galatians 2:16:\n"
+                "know that a man is not \x1b[1mjustified\x1b[0m by works of the law, but by \x1b[1mfaith\x1b[0m in Jesus Christ. So we, too, have believed in Christ Jesus, that we may be \x1b[1mjustified\x1b[0m by \x1b[1mfaith\x1b[0m in Christ and not by works of the law, because by works of the law no one will be \x1b[1mjustified\x1b[0m. \n"
+                "___\n\n"
+                "Galatians 3:11:\n"
+                "Now it is clear that no one is \x1b[1mjustified\x1b[0m before God by the law, because, “The righteous will live by \x1b[1mfaith\x1b[0m.” \n"
+                "___\n\n"
+                "Galatians 3:24:\n"
+                "So the law became our guardian to lead us to Christ, that we might be \x1b[1mjustified\x1b[0m by \x1b[1mfaith\x1b[0m. \n"
+                "___\n\n"
+                "James 2:24:\n"
+                "As you can see, a man is \x1b[1mjustified\x1b[0m by his deeds and not by \x1b[1mfaith\x1b[0m alone. \n"
+                "___\n"
+            )
+        ),
         # Error path tests
         (
             "Searching a phrase in a chapter with the New Testament flag should be invalid",
