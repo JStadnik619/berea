@@ -371,7 +371,6 @@ class BibleClient:
             return verse_records
     
     # TODO: FTS5 is enabled by specifying the "--enable-fts" option when running the configure script
-    # TODO: Toggle fts from the CLI?
     def search_bible(self, phrase, fts=False):
         cursor = self.get_bible_cursor()
         
@@ -398,8 +397,26 @@ class BibleClient:
         
         return cursor.fetchall()
     
-    def search_testament(self, phrase, testament):
+    def search_testament(self, phrase, testament, fts=False):
         cursor = self.get_bible_cursor()
+        
+        sql = """
+        SELECT books.name AS book, chapter, verse, text FROM verses
+        JOIN books ON verses.book_id = books.id
+        WHERE verses.text LIKE ?
+        """
+        
+        if fts:
+            sql = """
+            SELECT
+                books.name AS book,
+                chapter,
+                verse,
+                highlight(fts_verses, 3, '<b>', '</b>') AS text
+            FROM fts_verses
+            JOIN books ON fts_verses.book_id = books.id
+            WHERE fts_verses MATCH ?
+            """
 
         new_testament = [
             'Matthew',
@@ -434,28 +451,19 @@ class BibleClient:
         nt_sql_list = list_to_sql(new_testament)
 
         if testament == 'nt':
-
-            sql = f"""
-            SELECT books.name AS book, chapter, verse, text FROM verses
-            JOIN books ON verses.book_id = books.id
-            WHERE verses.text LIKE ?
-            AND books.name IN {nt_sql_list};
-            """
+            sql += f"\nAND books.name IN {nt_sql_list};"
         
         elif testament == 'ot': 
-
-            sql = f"""
-            SELECT books.name AS book, chapter, verse, text FROM verses
-            JOIN books ON verses.book_id = books.id
-            WHERE verses.text LIKE ?
-            AND books.name NOT IN {nt_sql_list};
-            """
+            sql += f"\nAND books.name NOT IN {nt_sql_list};"
         
         else:
             raise BibleInputError(f"Invalid {testament=}.")
         
         # Bind phrase since it's user input
-        cursor.execute(sql, (f"%{phrase}%",))
+        if fts:
+            cursor.execute(sql, (phrase,))
+        else:
+            cursor.execute(sql, (f"%{phrase}%",))
         return cursor.fetchall()
     
     def search_book(self, phrase, book):

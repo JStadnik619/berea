@@ -349,15 +349,18 @@ def test_download_error(monkeypatch, capsys):
         ),
         (
             "Searching a phrase in the New Testament failed",
-            ['ghost', '-NT', '-t', 'BSB'],
+            ['justified by faith', '-NT', '-t', 'BSB'],
             (
-                "2 occurrences of 'ghost' in the New Testament (BSB):\n"
+                "3 occurrences of 'justified by faith' in the New Testament (BSB):\n"
                 "___\n\n"
-                "Matthew 14:26:\n"
-                "When the disciples saw Him walking on the sea, they were terrified. “It’s a ghost!” they said, and cried out in fear. \n"
+                "Romans 3:28:\n"
+                "For we maintain that a man is justified by faith apart from works of the law. \n"
                 "___\n\n"
-                "Mark 6:49:\n"
-                "but when they saw Him walking on the sea, they cried out, thinking He was a ghost— \n"
+                "Galatians 2:16:\n"
+                "know that a man is not justified by works of the law, but by faith in Jesus Christ. So we, too, have believed in Christ Jesus, that we may be justified by faith in Christ and not by works of the law, because by works of the law no one will be justified. \n"
+                "___\n\n"
+                "Galatians 3:24:\n"
+                "So the law became our guardian to lead us to Christ, that we might be justified by faith. \n"
                 "___\n"
             )
         ),
@@ -393,7 +396,7 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Performing full-text search failed",
+            "Full-text searching failed a phrase in the Bible failed",
             ['justified faith', '-F', '-t', 'BSB'],
             (
                 "6 occurrences of 'justified faith' in the BSB Bible:\n"
@@ -415,6 +418,43 @@ def test_download_error(monkeypatch, capsys):
                 "___\n\n"
                 "James 2:24:\n"
                 "As you can see, a man is \x1b[1mjustified\x1b[0m by his deeds and not by \x1b[1mfaith\x1b[0m alone. \n"
+                "___\n"
+            )
+        ),
+        (
+            "Full-text searching failed a phrase in the Old Testament failed",
+            ['serpent dust', '-OT', '-F', '-t', 'BSB'],
+            (
+                "2 occurrences of 'serpent dust' in the Old Testament (BSB):\n"
+                "___\n\n"
+                "Genesis 3:14:\n"
+                " So the LORD God said to the \x1b[1mserpent\x1b[0m:  “Because you have done this, cursed are you above all livestock and every beast of the field! On your belly will you go, and \x1b[1mdust\x1b[0m you will eat, all the days of your life. \n"
+                "___\n\n"
+                "Isaiah 65:25:\n"
+                "The wolf and the lamb will feed together, and the lion will eat straw like the ox, but the food of the \x1b[1mserpent\x1b[0m will be \x1b[1mdust\x1b[0m. They will neither harm nor destroy on all My holy mountain,” says the LORD.   \n"
+                "___\n"
+            )
+        ),
+        (
+            "Full-text searching failed a phrase in the New Testament failed",
+            ['justified by faith', '-NT', '-F', '-t', 'BSB'],
+            (
+                "5 occurrences of 'justified by faith' in the New Testament (BSB):\n"
+                "___\n\n"
+                "Romans 3:28:\n"
+                "For we maintain that a man is \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m apart from works of the law. \n"
+                "___\n\n"
+                "Galatians 2:16:\n"
+                "know that a man is not \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m works of the law, but \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m in Jesus Christ. So we, too, have believed in Christ Jesus, that we may be \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m in Christ and not \x1b[1mby\x1b[0m works of the law, because \x1b[1mby\x1b[0m works of the law no one will be \x1b[1mjustified\x1b[0m. \n"
+                "___\n\n"
+                "Galatians 3:11:\n"
+                "Now it is clear that no one is \x1b[1mjustified\x1b[0m before God \x1b[1mby\x1b[0m the law, because, “The righteous will live \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m.” \n"
+                "___\n\n"
+                "Galatians 3:24:\n"
+                "So the law became our guardian to lead us to Christ, that we might be \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m. \n"
+                "___\n\n"
+                "James 2:24:\n"
+                "As you can see, a man is \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m his deeds and not \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m alone. \n"
                 "___\n"
             )
         ),

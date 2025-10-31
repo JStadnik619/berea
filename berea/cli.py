@@ -277,9 +277,9 @@ def main():
             else:
                 verse_records = bible.search_book(args.phrase, args.book)
         elif args.new_testament:
-            verse_records = bible.search_testament(args.phrase , 'nt')
+            verse_records = bible.search_testament(args.phrase , 'nt', args.full_text)
         elif args.old_testament:
-            verse_records = bible.search_testament(args.phrase , 'ot')
+            verse_records = bible.search_testament(args.phrase , 'ot', args.full_text)
         else:
             verse_records = bible.search_bible(args.phrase, args.full_text)
         
