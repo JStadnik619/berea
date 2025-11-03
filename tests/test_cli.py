@@ -306,7 +306,7 @@ def test_download_error(monkeypatch, capsys):
                 "1 occurrences of 'rescue my soul' in the BSB Bible:\n"
                 "___\n\n"
                 "Psalms 35:17:\n"
-                "How long, O Lord, will You look on? Rescue my soul from their ravages, my precious life from these lions. \n"
+                "How long, O Lord, will You look on? \x1b[1mRescue my soul\x1b[0m from their ravages, my precious life from these lions. \n"
                 "___\n"
             )
         ),
@@ -317,16 +317,16 @@ def test_download_error(monkeypatch, capsys):
                 "4 occurrences of 'sheep gate' in the BSB Bible:\n"
                 "___\n\n"
                 "Nehemiah 3:1:\n"
-                "At the Sheep Gate, Eliashib the high priest and his fellow priests began rebuilding. They dedicated it and installed its doors. After building as far as the Tower of the Hundred and the Tower of Hananel, they dedicated the wall. \n"
+                "At the \x1b[1mSheep Gate\x1b[0m, Eliashib the high priest and his fellow priests began rebuilding. They dedicated it and installed its doors. After building as far as the Tower of the Hundred and the Tower of Hananel, they dedicated the wall. \n"
                 "___\n\n"
                 "Nehemiah 3:32:\n"
-                "And between the upper room above the corner and the Sheep Gate, the goldsmiths and merchants made repairs. \n"
+                "And between the upper room above the corner and the \x1b[1mSheep Gate\x1b[0m, the goldsmiths and merchants made repairs. \n"
                 "___\n\n"
                 "Nehemiah 12:39:\n"
-                "over the Gate of Ephraim, the Jeshanah Gate, the Fish Gate, the Tower of Hananel, and the Tower of the Hundred, as far as the Sheep Gate. And they stopped at the Gate of the Guard. \n"
+                "over the Gate of Ephraim, the Jeshanah Gate, the Fish Gate, the Tower of Hananel, and the Tower of the Hundred, as far as the \x1b[1mSheep Gate\x1b[0m. And they stopped at the Gate of the Guard. \n"
                 "___\n\n"
                 "John 5:2:\n"
-                "Now there is in Jerusalem near the Sheep Gate a pool with five covered colonnades, which in Hebrew is called Bethesda. \n"
+                "Now there is in Jerusalem near the \x1b[1mSheep Gate\x1b[0m a pool with five covered colonnades, which in Hebrew is called Bethesda. \n"
                 "___\n"
             )
         ),
@@ -337,13 +337,13 @@ def test_download_error(monkeypatch, capsys):
                 "3 occurrences of 'holy spirit' in the Old Testament (BSB):\n"
                 "___\n\n"
                 "Psalms 51:11:\n"
-                "Cast me not away from Your presence; take not Your Holy Spirit from me. \n"
+                "Cast me not away from Your presence; take not Your \x1b[1mHoly Spirit\x1b[0m from me. \n"
                 "___\n\n"
                 "Isaiah 63:10:\n"
-                "But they rebelled and grieved His Holy Spirit. So He turned and became their enemy, and He Himself fought against them.   \n"
+                "But they rebelled and grieved His \x1b[1mHoly Spirit\x1b[0m. So He turned and became their enemy, and He Himself fought against them.   \n"
                 "___\n\n"
                 "Isaiah 63:11:\n"
-                "Then His people remembered the days of old, the days of Moses. Where is He who brought them through the sea with the shepherds of His flock? Where is the One who set His Holy Spirit among them, \n"
+                "Then His people remembered the days of old, the days of Moses. Where is He who brought them through the sea with the shepherds of His flock? Where is the One who set His \x1b[1mHoly Spirit\x1b[0m among them, \n"
                 "___\n"
             )
         ),
@@ -354,13 +354,13 @@ def test_download_error(monkeypatch, capsys):
                 "3 occurrences of 'justified by faith' in the New Testament (BSB):\n"
                 "___\n\n"
                 "Romans 3:28:\n"
-                "For we maintain that a man is justified by faith apart from works of the law. \n"
+                "For we maintain that a man is \x1b[1mjustified by faith\x1b[0m apart from works of the law. \n"
                 "___\n\n"
                 "Galatians 2:16:\n"
-                "know that a man is not justified by works of the law, but by faith in Jesus Christ. So we, too, have believed in Christ Jesus, that we may be justified by faith in Christ and not by works of the law, because by works of the law no one will be justified. \n"
+                "know that a man is not justified by works of the law, but by faith in Jesus Christ. So we, too, have believed in Christ Jesus, that we may be \x1b[1mjustified by faith\x1b[0m in Christ and not by works of the law, because by works of the law no one will be justified. \n"
                 "___\n\n"
                 "Galatians 3:24:\n"
-                "So the law became our guardian to lead us to Christ, that we might be justified by faith. \n"
+                "So the law became our guardian to lead us to Christ, that we might be \x1b[1mjustified by faith\x1b[0m. \n"
                 "___\n"
             )
         ),
@@ -371,10 +371,10 @@ def test_download_error(monkeypatch, capsys):
                 "2 occurrences of 'lying spirit' in II Chronicles (BSB):\n"
                 "___\n\n"
                 "II Chronicles 18:21:\n"
-                "And he replied, ‘I will go out and be a lying spirit in the mouths of all his prophets.’  ‘You will surely entice him and prevail,’ said the LORD. ‘Go and do it.’ \n"
+                "And he replied, ‘I will go out and be a \x1b[1mlying spirit\x1b[0m in the mouths of all his prophets.’  ‘You will surely entice him and prevail,’ said the LORD. ‘Go and do it.’ \n"
                 "___\n\n"
                 "II Chronicles 18:22:\n"
-                "So you see, the LORD has put a lying spirit in the mouths of these prophets of yours, and the LORD has pronounced disaster against you.” \n"
+                "So you see, the LORD has put a \x1b[1mlying spirit\x1b[0m in the mouths of these prophets of yours, and the LORD has pronounced disaster against you.” \n"
                 "___\n"
             )
         ),
@@ -385,13 +385,13 @@ def test_download_error(monkeypatch, capsys):
                 "3 occurrences of 'lampstands' in Revelation of John 1 (BSB):\n"
                 "___\n\n"
                 "Revelation of John 1:12:\n"
-                "Then I turned to see the voice that was speaking with me. And having turned, I saw seven golden lampstands, \n"
+                "Then I turned to see the voice that was speaking with me. And having turned, I saw seven golden \x1b[1mlampstands\x1b[0m, \n"
                 "___\n\n"
                 "Revelation of John 1:13:\n"
-                "and among the lampstands was One like the Son of Man, dressed in a long robe, with a golden sash around His chest. \n"
+                "and among the \x1b[1mlampstands\x1b[0m was One like the Son of Man, dressed in a long robe, with a golden sash around His chest. \n"
                 "___\n\n"
                 "Revelation of John 1:20:\n"
-                "This is the mystery of the seven stars you saw in My right hand and of the seven golden lampstands: The seven stars are the angels of the seven churches, and the seven lampstands are the seven churches. \n"
+                "This is the mystery of the seven stars you saw in My right hand and of the seven golden \x1b[1mlampstands\x1b[0m: The seven stars are the angels of the seven churches, and the seven \x1b[1mlampstands\x1b[0m are the seven churches. \n"
                 "___\n"
             )
         ),
