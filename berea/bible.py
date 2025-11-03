@@ -3,7 +3,6 @@ import urllib.request
 from urllib.error import HTTPError
 import json
 import csv
-import sys
 import os
 
 from berea.utils import get_source_root, get_app_data_path

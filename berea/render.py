@@ -1,3 +1,6 @@
+import re
+
+
 # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
 def list_multiline_verse(verse):
     lines = []
@@ -107,7 +110,8 @@ def render_search_results(
     phrase,
     testament=None,
     book=None,
-    chapter=None
+    chapter=None,
+    fts=False
 ):
     if chapter:
         book = bible_client.get_book_from_abbreviation(book)
@@ -133,7 +137,19 @@ def render_search_results(
             output += f"\n{verse['book']} {verse['chapter']}:{verse['verse']}:\n{verse['text']}\n___\n"
     
     # Replace highlight bold tags with ANSI escape codes
-    output = output.replace('<b>', '\033[1m')
-    output = output.replace('</b>', '\033[0m')
+    if fts:
+        output = output.replace('<b>', '\033[1m')
+        output = output.replace('</b>', '\033[0m')
+    
+    # Embolden pattern matches in default search results,
+    # preserving original case
+    else:
+        output = re.sub(
+            phrase,
+            lambda m: f'\033[1m{m.group(0)}\033[0m',
+            output,
+            flags=re.IGNORECASE
+        )
+        output = output.replace(f'\033[1m{phrase}\033[0m', phrase, 1)
 
     return output

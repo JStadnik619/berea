@@ -296,7 +296,8 @@ def main():
                 args.phrase,
                 testament,
                 args.book,
-                args.chapter
+                args.chapter,
+                args.full_text
             )
     
     print(output)
