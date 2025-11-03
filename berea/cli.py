@@ -275,7 +275,7 @@ def main():
                     "'-OT, --old_testament' flag."
                 )
             else:
-                verse_records = bible.search_book(args.phrase, args.book)
+                verse_records = bible.search_book(args.phrase, args.book, args.full_text)
         elif args.new_testament:
             verse_records = bible.search_testament(args.phrase , 'nt', args.full_text)
         elif args.old_testament:

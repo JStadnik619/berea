@@ -458,6 +458,23 @@ def test_download_error(monkeypatch, capsys):
                 "___\n"
             )
         ),
+        (
+            "Full-text searching failed a phrase in a book failed",
+            ['justified by faith', 'gal', '-F', '-t', 'BSB'],
+            (
+                "3 occurrences of 'justified by faith' in Galatians (BSB):\n"
+                "___\n\n"
+                "Galatians 2:16:\n"
+                "know that a man is not \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m works of the law, but \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m in Jesus Christ. So we, too, have believed in Christ Jesus, that we may be \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m in Christ and not \x1b[1mby\x1b[0m works of the law, because \x1b[1mby\x1b[0m works of the law no one will be \x1b[1mjustified\x1b[0m. \n"
+                "___\n\n"
+                "Galatians 3:11:\n"
+                "Now it is clear that no one is \x1b[1mjustified\x1b[0m before God \x1b[1mby\x1b[0m the law, because, “The righteous will live \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m.” \n"
+                "___\n\n"
+                "Galatians 3:24:\n"
+                "So the law became our guardian to lead us to Christ, that we might be \x1b[1mjustified\x1b[0m \x1b[1mby\x1b[0m \x1b[1mfaith\x1b[0m. \n"
+                "___\n"
+            )
+        ),
         # Error path tests
         (
             "Searching a phrase in a chapter with the New Testament flag should be invalid",

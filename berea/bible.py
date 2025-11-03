@@ -465,21 +465,34 @@ class BibleClient:
             cursor.execute(sql, (f"%{phrase}%",))
         return cursor.fetchall()
     
-    def search_book(self, phrase, book):
+    def search_book(self, phrase, book, fts=False):
         cursor = self.get_bible_cursor()
 
         book = self.get_book_from_abbreviation(book)
-        params = {
-            'phrase': f"%{phrase}%",
-            'book': book,
-            }
+        params = {'book': book}
         
-        cursor.execute("""
-        SELECT books.name AS book, chapter, verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE verses.text LIKE :phrase
-        AND book = :book;
-        """, params)
+        if fts:
+            params['phrase'] = phrase
+            cursor.execute("""
+            SELECT
+                books.name AS book,
+                chapter,
+                verse,
+                highlight(fts_verses, 3, '<b>', '</b>') AS text
+            FROM fts_verses
+            JOIN books ON fts_verses.book_id = books.id
+            WHERE fts_verses MATCH :phrase
+            AND book = :book;
+            """, params)
+        
+        else:
+            params['phrase'] = f"%{phrase}%"
+            cursor.execute("""
+            SELECT books.name AS book, chapter, verse, text FROM verses
+            JOIN books ON verses.book_id = books.id
+            WHERE verses.text LIKE :phrase
+            AND book = :book;
+            """, params)
         
         return cursor.fetchall()
 
