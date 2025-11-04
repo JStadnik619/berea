@@ -475,6 +475,17 @@ def test_download_error(monkeypatch, capsys):
                 "___\n"
             )
         ),
+        (
+            "Full-text searching a phrase in a chapter failed",
+            ['one man', 'rev', '1', '-F', '-t', 'BSB'],
+            (
+                "1 occurrences of 'one man' in Revelation of John 1 (BSB):\n"
+                "___\n\n"
+                "Revelation of John 1:13:\n"
+                "and among the lampstands was \x1b[1mOne\x1b[0m like the Son of \x1b[1mMan\x1b[0m, dressed in a long robe, with a golden sash around His chest. \n"
+                "___\n"
+            )
+        ),
         # Error path tests
         (
             "Searching a phrase in a chapter with the New Testament flag should be invalid",

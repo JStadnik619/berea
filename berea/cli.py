@@ -262,7 +262,12 @@ def main():
                     "'-OT, --old_testament' flag."
                 )
             else:
-                verse_records = bible.search_chapter(args.phrase, args.book, args.chapter)
+                verse_records = bible.search_chapter(
+                    args.phrase,
+                    args.book,
+                    args.chapter,
+                    args.full_text
+                )
         elif args.book:
             if args.new_testament:
                 output = (
@@ -275,11 +280,23 @@ def main():
                     "'-OT, --old_testament' flag."
                 )
             else:
-                verse_records = bible.search_book(args.phrase, args.book, args.full_text)
+                verse_records = bible.search_book(
+                    args.phrase,
+                    args.book,
+                    args.full_text
+                )
         elif args.new_testament:
-            verse_records = bible.search_testament(args.phrase , 'nt', args.full_text)
+            verse_records = bible.search_testament(
+                args.phrase,
+                'nt',
+                args.full_text
+            )
         elif args.old_testament:
-            verse_records = bible.search_testament(args.phrase , 'ot', args.full_text)
+            verse_records = bible.search_testament(
+                args.phrase,
+                'ot',
+                args.full_text
+            )
         else:
             verse_records = bible.search_bible(args.phrase, args.full_text)
         

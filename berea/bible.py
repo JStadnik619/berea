@@ -219,7 +219,6 @@ class BibleClient:
             AND resources.name = :resource
             """, params)
         
-        # BUG: why is this failing? stale cursor from previous SELECT?
         # Assuming a resource only has one abbreviation for a given book and translation
         return cursor.fetchone()[0]
     
@@ -497,22 +496,39 @@ class BibleClient:
         return cursor.fetchall()
 
     # TODO: Validate chapter?
-    def search_chapter(self, phrase, book, chapter):
+    def search_chapter(self, phrase, book, chapter, fts=False):
         cursor = self.get_bible_cursor()
 
         book = self.get_book_from_abbreviation(book)
         params = {
-            'phrase': f"%{phrase}%",
             'book': book,
-            'chapter': chapter,
-            }
+            # FTS will fail if chapter is passed as a string
+            'chapter': int(chapter),
+        }
         
-        cursor.execute("""
-        SELECT books.name AS book, chapter, verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE verses.text LIKE :phrase
-        AND book = :book
-        AND chapter = :chapter;
-        """, params)
+        if fts:
+            params['phrase'] = phrase
+            cursor.execute("""
+            SELECT
+                books.name AS book,
+                chapter,
+                verse,
+                highlight(fts_verses, 3, '<b>', '</b>') AS text
+            FROM fts_verses
+            JOIN books ON fts_verses.book_id = books.id
+            WHERE fts_verses MATCH :phrase
+            AND book = :book
+            AND chapter = :chapter;
+            """, params)
+        
+        else:
+            params['phrase'] = f"%{phrase}%"
+            cursor.execute("""
+            SELECT books.name AS book, chapter, verse, text FROM verses
+            JOIN books ON verses.book_id = books.id
+            WHERE verses.text LIKE :phrase
+            AND book = :book
+            AND chapter = :chapter;
+            """, params)
         
         return cursor.fetchall()
