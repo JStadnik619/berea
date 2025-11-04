@@ -250,72 +250,76 @@ def main():
         
     elif args.command ==  'search':
         verse_records = []
-        if args.chapter:
-            if args.new_testament:
-                output = (
-                    "Invalid search: cannot search a chapter with the "
-                    "'-NT, --new_testament' flag."
+        try:
+            if args.chapter:
+                if args.new_testament:
+                    output = (
+                        "Invalid search: cannot search a chapter with the "
+                        "'-NT, --new_testament' flag."
+                    )
+                elif args.old_testament:
+                    output = (
+                        "Invalid search: cannot search a chapter with the "
+                        "'-OT, --old_testament' flag."
+                    )
+                else:
+                    verse_records = bible.search_chapter(
+                        args.phrase,
+                        args.book,
+                        args.chapter,
+                        args.full_text
+                    )
+            elif args.book:
+                if args.new_testament:
+                    output = (
+                        "Invalid search: cannot search a book with the "
+                        "'-NT, --new_testament' flag."
+                    )
+                elif args.old_testament:
+                    output = (
+                        "Invalid search: cannot search a book with the "
+                        "'-OT, --old_testament' flag."
+                    )
+                else:
+                    verse_records = bible.search_book(
+                        args.phrase,
+                        args.book,
+                        args.full_text
+                    )
+            elif args.new_testament:
+                verse_records = bible.search_testament(
+                    args.phrase,
+                    'nt',
+                    args.full_text
                 )
             elif args.old_testament:
-                output = (
-                    "Invalid search: cannot search a chapter with the "
-                    "'-OT, --old_testament' flag."
+                verse_records = bible.search_testament(
+                    args.phrase,
+                    'ot',
+                    args.full_text
                 )
             else:
-                verse_records = bible.search_chapter(
+                verse_records = bible.search_bible(args.phrase, args.full_text)
+            
+            testament = None
+            if args.new_testament:
+                testament = 'nt'
+            elif args.old_testament:
+                testament = 'ot'
+            
+            if verse_records:
+                output = render_search_results(
+                    bible,
+                    verse_records,
                     args.phrase,
+                    testament,
                     args.book,
                     args.chapter,
                     args.full_text
                 )
-        elif args.book:
-            if args.new_testament:
-                output = (
-                    "Invalid search: cannot search a book with the "
-                    "'-NT, --new_testament' flag."
-                )
-            elif args.old_testament:
-                output = (
-                    "Invalid search: cannot search a book with the "
-                    "'-OT, --old_testament' flag."
-                )
-            else:
-                verse_records = bible.search_book(
-                    args.phrase,
-                    args.book,
-                    args.full_text
-                )
-        elif args.new_testament:
-            verse_records = bible.search_testament(
-                args.phrase,
-                'nt',
-                args.full_text
-            )
-        elif args.old_testament:
-            verse_records = bible.search_testament(
-                args.phrase,
-                'ot',
-                args.full_text
-            )
-        else:
-            verse_records = bible.search_bible(args.phrase, args.full_text)
-        
-        testament = None
-        if args.new_testament:
-            testament = 'nt'
-        elif args.old_testament:
-            testament = 'ot'
-        
-        if verse_records:
-            output = render_search_results(
-                bible,
-                verse_records,
-                args.phrase,
-                testament,
-                args.book,
-                args.chapter,
-                args.full_text
-            )
+    
+        except BibleInputError as ex:
+            output = str(ex)
     
     print(output)
 
