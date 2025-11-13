@@ -190,11 +190,12 @@ class BibleClient:
         conn.close()
     
     def create_bible_db(self):
-        self.download_raw_bible()
+        output = self.download_raw_bible()
         self.rename_tables()
         self.create_abbreviations_table()
         self.create_resource_tables()
         self.create_fts_verses_table()
+        return output
     
     def delete_translation(self):
         os.remove(self.database)
@@ -367,8 +368,7 @@ class BibleClient:
         
         else:
             return verse_records
-    
-    # TODO: FTS5 is enabled by specifying the "--enable-fts" option when running the configure script
+
     def search_bible(self, phrase, fts=False):
         cursor = self.get_bible_cursor()
         
