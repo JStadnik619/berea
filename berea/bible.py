@@ -199,7 +199,7 @@ class BibleClient:
     
     def delete_translation(self):
         os.remove(self.database)
-        return f"Deleted transation '{self.translation}'."
+        return f"Deleted translation '{self.translation}'."
     
     def get_book_abbreviation_by_resource(self, book, resource):
         """Get a book's abbreviation used by a specific resource.

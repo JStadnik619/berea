@@ -212,12 +212,14 @@ def test_reference(monkeypatch, capsys, msg, args, output):
     assert captured.out == output + '\n', msg
 
 
-def test_delete(monkeypatch):
+def test_delete(monkeypatch, capsys):
     default_translation = CLIConfig.get_default_translation()
     monkeypatch.setattr(sys, 'argv', ['bible', 'delete', default_translation])
     main()
     
     assert not pytest.translation_exists(default_translation)
+    captured = capsys.readouterr()
+    assert captured.out == f"Deleted translation '{default_translation}'.\n"
     
     downloaded_translations = get_downloaded_translations()
     
@@ -231,6 +233,8 @@ def test_delete(monkeypatch):
         main()
     
         assert not pytest.translation_exists(translation)
+        captured = capsys.readouterr()
+        assert captured.out == f"Deleted translation '{translation}'.\n"
     
     msg = "Failed to update config if no other translation is downloaded"
     assert CLIConfig.get_default_translation() == 'None', msg
@@ -261,7 +265,7 @@ def test_download_sets_default_translation(monkeypatch):
         ('UKJV'),        
     ]
 )
-def test_download(monkeypatch, translation):
+def test_download(monkeypatch, capsys, translation):
     if translation in get_downloaded_translations():
         monkeypatch.setattr(sys, 'argv', ['bible', 'delete', translation])
         main()
@@ -271,6 +275,9 @@ def test_download(monkeypatch, translation):
     monkeypatch.setattr(sys, 'argv', args)
     
     main()
+    
+    captured = capsys.readouterr()
+    assert all(s in captured.out for s in ['Downloaded:', f'{translation}.db'])
     
     assert pytest.translation_exists(translation)
 
@@ -523,11 +530,14 @@ def test_search(monkeypatch, capsys, msg, args, output):
         ('BSB'), 
     ]
 )
-def test_config_default_translation(monkeypatch, translation):
+def test_config_default_translation(monkeypatch, capsys, translation):
     args = ['bible', 'config', 'translation', translation]
     monkeypatch.setattr(sys, 'argv', args)
     
     main()
+    
+    captured = capsys.readouterr()
+    assert captured.out == "Default translation updated.\n"
     
     msg = "Setting the default translation failed"
     assert CLIConfig.get_default_translation() == translation, msg
