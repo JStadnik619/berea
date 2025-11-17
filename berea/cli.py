@@ -1,6 +1,7 @@
 import sys
 import configparser
 import argparse
+
 from berea.utils import get_downloaded_translations, get_app_data_path
 from berea.bible import BibleClient, BibleInputError
 from berea.render import render_reference_results, render_search_results
@@ -136,11 +137,6 @@ def add_search_parser(subparsers, downloaded_translations):
         '-OT', '--old_testament',
         action='store_true'
     )
-    
-    search_parser.add_argument(
-        '-F', '--full_text',
-        action='store_true'
-    )
 
 
 def parse_berea_args(downloaded_translations):
@@ -266,8 +262,7 @@ def main():
                     verse_records = bible.search_chapter(
                         args.phrase,
                         args.book,
-                        args.chapter,
-                        args.full_text
+                        args.chapter
                     )
             elif args.book:
                 if args.new_testament:
@@ -281,26 +276,13 @@ def main():
                         "'-OT, --old_testament' flag."
                     )
                 else:
-                    verse_records = bible.search_book(
-                        args.phrase,
-                        args.book,
-                        args.full_text
-                    )
+                    verse_records = bible.search_book(args.phrase, args.book)
             elif args.new_testament:
-                verse_records = bible.search_testament(
-                    args.phrase,
-                    'nt',
-                    args.full_text
-                )
+                verse_records = bible.search_testament(args.phrase, 'nt')
             elif args.old_testament:
-                verse_records = bible.search_testament(
-                    args.phrase,
-                    'ot',
-                    args.full_text
-                )
+                verse_records = bible.search_testament(args.phrase, 'ot')
             else:
-                verse_records = bible.search_bible(args.phrase, args.full_text)
-            
+                verse_records = bible.search_bible(args.phrase)
             testament = None
             if args.new_testament:
                 testament = 'nt'
@@ -314,8 +296,7 @@ def main():
                     args.phrase,
                     testament,
                     args.book,
-                    args.chapter,
-                    args.full_text
+                    args.chapter
                 )
     
         except BibleInputError as ex:

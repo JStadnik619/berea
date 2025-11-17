@@ -307,10 +307,10 @@ def test_download_error(monkeypatch, capsys):
     "msg, args, output",
     [
         (
-            "Searching a phrase with a single occurrence failed",
-            ['rescue my soul', '-t', 'BSB'],
+            "Searching an exact phrase with a single occurrence failed",
+            ['"rescue my soul"', '-t', 'BSB'],
             (
-                "1 occurrences of 'rescue my soul' in the BSB Bible:\n"
+                "1 occurrences of '\"rescue my soul\"' in the BSB Bible:\n"
                 "___\n\n"
                 "Psalms 35:17:\n"
                 "How long, O Lord, will You look on? \x1b[1mRescue my soul\x1b[0m from their ravages, my precious life from these lions. \n"
@@ -318,10 +318,10 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Searching a phrase with multiple occurrences failed",
-            ['sheep gate', '-t', 'BSB'],
+            "Searching an exact phrase with multiple occurrences failed",
+            ['"sheep gate"', '-t', 'BSB'],
             (
-                "4 occurrences of 'sheep gate' in the BSB Bible:\n"
+                "4 occurrences of '\"sheep gate\"' in the BSB Bible:\n"
                 "___\n\n"
                 "Nehemiah 3:1:\n"
                 "At the \x1b[1mSheep Gate\x1b[0m, Eliashib the high priest and his fellow priests began rebuilding. They dedicated it and installed its doors. After building as far as the Tower of the Hundred and the Tower of Hananel, they dedicated the wall. \n"
@@ -338,10 +338,10 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Searching a phrase in the Old Testament failed",
-            ['holy spirit', '-OT', '-t', 'BSB'],
+            "Searching an exact phrase in the Old Testament failed",
+            ['"holy spirit"', '-OT', '-t', 'BSB'],
             (
-                "3 occurrences of 'holy spirit' in the Old Testament (BSB):\n"
+                "3 occurrences of '\"holy spirit\"' in the Old Testament (BSB):\n"
                 "___\n\n"
                 "Psalms 51:11:\n"
                 "Cast me not away from Your presence; take not Your \x1b[1mHoly Spirit\x1b[0m from me. \n"
@@ -355,10 +355,10 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Searching a phrase in the New Testament failed",
-            ['justified by faith', '-NT', '-t', 'BSB'],
+            "Searching an exact phrase in the New Testament failed",
+            ['"justified by faith"', '-NT', '-t', 'BSB'],
             (
-                "3 occurrences of 'justified by faith' in the New Testament (BSB):\n"
+                "3 occurrences of '\"justified by faith\"' in the New Testament (BSB):\n"
                 "___\n\n"
                 "Romans 3:28:\n"
                 "For we maintain that a man is \x1b[1mjustified by faith\x1b[0m apart from works of the law. \n"
@@ -373,9 +373,9 @@ def test_download_error(monkeypatch, capsys):
         ),
         (
             "Searching a phrase in a book failed",
-            ['lying spirit', '2chr', '-t', 'BSB'],
+            ['"lying spirit"', '2chr', '-t', 'BSB'],
             (
-                "2 occurrences of 'lying spirit' in II Chronicles (BSB):\n"
+                "2 occurrences of '\"lying spirit\"' in II Chronicles (BSB):\n"
                 "___\n\n"
                 "II Chronicles 18:21:\n"
                 "And he replied, ‘I will go out and be a \x1b[1mlying spirit\x1b[0m in the mouths of all his prophets.’  ‘You will surely entice him and prevail,’ said the LORD. ‘Go and do it.’ \n"
@@ -403,8 +403,8 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Full-text searching failed a phrase in the Bible failed",
-            ['justified faith', '-F', '-t', 'BSB'],
+            "Searching a tokenized phrase in the Bible failed",
+            ['justified faith', '-t', 'BSB'],
             (
                 "6 occurrences of 'justified faith' in the BSB Bible:\n"
                 "___\n\n"
@@ -429,8 +429,8 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Full-text searching failed a phrase in the Old Testament failed",
-            ['serpent dust', '-OT', '-F', '-t', 'BSB'],
+            "Searching a tokenized phrase in the Old Testament failed",
+            ['serpent dust', '-OT', '-t', 'BSB'],
             (
                 "2 occurrences of 'serpent dust' in the Old Testament (BSB):\n"
                 "___\n\n"
@@ -443,8 +443,8 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Full-text searching failed a phrase in the New Testament failed",
-            ['justified by faith', '-NT', '-F', '-t', 'BSB'],
+            "Searching a tokenized phrase in the New Testament failed",
+            ['justified by faith', '-NT', '-t', 'BSB'],
             (
                 "5 occurrences of 'justified by faith' in the New Testament (BSB):\n"
                 "___\n\n"
@@ -466,8 +466,8 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Full-text searching failed a phrase in a book failed",
-            ['justified by faith', 'gal', '-F', '-t', 'BSB'],
+            "Searching a tokenized phrase in a book failed",
+            ['justified by faith', 'gal', '-t', 'BSB'],
             (
                 "3 occurrences of 'justified by faith' in Galatians (BSB):\n"
                 "___\n\n"
@@ -483,8 +483,8 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Full-text searching a phrase in a chapter failed",
-            ['one man', 'rev', '1', '-F', '-t', 'BSB'],
+            "Searching a tokenized phrase in a chapter failed",
+            ['one man', 'rev', '1', '-t', 'BSB'],
             (
                 "1 occurrences of 'one man' in Revelation of John 1 (BSB):\n"
                 "___\n\n"
@@ -493,6 +493,9 @@ def test_download_error(monkeypatch, capsys):
                 "___\n"
             )
         ),
+        # TODO: search prefix query (eg. justif* in Romans 5)
+        # TODO: Search with boolean operators, eg. '"angel" NOT "of the lord"'
+        # TODO: Is suffix searching possible with FTS or even useful?
         # Error path tests
         (
             "Searching a phrase in a chapter with the New Testament flag should be invalid",

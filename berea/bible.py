@@ -369,53 +369,26 @@ class BibleClient:
         else:
             return verse_records
 
-    def search_bible(self, phrase, fts=False):
+    def search_bible(self, phrase):
         cursor = self.get_bible_cursor()
         
-        if fts:
-            # TODO: Order by rank?
-            cursor.execute("""
-            SELECT
-                books.name AS book,
-                chapter,
-                verse,
-                highlight(fts_verses, 3, '<b>', '</b>') AS text
-            FROM fts_verses
-            JOIN books ON fts_verses.book_id = books.id
-            WHERE fts_verses MATCH ?;
-            """, (phrase,))
-        
-        # Default to pattern matching
-        else:
-            cursor.execute("""
-            SELECT books.name AS book, chapter, verse, text FROM verses
-            JOIN books ON verses.book_id = books.id
-            WHERE verses.text LIKE ?;
-            """, (f"%{phrase}%",))
+        # TODO: Order by rank?
+        cursor.execute("""
+        SELECT
+            books.name AS book,
+            chapter,
+            verse,
+            highlight(fts_verses, 3, '<b>', '</b>') AS text
+        FROM fts_verses
+        JOIN books ON fts_verses.book_id = books.id
+        WHERE fts_verses MATCH ?;
+        """, (phrase,))
         
         return cursor.fetchall()
     
-    def search_testament(self, phrase, testament, fts=False):
+    def search_testament(self, phrase, testament):
         cursor = self.get_bible_cursor()
         
-        sql = """
-        SELECT books.name AS book, chapter, verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE verses.text LIKE ?
-        """
-        
-        if fts:
-            sql = """
-            SELECT
-                books.name AS book,
-                chapter,
-                verse,
-                highlight(fts_verses, 3, '<b>', '</b>') AS text
-            FROM fts_verses
-            JOIN books ON fts_verses.book_id = books.id
-            WHERE fts_verses MATCH ?
-            """
-
         new_testament = [
             'Matthew',
             'Mark',
@@ -449,86 +422,85 @@ class BibleClient:
         nt_sql_list = list_to_sql(new_testament)
 
         if testament == 'nt':
-            sql += f"\nAND books.name IN {nt_sql_list};"
+            sql = f"""
+            SELECT
+                books.name AS book,
+                chapter,
+                verse,
+                highlight(fts_verses, 3, '<b>', '</b>') AS text
+            FROM fts_verses
+            JOIN books ON fts_verses.book_id = books.id
+            WHERE fts_verses MATCH ?
+            AND books.name IN {nt_sql_list};
+            """
         
         elif testament == 'ot': 
-            sql += f"\nAND books.name NOT IN {nt_sql_list};"
+            sql = f"""
+            SELECT
+                books.name AS book,
+                chapter,
+                verse,
+                highlight(fts_verses, 3, '<b>', '</b>') AS text
+            FROM fts_verses
+            JOIN books ON fts_verses.book_id = books.id
+            WHERE fts_verses MATCH ?
+            AND books.name NOT IN {nt_sql_list};
+            """
         
         else:
             raise BibleInputError(f"Invalid {testament=}.")
         
         # Bind phrase since it's user input
-        if fts:
-            cursor.execute(sql, (phrase,))
-        else:
-            cursor.execute(sql, (f"%{phrase}%",))
+        cursor.execute(sql, (phrase,))
         return cursor.fetchall()
     
-    def search_book(self, phrase, book, fts=False):
-        cursor = self.get_bible_cursor()
-
-        book = self.get_book_from_abbreviation(book)
-        params = {'book': book}
-        
-        if fts:
-            params['phrase'] = phrase
-            cursor.execute("""
-            SELECT
-                books.name AS book,
-                chapter,
-                verse,
-                highlight(fts_verses, 3, '<b>', '</b>') AS text
-            FROM fts_verses
-            JOIN books ON fts_verses.book_id = books.id
-            WHERE fts_verses MATCH :phrase
-            AND book = :book;
-            """, params)
-        
-        else:
-            params['phrase'] = f"%{phrase}%"
-            cursor.execute("""
-            SELECT books.name AS book, chapter, verse, text FROM verses
-            JOIN books ON verses.book_id = books.id
-            WHERE verses.text LIKE :phrase
-            AND book = :book;
-            """, params)
-        
-        return cursor.fetchall()
-
-    # TODO: Validate chapter?
-    def search_chapter(self, phrase, book, chapter, fts=False):
+    def search_book(self, phrase, book):
         cursor = self.get_bible_cursor()
 
         book = self.get_book_from_abbreviation(book)
         params = {
+            'phrase': phrase,
+            'book': book
+        }
+        
+        cursor.execute("""
+        SELECT
+            books.name AS book,
+            chapter,
+            verse,
+            highlight(fts_verses, 3, '<b>', '</b>') AS text
+        FROM fts_verses
+        JOIN books ON fts_verses.book_id = books.id
+        WHERE fts_verses MATCH :phrase
+        AND book = :book;
+        """, params)
+
+        
+        return cursor.fetchall()
+
+    # TODO: Validate chapter?
+    def search_chapter(self, phrase, book, chapter):
+        cursor = self.get_bible_cursor()
+
+        book = self.get_book_from_abbreviation(book)
+        params = {
+            'phrase': phrase,
             'book': book,
             # FTS will fail if chapter is passed as a string
             'chapter': int(chapter),
         }
         
-        if fts:
-            params['phrase'] = phrase
-            cursor.execute("""
-            SELECT
-                books.name AS book,
-                chapter,
-                verse,
-                highlight(fts_verses, 3, '<b>', '</b>') AS text
-            FROM fts_verses
-            JOIN books ON fts_verses.book_id = books.id
-            WHERE fts_verses MATCH :phrase
-            AND book = :book
-            AND chapter = :chapter;
-            """, params)
-        
-        else:
-            params['phrase'] = f"%{phrase}%"
-            cursor.execute("""
-            SELECT books.name AS book, chapter, verse, text FROM verses
-            JOIN books ON verses.book_id = books.id
-            WHERE verses.text LIKE :phrase
-            AND book = :book
-            AND chapter = :chapter;
-            """, params)
+        cursor.execute("""
+        SELECT
+            books.name AS book,
+            chapter,
+            verse,
+            highlight(fts_verses, 3, '<b>', '</b>') AS text
+        FROM fts_verses
+        JOIN books ON fts_verses.book_id = books.id
+        WHERE fts_verses MATCH :phrase
+        AND book = :book
+        AND chapter = :chapter;
+        """, params)
         
         return cursor.fetchall()
