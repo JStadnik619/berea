@@ -493,9 +493,56 @@ def test_download_error(monkeypatch, capsys):
                 "___\n"
             )
         ),
-        # TODO: search prefix query (eg. justif* in Romans 5)
-        # TODO: Search with boolean operators, eg. '"angel" NOT "of the lord"'
-        # TODO: Is suffix searching possible with FTS or even useful?
+        (
+            "Searching a prefix in a chapter failed",
+            ['justif*', 'rom', '5', '-t', 'BSB'],
+            (
+                "4 occurrences of 'justif*' in Romans 5 (BSB):\n"
+                "___\n\n"
+                "Romans 5:1:\n"
+                "Therefore, since we have been \x1b[1mjustified\x1b[0m through faith, we have peace with God through our Lord Jesus Christ, \n"
+                "___\n\n"
+                "Romans 5:9:\n"
+                "Therefore, since we have now been \x1b[1mjustified\x1b[0m by His blood, how much more shall we be saved from wrath through Him! \n"
+                "___\n\n"
+                "Romans 5:16:\n"
+                "Again, the gift is not like the result of the one man’s sin: The judgment that followed one sin brought condemnation, but the gift that followed many trespasses brought \x1b[1mjustification\x1b[0m. \n"
+                "___\n\n"
+                "Romans 5:18:\n"
+                "So then, just as one trespass brought condemnation for all men, so also one act of righteousness brought \x1b[1mjustification\x1b[0m and life for all men. \n"
+                "___\n"
+            )
+        ),
+        (
+            "Searching a phrase with boolean operators (NOT) in a book failed",
+            ['mercy NOT seat', 'exo', '-t', 'BSB'],
+            (
+                "1 occurrences of 'mercy NOT seat' in Exodus (BSB):\n"
+                "___\n\n"
+                "Exodus 33:19:\n"
+                "“I will cause all My goodness to pass before you,” the LORD replied, “and I will proclaim My name—the LORD—in your presence. I will have \x1b[1mmercy\x1b[0m on whom I have \x1b[1mmercy\x1b[0m, and I will have compassion on whom I have compassion.” \n"
+                "___\n"
+            )
+        ),
+        (
+            "Searching a phrase with boolean operators "
+            "(NOT, OR) in a book failed",
+            ['james NOT (alphaeus OR john)', 'acts', '-t', 'BSB'],
+            (
+                "3 occurrences of 'james NOT (alphaeus OR john)' in Acts (BSB):\n"
+                "___\n\n"
+                "Acts 12:17:\n"
+                "Peter motioned with his hand for silence, and he described how the Lord had brought him out of the prison. “Send word to \x1b[1mJames\x1b[0m and to the brothers,” he said, and he left for another place. \n"
+                "___\n\n"
+                "Acts 15:13:\n"
+                "When they had finished speaking, \x1b[1mJames\x1b[0m declared, “Brothers, listen to me! \n"
+                "___\n\n"
+                "Acts 21:18:\n"
+                "The next day Paul went in with us to see \x1b[1mJames\x1b[0m, and all the elders were present. \n"
+                "___\n"
+            )
+        ),
+        # TODO: Is suffix searching possible with FTS5 or even useful?
         # Error path tests
         (
             "Searching a phrase in a chapter with the New Testament flag should be invalid",
