@@ -308,12 +308,12 @@ def test_download_error(monkeypatch, capsys):
     [
         (
             "Searching an exact phrase with a single occurrence failed",
-            ['"rescue my soul"', '-t', 'BSB'],
+            ['"prince of peace"', '-t', 'BSB'],
             (
-                "1 occurrences of '\"rescue my soul\"' in the BSB Bible:\n"
+                "1 occurrences of '\"prince of peace\"' in the BSB Bible:\n"
                 "___\n\n"
-                "Psalms 35:17:\n"
-                "How long, O Lord, will You look on? \x1b[1mRescue my soul\x1b[0m from their ravages, my precious life from these lions. \n"
+                "Isaiah 9:6:\n"
+                "For unto us a child is born, unto us a son is given, and the government will be upon His shoulders. And He will be called Wonderful Counselor, Mighty God, Everlasting Father, \x1b[1mPrince of Peace\x1b[0m. \n"
                 "___\n"
             )
         ),
@@ -372,7 +372,7 @@ def test_download_error(monkeypatch, capsys):
             )
         ),
         (
-            "Searching a phrase in a book failed",
+            "Searching an exact phrase in a book failed",
             ['"lying spirit"', '2chr', '-t', 'BSB'],
             (
                 "2 occurrences of '\"lying spirit\"' in II Chronicles (BSB):\n"
