@@ -89,16 +89,22 @@ bible matthew 5 1-11 -f md
 
 ### Search
 
-The `search` command finds all occurrences of a phrase throughout the Bible:
+The `search` command finds all occurrences of a tokenized phrase throughout the Bible:
 
 ```
-bible search 'prince of peace'
+bible search 'burning bush'
 ```
 
 Translation is specified via the `-t, --translation` flag:
 
 ```
-bible search 'prince of peace' -t BSB
+bible search 'burning bush' -t BSB
+```
+
+To search an exact phrase, enclose it in double quotes:
+
+```
+bible search '"prince of peace"'
 ```
 
 A phrase can be searched in a particular book:
@@ -122,8 +128,31 @@ bible search ghost -NT
 or the Old Testament:
 
 ```
-bible search 'holy spirit' -OT
+bible search '"holy spirit"' -OT
 ```
+
+To search a prefix, use the `*` operator:
+
+```
+bible search 'glor*' john 17
+```
+
+The `search` command also supports boolean operators (`AND`, `OR`, `NOT`).
+For example, to search all instances of 'mercy' in Exodus that are **not**
+referencing the mercy seat:
+
+```
+bible search 'mercy NOT seat' exo
+```
+
+Similarly, to search all mentions of James in Acts that do **not** reference
+the son of Alphaeus **or** the brother of John:
+
+```
+bible search 'james NOT ("son of alphaeus" OR john)' acts
+```
+
+More info on the search syntax is provided [here](https://www.sqlite.org/fts5.html#full_text_query_syntax).
 
 For large results sets, consider saving the output to a file:
 
