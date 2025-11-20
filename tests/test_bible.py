@@ -5,12 +5,37 @@ import pytest
 from berea.bible import BibleClient, BibleInputError
 
 
+def redirected_to_gen1(response):
+    """Invalid links to STEP Bible will redirect to Genesis 1.
+    """
+    body_bytes = response.read()
+    body_string = body_bytes.decode("utf-8")
+    
+    if "Genesis 1</h2>" in body_string:
+        return True
+    else:
+        return False
 
-def valid_url(url):
+
+def valid_url(url, gen1_invalid=True):
+    """Check whether the resource URL is valid.
+
+    Args:
+        url (str): a resource's link to a particular Bible passage.
+        gen1_invalid (bool, optional): Return `False` if link
+            mistakenly redirects to Genesis 1, otherwise returns `True`.
+            Defaults to `True`.
+
+    Returns:
+        bool: `True` if the URL is valid, otherwise `False`.
+    """
     try:
         with urllib.request.urlopen(url) as response:
             if response.status == 200:
-                return True
+                if gen1_invalid:
+                    return not redirected_to_gen1(response)
+                else:
+                    return True
             else:
                 return False
     except urllib.error.HTTPError as e:
@@ -27,22 +52,22 @@ def valid_url(url):
         (
             "Creating link for a single verse failed",
             "John", "3", "16", "BSB",
-            "https://www.stepbible.org/?q=version=BSB@reference=john.3.16&options=NVHUG"
+            "https://www.stepbible.org/?q=version=BSB@reference=John.3.16&options=NVHUG"
         ),
         (
             "Creating link for multiple verses failed",
             "John", "3", "16-18", "BSB",
-            "https://www.stepbible.org/?q=version=BSB@reference=john.3.16-john.3.18&options=NVHUG"
+            "https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG"
         ),
         (
             "Creating link for a chapter failed",
             "Psalms", "117", None, "BSB",
-            "https://www.stepbible.org/?q=version=BSB@reference=psalm.117&options=NVHUG"
+            "https://www.stepbible.org/?q=version=BSB@reference=Psalm.117&options=NVHUG"
         ),
         (
             "Creating link for a book",
             "III John", None, None, "BSB",
-            "https://www.stepbible.org/?q=version=BSB@reference=3john&options=NVHUG"
+            "https://www.stepbible.org/?q=version=BSB@reference=3John&options=NVHUG"
         ),
     ]
 )
@@ -61,7 +86,12 @@ def test_validate_resource_abbreviations():
     
     for book in books:
         link = bible.create_link(book['name'])
-        assert valid_url(link), f"{book['name']} produced invalid link: {link}"
+        msg = f"{book['name']} produced invalid link: {link}"
+        
+        if book['name'] == 'Genesis':
+            assert valid_url(link, gen1_invalid=False), msg
+        else:
+            assert valid_url(link), msg
 
 
 @pytest.mark.parametrize(
