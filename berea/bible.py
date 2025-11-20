@@ -221,7 +221,8 @@ class BibleClient:
             """, params)
         
         # Assuming a resource only has one abbreviation for a given book and translation
-        return cursor.fetchone()[0]
+        # STEP Bible abbreviations are in title case
+        return cursor.fetchone()[0].title()
     
     def get_book_from_abbreviation(self, book):
         cleaned_book_name = clean_book_name(book)
