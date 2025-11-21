@@ -8,7 +8,7 @@ from berea.render import render_reference_results, render_search_results
 
 
 # Version stored here to prevent editable install ImportError
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 
 class CLIConfig:
