@@ -129,7 +129,7 @@ from berea.utils import get_downloaded_translations
                 "______________________________________________________________________\n\n"
                 "For God so loved the world that He gave His one and only Son, that everyone\n"
                 "who believes in Him shall not perish but have eternal life. \n"
-                "([John 3:16 BSB](https://www.stepbible.org/?q=version=BSB@reference=john.3.16&options=NVHUG))\n\n"
+                "([John 3:16 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16&options=NVHUG))\n\n"
                 "______________________________________________________________________"
             )
         ),
@@ -145,7 +145,7 @@ from berea.utils import get_downloaded_translations
                 "through Him. Whoever believes in Him is not condemned, but whoever does not\n"
                 "believe has already been condemned, because he has not believed in the name of\n"
                 "God’s one and only Son. \n"
-                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=john.3.16-john.3.18&options=NVHUG))\n\n"
+                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG))\n\n"
                 "______________________________________________________________________"
             )
         ),
@@ -161,7 +161,7 @@ from berea.utils import get_downloaded_translations
                 "world, but to save the world through Him. <sup>18</sup> Whoever believes in\n"
                 "Him is not condemned, but whoever does not believe has already been condemned,\n"
                 "because he has not believed in the name of God’s one and only Son. \n"
-                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=john.3.16-john.3.18&options=NVHUG))\n\n"
+                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG))\n\n"
                 "______________________________________________________________________"
             )
         ),
