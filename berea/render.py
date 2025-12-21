@@ -39,6 +39,29 @@ def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'):
     return wrapped_verses
 
 
+def verses_to_formatted_passage(verse_records, verse_numbers=False, format='txt'):
+    pass
+
+
+# TODO: verse-level replacement might not deal with blocks of verses that are
+# in margin (\m), eg. Gen 2:11-14
+# TODO: Format could be txt, md, or HTML
+def replace_usfm(verse, format='txt'):
+    # These are custom tags used by the BSB
+    tag_map = {
+        '\pmo': '\n',
+        '\q2': '\n  ',  
+    }
+    # TODO: Rendering cross references/footnotes will require special handling
+    # eg, [^1] or [^a] for markdown, anchors for HTML
+    # superscript alphabetically characters for stdout?
+    # TODO: Handle section headings
+    rendered_verse = verse
+    for tag, output in tag_map.items():
+        rendered_verse = rendered_verse.replace(tag, output)
+    return rendered_verse
+
+
 def create_link_label(translation, book, chapter=None, verse=None):
     """Creates a link label, eg. `Isaiah 14:12-20`
     """
