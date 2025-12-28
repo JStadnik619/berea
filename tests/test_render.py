@@ -108,7 +108,8 @@ def test_replace_usfm(verse, rendered_verse):
                 "Then the LORD God took the man and placed him in the Garden of Eden to\n"
                 "cultivate and keep it\n"
             )
-        )
+        ),
+        # TODO: Passage that doesn't have a trailing newline
     ]
 )
 def test_verses_to_formatted_passage(verse_records, formatted_passage):

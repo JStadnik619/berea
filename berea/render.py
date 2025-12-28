@@ -39,6 +39,7 @@ def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'):
     return wrapped_verses
 
 
+# BUG: This assumes that the last verses has a trailing newline
 def wrap_long_lines(verses):
     """Replace the last space before the 80th character 
     in a line longer than 80 characters with a newline.
@@ -50,7 +51,7 @@ def wrap_long_lines(verses):
     next_pos = 0
 
     while next_pos < len(verses):
-        breakpoint()
+        # breakpoint()
         # Line length is the distance to the next newline character
         next_pos = verses.find('\n', current_pos)
         if next_pos == -1:
@@ -60,12 +61,21 @@ def wrap_long_lines(verses):
         if line_length > 80:
             # Replace the last space before the 80th character with a newline
             last_space_pos = next_pos
-            # TODO: Repeat these steps until current_pos >= next_pos
-            while (last_space_pos - current_pos) > 80:
-                last_space_pos = verses.rfind(" ", current_pos, last_space_pos)
+            # Add as many newlines between current and next positions as needed
+            while current_pos <= next_pos:
+                while (last_space_pos - current_pos) > 80:
+                    last_space_pos = verses.rfind(" ", current_pos, last_space_pos)
+                
+                if last_space_pos != -1:
+                    wrapped_verses += verses[current_pos:last_space_pos] + "\n"
+                    # Shift the current and last space positions forward
+                    current_pos = last_space_pos + 1
+                    last_space_pos = next_pos
+                    continue
 
-            wrapped_verses += verses[current_pos:last_space_pos] + "\n"
-            wrapped_verses += verses[last_space_pos + 1:next_pos + 1]
+                else:
+                    wrapped_verses += verses[current_pos:next_pos + 1]
+                    break
         
         else:
             wrapped_verses += verses[current_pos:next_pos + 1]
@@ -73,6 +83,10 @@ def wrap_long_lines(verses):
         # Proceed to the next line
         current_pos = next_pos + 1
         continue
+
+    # Add the remaining portion of the passage
+    # if len(wrapped_verses) < len(verses):
+    #     pass
 
     return wrapped_verses
 
