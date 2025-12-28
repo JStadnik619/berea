@@ -76,7 +76,8 @@ def test_replace_usfm(verse, rendered_verse):
                 },
                 {
                     'verse': 14,
-                    'text': "\liThe name of the third river is Hiddekel; it runs along the east side of Assyria.\b \li1And the fourth river is the Euphrates.\b",
+                    #  TODO: BSB PDF says Tigris, which is right?
+                    'text': "\li1The name of the third river is Hiddekel; it runs along the east side of Assyria.\b\li1And the fourth river is the Euphrates.\b",
                 },
                 {
                     'verse': 15,
@@ -111,4 +112,5 @@ def test_replace_usfm(verse, rendered_verse):
     ]
 )
 def test_verses_to_formatted_passage(verse_records, formatted_passage):
+    # breakpoint()
     assert verses_to_formatted_passage(verse_records, False, 'txt') == formatted_passage

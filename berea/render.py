@@ -8,7 +8,7 @@ def list_multiline_verse(verse):
         # Split the verse if there's more than one line left
         space_split = next_line[:79].rfind(' ')
         lines.append(next_line[:space_split])
-        next_line = next_line[space_split:].lstrip()
+        next_line = next_line[space_split:]#.lstrip()
             
     # Append last line of verse
     lines.append(next_line)
@@ -39,8 +39,68 @@ def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'):
     return wrapped_verses
 
 
+def wrap_long_lines(verses):
+    """Replace the last space before the 80th character 
+    in a line longer than 80 characters with a newline.
+    """
+    wrapped_verses = ''
+
+    # TODO: li2 must be applied to every line in the verse
+    current_pos = 0
+    next_pos = 0
+
+    while next_pos < len(verses):
+        breakpoint()
+        # Line length is the distance to the next newline character
+        next_pos = verses.find('\n', current_pos)
+        if next_pos == -1:
+            break
+        line_length = next_pos - current_pos
+        
+        if line_length > 80:
+            # Replace the last space before the 80th character with a newline
+            last_space_pos = next_pos
+            # TODO: Repeat these steps until current_pos >= next_pos
+            while (last_space_pos - current_pos) > 80:
+                last_space_pos = verses.rfind(" ", current_pos, last_space_pos)
+
+            wrapped_verses += verses[current_pos:last_space_pos] + "\n"
+            wrapped_verses += verses[last_space_pos + 1:next_pos + 1]
+        
+        else:
+            wrapped_verses += verses[current_pos:next_pos + 1]
+
+        # Proceed to the next line
+        current_pos = next_pos + 1
+        continue
+
+    return wrapped_verses
+
+
 def verses_to_formatted_passage(verse_records, verse_numbers=False, format='txt'):
-    pass
+    verses = ''
+    for row in verse_records:
+        # Skip empty verses so orphaned verse numbers or extra whitespace
+        # is not displayed
+        if not row['text']:
+            continue
+        
+        # BUG: Adds space before every verse
+        # breakpoint()
+
+        last_character = ''
+        if verses:
+            last_character = verses[-1]
+
+        if last_character == '' or last_character.isspace():
+            verses += replace_usfm(row['text'])
+        else:
+            verses += ' ' + replace_usfm(row['text'])
+    
+    wrapped_verses = wrap_long_lines(verses)
+    
+    return wrapped_verses.rstrip()
+
 
 
 # TODO: verse-level replacement might not deal with blocks of verses that are
@@ -50,7 +110,9 @@ def replace_usfm(verse, format='txt'):
     # These are custom tags used by the BSB
     tag_map = {
         '\pmo': '\n',
-        '\q2': '\n  ',  
+        '\q2': '\n  ',
+        '\b': '\n\n', 
+        '\li1': '  ',  # BUG: This will not indent multiline/wrapped verses
     }
     # TODO: Rendering cross references/footnotes will require special handling
     # eg, [^1] or [^a] for markdown, anchors for HTML
