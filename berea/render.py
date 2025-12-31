@@ -138,6 +138,24 @@ def replace_usfm(verse, format='txt'):
     return rendered_verse
 
 
+def render_markup(markup_records):
+    verses = ''
+    for record in markup_records:
+        if record['marker'] == 'm':
+            verses += record['text']
+        elif record['marker'] == 'li1':
+            # BUG: This will not indent multiline/wrapped phrases
+            verses += '  ' + record['text']
+        elif record['marker'] == 'b':
+            verses += '\n'
+        else:
+            continue
+    
+    wrapped_verses = wrap_long_lines(verses)
+    
+    return wrapped_verses.rstrip()
+
+
 def create_link_label(translation, book, chapter=None, verse=None):
     """Creates a link label, eg. `Isaiah 14:12-20`
     """

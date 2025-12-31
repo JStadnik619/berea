@@ -3,7 +3,8 @@ import pytest
 from berea.render import (
     list_multiline_verse,
     replace_usfm,
-    verses_to_formatted_passage
+    verses_to_formatted_passage,
+    render_markup
 )
 
 
@@ -106,7 +107,7 @@ def test_replace_usfm(verse, rendered_verse):
                 "  And the fourth river is the Euphrates.\n"
                 "\n"
                 "Then the LORD God took the man and placed him in the Garden of Eden to\n"
-                "cultivate and keep it\n"
+                "cultivate and keep it.\n"
             )
         ),
         # TODO: Passage that doesn't have a trailing newline
@@ -115,3 +116,59 @@ def test_replace_usfm(verse, rendered_verse):
 def test_verses_to_formatted_passage(verse_records, formatted_passage):
     # breakpoint()
     assert verses_to_formatted_passage(verse_records, False, 'txt') == formatted_passage
+
+
+@pytest.mark.parametrize(
+    "markup_records, rendered_passage",
+    [
+        (
+            [
+                {"book": "GEN", "chapter": 2, "verse": 10, "text": "", "type": "verse", "marker": "v"},
+                {"book": "GEN", "chapter": 2, "verse": 10, "text": "Now a river flowed out of Eden to water the garden, and from there it branched into four headwaters:\n", "type": "para", "marker": "m"},
+                {"book": "GEN", "chapter": 2, "verse": 10, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 11, "text": "", "type": "verse", "marker": "v"},
+                {"book": "GEN", "chapter": 2, "verse": 11, "text": "The name of the first river is the Pishon; it winds through the whole land of Havilah, where there is gold.\n", "type": "para", "marker": "li1"},
+
+                {"book": "GEN", "chapter": 2, "verse": 12, "text": "", "type": "verse", "marker": "v"},
+                {"book": "GEN", "chapter": 2, "verse": 12, "text": "And the gold of that land is pure, and bdellium and onyx are found there.\n", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 12, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 13, "text": "", "type": "verse", "marker": "v"},
+                {"book": "GEN", "chapter": 2, "verse": 13, "text": "The name of the second river is the Gihon; it winds through the whole land of Cush.\n", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 13, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "", "type": "verse", "marker": "v"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "The name of the third river is the Tigris; it runs along the east side of Assyria.\n", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "", "type": "para", "marker": "b"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "And the fourth river is the Euphrates.\n", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 15, "text": "", "type": "verse", "marker": "v"},
+                {"book": "GEN", "chapter": 2, "verse": 15, "text": "Then the LORD God took the man and placed him in the Garden of Eden to cultivate and keep it.\n", "type": "para", "marker": "m"},
+                {"book": "GEN", "chapter": 2, "verse": 15, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "Now a river flowed out of Eden to water the garden, and from there it branched\n"
+                "into four headwaters:\n"
+                "\n"
+                "  The name of the first river is the Pishon; it winds through the whole land of\n"
+                "  Havilah, where there is gold. And the gold of that land is pure, and bdellium\n"
+                "  and onyx are found there.\n"
+                "\n"
+                "  The name of the second river is the Gihon; it winds through the whole land of\n"
+                "  Cush.\n"
+                "\n"
+                "  The name of the third river is the Tigris; it runs along the east side of\n"
+                "  Assyria.\n"
+                "\n"
+                "  And the fourth river is the Euphrates.\n"
+                "\n"
+                "Then the LORD God took the man and placed him in the Garden of Eden to cultivate\n"
+                "and keep it."
+            ),
+        ),
+    ]
+)
+def test_render_markup(markup_records, rendered_passage):
+    assert render_markup(markup_records) == rendered_passage
