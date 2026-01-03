@@ -39,6 +39,10 @@ def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'):
     return wrapped_verses
 
 
+def get_indent(string):
+    return (len(string) - len(string.lstrip())) * ' '
+
+
 # BUG: This assumes that the last verses has a trailing newline
 def wrap_long_lines(verses):
     """Replace the last space before the 80th character 
@@ -59,6 +63,7 @@ def wrap_long_lines(verses):
         line_length = next_pos - current_pos
         
         if line_length > 80:
+            indent = get_indent(verses[current_pos:next_pos])
             # Replace the last space before the 80th character with a newline
             last_space_pos = next_pos
             # Add as many newlines between current and next positions as needed
@@ -67,14 +72,17 @@ def wrap_long_lines(verses):
                     last_space_pos = verses.rfind(" ", current_pos, last_space_pos)
                 
                 if last_space_pos != -1:
-                    wrapped_verses += verses[current_pos:last_space_pos] + "\n"
+                    line = verses[current_pos:last_space_pos]
+                    if not line.startswith(indent):
+                        wrapped_verses += indent
+                    wrapped_verses += line + "\n"
                     # Shift the current and last space positions forward
                     current_pos = last_space_pos + 1
                     last_space_pos = next_pos
                     continue
 
                 else:
-                    wrapped_verses += verses[current_pos:next_pos + 1]
+                    wrapped_verses += indent + verses[current_pos:next_pos + 1]
                     break
         
         else:
