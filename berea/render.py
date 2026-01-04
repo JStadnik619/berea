@@ -8,7 +8,7 @@ def list_multiline_verse(verse):
         # Split the verse if there's more than one line left
         space_split = next_line[:79].rfind(' ')
         lines.append(next_line[:space_split])
-        next_line = next_line[space_split:]#.lstrip()
+        next_line = next_line[space_split:].lstrip()
             
     # Append last line of verse
     lines.append(next_line)
