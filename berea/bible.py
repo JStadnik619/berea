@@ -1,11 +1,9 @@
 import sqlite3
 import urllib.request
 from urllib.error import HTTPError
-import json
-import csv
 import os
 
-from berea.utils import get_source_root, get_app_data_path
+from berea.utils import get_app_data_path
 
 
 def clean_book_name(book):
@@ -15,17 +13,6 @@ def clean_book_name(book):
         if 'Of' in cleaned_name:
             cleaned_name = cleaned_name.replace('Of', 'of')
         return cleaned_name
-
-
-def import_resource_books(resource='step_bible'):
-    books = []
-    
-    with open(f'{get_source_root()}/data/{resource}_books.csv') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        for row in csv_reader:
-            books.append(row['abbreviation'])
-    
-    return books
 
 
 def parse_verses_str(verses):
@@ -68,134 +55,6 @@ class BibleClient:
         conn.row_factory = sqlite3.Row
         # TODO: Use context manager?
         return conn.cursor()
-    
-    def rename_tables(self):
-        """Rename tables for consistent schema across downloaded translations.
-        """
-        cursor = self.get_bible_cursor()
-        
-        tables = ['books', 'verses']
-        for table in tables:
-            # SQLite doesn't bind parameters for schema objects
-            sql = f"ALTER TABLE {self.translation}_{table} RENAME TO {table};"
-            cursor.execute(sql)
-    
-    def create_abbreviations_table(self):
-        cursor = self.get_bible_cursor()
-
-        cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS abbreviations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            book_id INTEGER,
-            abbreviation TEXT,
-            FOREIGN KEY (book_id) REFERENCES books(id)
-        );
-        """)
-        
-        books_to_abbreviations = {}
-        
-        with open(f'{get_source_root()}/data/book_abbreviations.json') as file:
-            books_to_abbreviations = dict(json.load(file))
-    
-        # Create a conn to commit inserts and close 
-        conn = sqlite3.connect(self.database)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        for book, abbreviations in books_to_abbreviations.items():
-            for abbreviation in abbreviations:
-                params = {
-                    'abbreviation': abbreviation,
-                    'book': book,
-                }
-                
-                cursor.execute(f"""
-                INSERT INTO abbreviations (abbreviation, book_id)
-                SELECT :abbreviation, books.id
-                FROM books
-                WHERE books.name = :book;
-                """, params)
-        
-        conn.commit()
-        conn.close()
-
-    def create_resource_tables(self):
-        cursor = self.get_bible_cursor()
-
-        cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS resources (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT
-        );
-        """)
-        
-        cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS resources_abbreviations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            resource_id INTEGER,
-            abbreviation_id INTEGER
-        );
-        """)
-        
-        # Create a conn to commit inserts and close 
-        conn = sqlite3.connect(self.database)
-        cursor = conn.cursor()
-        
-        # TODO: Insert STEP Bible dynamically
-        resource='STEP Bible'
-        cursor.execute(f"""
-        INSERT INTO resources (name) VALUES (
-            'STEP Bible'
-        );
-        """)
-        
-        conn.commit()
-        conn.close()
-        
-        abbreviations = import_resource_books()
-        
-        conn = sqlite3.connect(self.database)
-        cursor = conn.cursor()
-        
-        for abbreviation in abbreviations:
-            params = {
-                'abbreviation': abbreviation.lower(),
-            }
-            
-            # TODO: Select STEP Bible id dynamically
-            cursor.execute(f"""
-            INSERT INTO resources_abbreviations (resource_id, abbreviation_id)
-            SELECT 1, abbreviations.id
-            FROM abbreviations
-            WHERE abbreviations.abbreviation = :abbreviation;
-            """, params)
-        
-        conn.commit()
-        conn.close()
-    
-    def create_fts_verses_table(self):
-        cursor = self.get_bible_cursor()
-        cursor.execute("""
-        CREATE VIRTUAL TABLE fts_verses
-            USING fts5(book_id, chapter, verse, text);
-        """)
-
-        conn = sqlite3.connect(self.database)
-        cursor = conn.cursor()
-        cursor.execute("""
-        INSERT INTO fts_verses (book_id, chapter, verse, text)
-        SELECT book_id, chapter, verse, text FROM verses;
-        """)
-        conn.commit()
-        conn.close()
-    
-    def create_bible_db(self):
-        output = self.download_raw_bible()
-        self.rename_tables()
-        self.create_abbreviations_table()
-        self.create_resource_tables()
-        self.create_fts_verses_table()
-        return output
     
     def delete_translation(self):
         os.remove(self.database)

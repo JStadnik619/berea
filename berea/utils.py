@@ -3,10 +3,6 @@ from site import getsitepackages
 import os
 
 
-def get_source_root():
-    return os.path.realpath(os.path.dirname(__file__))
-
-
 def get_app_data_path(subdir=None):
     """
     Retrieve the venv or OS's directory for mutuable app data (translations or config).
