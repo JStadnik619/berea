@@ -195,6 +195,40 @@ class BibleClient:
             return verse_records
 
     # TODO: Validate chapter?
+    # def get_verses(self, book, chapter, verse):
+    #     """
+    #     Print a range of verses, eg. 5-7. 
+    #     """
+    #     cursor = self.get_bible_cursor()
+    #     book = self.get_book_from_abbreviation(book)
+    #     verse_start, verse_end = parse_verses_str(verse)
+        
+    #     params = {
+    #         'book': book,
+    #         'chapter': chapter,
+    #         'verse_start': verse_start,
+    #         'verse_end': verse_end,
+    #     }
+        
+    #     cursor.execute("""
+    #     SELECT verse, text FROM verses
+    #     JOIN books ON verses.book_id = books.id
+    #     WHERE books.name = :book
+    #     AND chapter = :chapter
+    #     AND verse BETWEEN :verse_start AND :verse_end
+    #     """, params)
+
+    #     verse_records = cursor.fetchall()
+        
+    #     if len(verse_records) == 0:
+    #         raise BibleInputError(
+    #             f"Invalid verses: {book} "
+    #             f"{chapter}:{verse_start}-{verse_end}."
+    #         )
+        
+    #     else:
+    #         return verse_records
+    
     def get_verses(self, book, chapter, verse):
         """
         Print a range of verses, eg. 5-7. 
@@ -210,12 +244,14 @@ class BibleClient:
             'verse_end': verse_end,
         }
         
+        # BUG: Not returning poetry (\q2, eg Proverbs)
         cursor.execute("""
-        SELECT verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE books.name = :book
+        SELECT verse, text, marker FROM markup
+        JOIN books ON markup.book_id = books.id
+        WHERE marker IN ('b', 'm', 'pmo', 'li1')
+        AND books.name = :book
         AND chapter = :chapter
-        AND verse BETWEEN :verse_start AND :verse_end
+        AND verse BETWEEN :verse_start AND :verse_end;
         """, params)
 
         verse_records = cursor.fetchall()

@@ -114,7 +114,6 @@ def test_replace_usfm(verse, rendered_verse):
     ]
 )
 def test_verses_to_formatted_passage(verse_records, formatted_passage):
-    # breakpoint()
     assert verses_to_formatted_passage(verse_records, False, 'txt') == formatted_passage
 
 
@@ -122,6 +121,7 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
     "markup_records, rendered_passage",
     [
         (
+            # TODO: Remove the trailing newline from every verse, replace \b with \n\n
             [
                 {"book": "GEN", "chapter": 2, "verse": 10, "text": "", "type": "verse", "marker": "v"},
                 {"book": "GEN", "chapter": 2, "verse": 10, "text": "Now a river flowed out of Eden to water the garden, and from there it branched into four headwaters:\n", "type": "para", "marker": "m"},

@@ -55,7 +55,6 @@ def wrap_long_lines(verses):
     next_pos = 0
 
     while next_pos < len(verses):
-        # breakpoint()
         # Line length is the distance to the next newline character
         next_pos = verses.find('\n', current_pos)
         if next_pos == -1:
@@ -80,7 +79,8 @@ def wrap_long_lines(verses):
                     current_pos = last_space_pos + 1
                     last_space_pos = next_pos
                     continue
-
+                
+                # Add the last piece of this line
                 else:
                     wrapped_verses += indent + verses[current_pos:next_pos + 1]
                     break
@@ -106,9 +106,6 @@ def verses_to_formatted_passage(verse_records, verse_numbers=False, format='txt'
         # is not displayed
         if not row['text']:
             continue
-        
-        # BUG: Adds space before every verse
-        # breakpoint()
 
         last_character = ''
         if verses:
@@ -146,16 +143,17 @@ def replace_usfm(verse, format='txt'):
     return rendered_verse
 
 
+# BUG: Gen 1 v3-5 are not separated by spaces
+# TODO: Toggle verse numbers
 def render_markup(markup_records):
     verses = ''
     for record in markup_records:
-        if record['marker'] == 'm':
+        if record['marker'] in ['m', 'pmo']:
             verses += record['text']
         elif record['marker'] == 'li1':
-            # BUG: This will not indent multiline/wrapped phrases
             verses += '  ' + record['text']
         elif record['marker'] == 'b':
-            verses += '\n'
+            verses += '\n\n'
         else:
             continue
     
@@ -201,6 +199,7 @@ def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, v
     return output
     
 
+# TODO: input markup_records instead of verses
 # TODO: Return paragraphs from Bible format
 def render_reference_results(bible_client, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
     """_summary_
@@ -219,7 +218,8 @@ def render_reference_results(bible_client, format, verse_records, verse_numbers=
     """
     match format: 
         case 'txt':
-            return verses_to_wall_of_text(verse_records, verse_numbers)
+            # return verses_to_wall_of_text(verse_records, verse_numbers)
+            return render_markup(verse_records)
 
         case 'md':
             return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers)
