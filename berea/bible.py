@@ -244,11 +244,11 @@ class BibleClient:
             'verse_end': verse_end,
         }
         
-        # BUG: Not returning poetry (\q2, eg Proverbs)
+        # BUG: Not returning poetry (q1, q2, eg Proverbs)
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'li1')
+        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
         AND books.name = :book
         AND chapter = :chapter
         AND verse BETWEEN :verse_start AND :verse_end;

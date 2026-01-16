@@ -44,6 +44,8 @@ def get_indent(string):
 
 
 # BUG: This assumes that the last verses has a trailing newline
+# BUG: Last line of Gen 1 31 missing from output of "bible gen 1 1-31"
+# (And there was evening, and there was morning—the sixth day.)
 def wrap_long_lines(verses):
     """Replace the last space before the 80th character 
     in a line longer than 80 characters with a newline.
@@ -144,6 +146,7 @@ def replace_usfm(verse, format='txt'):
 
 
 # BUG: Gen 1 v3-5 are not separated by spaces
+# BUG: Not rendering poetry (q1, q2, eg Gen 1:27, Proverbs)
 # TODO: Toggle verse numbers
 def render_markup(markup_records):
     verses = ''
