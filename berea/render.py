@@ -101,6 +101,8 @@ def wrap_long_lines(verses):
     return wrapped_verses
 
 
+# TODO: Remove this (only used in tests)
+# POC where format tags are embedded directly in verse text
 def verses_to_formatted_passage(verse_records, verse_numbers=False, format='txt'):
     verses = ''
     for row in verse_records:
@@ -123,7 +125,7 @@ def verses_to_formatted_passage(verse_records, verse_numbers=False, format='txt'
     return wrapped_verses.rstrip()
 
 
-
+# TODO: Remove this (only used in tests)
 # TODO: verse-level replacement might not deal with blocks of verses that are
 # in margin (\m), eg. Gen 2:11-14
 # TODO: Format could be txt, md, or HTML
