@@ -201,6 +201,21 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
                 "And God saw that it was good."
             )
         ),
+        (
+            "Verses ending with quotes are not separated by a space.",
+            [
+                {"book": "GEN", "chapter": 1, "verse": 20, "text": "And God said, “Let the waters teem with living creatures, and let birds fly above the earth in the open expanse of the sky.”", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 21, "text": "So God created the great sea creatures and every living thing that moves, with which the waters teemed according to their kinds, and every winged bird after its kind. And God saw that it was good.", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 21, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "And God said, “Let the waters teem with living creatures, and let birds fly\n"
+                "above the earth in the open expanse of the sky.” So God created the great sea\n"
+                "creatures and every living thing that moves, with which the waters teemed\n"
+                "according to their kinds, and every winged bird after its kind. And God saw that\n"
+                "it was good."
+            )
+        ),
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):
