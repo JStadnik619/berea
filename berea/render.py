@@ -45,16 +45,12 @@ def get_indent(string):
     return (len(string) - len(string.lstrip())) * ' '
 
 
-# BUG: This assumes that the last verses has a trailing newline
-# BUG: Last line of Gen 1 31 missing from output of "bible gen 1 1-31"
-# (And there was evening, and there was morning—the sixth day.)
+# This assumes that the last verse has a trailing newline
 def wrap_long_lines(verses):
     """Replace the last space before the 80th character 
     in a line longer than 80 characters with a newline.
     """
     wrapped_verses = ''
-
-    # TODO: li2 must be applied to every line in the verse
     current_pos = 0
     next_pos = 0
 
@@ -100,10 +96,6 @@ def wrap_long_lines(verses):
         # Proceed to the next line
         current_pos = next_pos + 1
         continue
-
-    # Add the remaining portion of the passage
-    # if len(wrapped_verses) < len(verses):
-    #     pass
 
     return wrapped_verses
 
@@ -169,7 +161,8 @@ def render_markup(markup_records):
         else:
             continue
     
-    wrapped_verses = wrap_long_lines(verses)
+    # Add trailing newline in case last verse doesn't have one
+    wrapped_verses = wrap_long_lines(verses + '\n')
     
     return wrapped_verses.rstrip()
 

@@ -244,6 +244,19 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
                 "creature that crawls upon the earth.”"
             )
         ),
+        (
+            "Failed to render all markup records of a verse without a trailing newline.",
+            [
+                {"book": "GEN", "chapter": 1, "verse": 31, "text": "And God looked upon all that He had made, and indeed, it was very good.", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 31, "text": "", "type": "para", "marker": "b"},
+                {"book": "GEN", "chapter": 1, "verse": 31, "text": "And there was evening, and there was morning—the sixth day.", "type": "para", "marker": "pmo"},
+            ],
+            (
+                "And God looked upon all that He had made, and indeed, it was very good.\n"
+                "\n"
+                "And there was evening, and there was morning—the sixth day."
+            )
+        ),
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):
