@@ -168,6 +168,26 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
                 "and keep it."
             ),
         ),
+        (
+            "Sentences within the same paragraph are not separated by a space.",
+            [
+                {"book": "GEN", "chapter": 1, "verse": 3, "text": "And God said, “Let there be light,”", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 3, "text": " and there was light.", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 4, "text": "And God saw that the light was good, and He separated the light from the darkness.", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 5, "text": "God called the light “day,” and the darkness He called “night.”", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 5, "text": "", "type": "para", "marker": "b"},
+                {"book": "GEN", "chapter": 1, "verse": 5, "text": "And there was evening, and there was morning—the first day.", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 5, "text": "", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 5, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "And God said, “Let there be light,” and there was light. And God saw that the\n"
+                "light was good, and He separated the light from the darkness. God called the\n"
+                "light “day,” and the darkness He called “night.”\n"
+                "\n"
+                "And there was evening, and there was morning—the first day."
+            )
+        )
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):

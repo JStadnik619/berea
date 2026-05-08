@@ -78,6 +78,8 @@ def wrap_long_lines(verses):
                     line = verses[current_pos:last_space_pos]
                     # Remove extra whitespace in the middle of the line
                     line = re.sub(r'(?<=\S)\s+(?=\S)', ' ', line)
+                    # Add space after a period followed by alphabet character
+                    line = re.sub(r'\.(?![\d\W]|$)', '. ', line)
                     if not line.startswith(indent):
                         wrapped_verses += indent
                     wrapped_verses += line + "\n"
