@@ -78,8 +78,8 @@ def wrap_long_lines(verses):
                     line = verses[current_pos:last_space_pos]
                     # Remove extra whitespace in the middle of the line
                     line = re.sub(r'(?<=\S)\s+(?=\S)', ' ', line)
-                    # Add space after a period followed by alphabet character
-                    line = re.sub(r'\.(?![\d\W]|$)', '. ', line)
+                    # Add space after a period/comma followed by alphabet character
+                    line = re.sub(r'([\.,])(?![\d\W]|$)', r'\1 ', line)
                     if not line.startswith(indent):
                         wrapped_verses += indent
                     wrapped_verses += line + "\n"
@@ -153,7 +153,6 @@ def replace_usfm(verse, format='txt'):
     return rendered_verse
 
 
-# BUG: Gen 1 v3-5 are not separated by spaces
 # BUG: Not rendering poetry (q1, q2, eg Gen 1:27, Proverbs)
 # TODO: Toggle verse numbers
 def render_markup(markup_records):

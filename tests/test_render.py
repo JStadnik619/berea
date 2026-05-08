@@ -187,7 +187,20 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
                 "\n"
                 "And there was evening, and there was morning—the first day."
             )
-        )
+        ),
+        (
+            "Clauses across verses within the same sentence are not separated by a space.",
+            [
+                {"book": "GEN", "chapter": 1, "verse": 17, "text": "God set these lights in the expanse of the sky to shine upon the earth,", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 18, "text": "to preside over the day and the night, and to separate the light from the darkness. And God saw that it was good.", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 18, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "God set these lights in the expanse of the sky to shine upon the earth, to\n"
+                "preside over the day and the night, and to separate the light from the darkness.\n"
+                "And God saw that it was good."
+            )
+        ),
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):
