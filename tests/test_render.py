@@ -148,7 +148,6 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
                 {"book": "GEN", "chapter": 2, "verse": 15, "text": "Then the LORD God took the man and placed him in the Garden of Eden to cultivate and keep it.", "type": "para", "marker": "m"},
                 {"book": "GEN", "chapter": 2, "verse": 15, "text": "", "type": "para", "marker": "b"},
             ],
-            # BUG: Extra space is added between v 11 & 12 (Havilah, where there is gold.  And the gold of that land is pure, and bdellium)
             (
                 "Now a river flowed out of Eden to water the garden, and from there it branched\n"
                 "into four headwaters:\n"

@@ -1,3 +1,5 @@
+import re
+
 # TODO: Adjustable line length? (BSB wraps lines at 40-43 characters)
 def list_multiline_verse(verse):
     lines = []
@@ -74,6 +76,8 @@ def wrap_long_lines(verses):
                 
                 if last_space_pos != -1:
                     line = verses[current_pos:last_space_pos]
+                    # Remove extra whitespace in the middle of the line
+                    line = re.sub(r'(?<=\S)\s+(?=\S)', ' ', line)
                     if not line.startswith(indent):
                         wrapped_verses += indent
                     wrapped_verses += line + "\n"
