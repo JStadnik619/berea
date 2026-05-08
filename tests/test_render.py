@@ -216,6 +216,34 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
                 "it was good."
             )
         ),
+        (
+            "Poetry is not rendered properly.",
+            [
+                {"book": "GEN", "chapter": 1, "verse": 26, "text": "Then God said, “Let Us make man in Our image, after Our likeness, to rule over the fish of the sea and the birds of the air, over the livestock, and over all the earth itself", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 26, "text": " and every creature that crawls upon it.”", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 26, "text": "", "type": "para", "marker": "b"},
+                {"book": "GEN", "chapter": 1, "verse": 27, "text": "So God created man in His own image;", "type": "para", "marker": "q1"},
+                {"book": "GEN", "chapter": 1, "verse": 27, "text": "in the image of God He created him;", "type": "para", "marker": "q2"},
+                {"book": "GEN", "chapter": 1, "verse": 27, "text": "male and female He created them.", "type": "para", "marker": "q2"},
+                {"book": "GEN", "chapter": 1, "verse": 27, "text": "", "type": "para", "marker": "q2"},
+                {"book": "GEN", "chapter": 1, "verse": 27, "text": "", "type": "para", "marker": "b"},
+                {"book": "GEN", "chapter": 1, "verse": 28, "text": "God blessed them and said to them, “Be fruitful and multiply, and fill the earth and subdue it; rule over the fish of the sea and the birds of the air and every creature that crawls upon the earth.”", "type": "para", "marker": "pmo"},
+                {"book": "GEN", "chapter": 1, "verse": 28, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "Then God said, “Let Us make man in Our image, after Our likeness, to rule over\n"
+                "the fish of the sea and the birds of the air, over the livestock, and over all\n"
+                "the earth itself and every creature that crawls upon it.”\n"
+                "\n"
+                "So God created man in His own image;\n"
+                "  in the image of God He created him;\n"
+                "  male and female He created them.\n"
+                "\n"
+                "God blessed them and said to them, “Be fruitful and multiply, and fill the earth\n"
+                "and subdue it; rule over the fish of the sea and the birds of the air and every\n"
+                "creature that crawls upon the earth.”"
+            )
+        ),
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):

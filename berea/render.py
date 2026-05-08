@@ -154,15 +154,16 @@ def replace_usfm(verse, format='txt'):
     return rendered_verse
 
 
-# BUG: Not rendering poetry (q1, q2, eg Gen 1:27, Proverbs)
 # TODO: Toggle verse numbers
 def render_markup(markup_records):
     verses = ''
     for record in markup_records:
-        if record['marker'] in ['m', 'pmo']:
+        if record['marker'] in ['m', 'pmo', 'q1']:
             verses += record['text']
         elif record['marker'] == 'li1':
             verses += '  ' + record['text']
+        elif record['marker'] == 'q2' and record['text']:
+            verses += '\n' + '  ' + record['text']
         elif record['marker'] == 'b':
             verses += '\n\n'
         else:
