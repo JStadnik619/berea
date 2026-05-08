@@ -261,3 +261,53 @@ def test_verses_to_formatted_passage(verse_records, formatted_passage):
 )
 def test_render_markup(msg, markup_records, rendered_passage):
     assert render_markup(markup_records) == rendered_passage, msg
+
+@pytest.mark.parametrize(
+    "msg, markup_records, rendered_passage",
+    [
+        (
+            "Blocks of lines in list items are not properly formatted.",
+            [
+                {"book": "GEN", "chapter": 2, "verse": 10, "text": "Now a river flowed out of Eden to water the garden, and from there it branched into four headwaters:", "type": "para", "marker": "m"},
+                {"book": "GEN", "chapter": 2, "verse": 10, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 11, "text": "The name of the first river is the Pishon; it winds through the whole land of Havilah, where there is gold.", "type": "para", "marker": "li1"},
+
+                {"book": "GEN", "chapter": 2, "verse": 12, "text": "And the gold of that land is pure, and bdellium and onyx are found there.", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 12, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 13, "text": "The name of the second river is the Gihon; it winds through the whole land of Cush.", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 13, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "The name of the third river is the Tigris; it runs along the east side of Assyria.", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "", "type": "para", "marker": "b"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "And the fourth river is the Euphrates.", "type": "para", "marker": "li1"},
+                {"book": "GEN", "chapter": 2, "verse": 14, "text": "", "type": "para", "marker": "b"},
+
+                {"book": "GEN", "chapter": 2, "verse": 15, "text": "Then the LORD God took the man and placed him in the Garden of Eden to cultivate and keep it.", "type": "para", "marker": "m"},
+                {"book": "GEN", "chapter": 2, "verse": 15, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "10 Now a river flowed out of Eden to water the garden, and from there it\n"
+                "branched into four headwaters:\n"
+                "\n"
+                "  11 The name of the first river is the Pishon; it winds through the whole land\n"
+                "  of Havilah, where there is gold. 12 And the gold of that land is pure, and\n"
+                "  bdellium and onyx are found there.\n"
+                "\n"
+                "  13 The name of the second river is the Gihon; it winds through the whole land\n"
+                "  of Cush.\n"
+                "\n"
+                "  14 The name of the third river is the Tigris; it runs along the east side of\n"
+                "  Assyria.\n"
+                "\n"
+                "  And the fourth river is the Euphrates.\n"
+                "\n"
+                "15 Then the LORD God took the man and placed him in the Garden of Eden to\n"
+                "cultivate and keep it."
+            ),
+        ),
+    ]
+)    
+def test_render_markup_verse_mumbers(msg, markup_records, rendered_passage):
+    assert render_markup(markup_records, verse_numbers=True) == rendered_passage, msg

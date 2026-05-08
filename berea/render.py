@@ -146,20 +146,41 @@ def replace_usfm(verse, format='txt'):
     return rendered_verse
 
 
-# TODO: Toggle verse numbers
-def render_markup(markup_records):
+def render_markup(markup_records, verse_numbers=False):
     verses = ''
-    for record in markup_records:
-        if record['marker'] in ['m', 'pmo', 'q1']:
-            verses += record['text']
-        elif record['marker'] == 'li1':
-            verses += '  ' + record['text']
-        elif record['marker'] == 'q2' and record['text']:
-            verses += '\n' + '  ' + record['text']
-        elif record['marker'] == 'b':
-            verses += '\n\n'
-        else:
-            continue
+    
+    if verse_numbers:
+        verse_number = 0
+        for record in markup_records:
+            verse_number_str = ''
+            if record['verse'] > verse_number:
+                verse_number = record['verse']
+                # TODO: Use superscript char
+                verse_number_str = str(verse_number) + ' '
+            
+            if record['marker'] in ['m', 'pmo', 'q1']:
+                verses += verse_number_str + record['text']
+            elif record['marker'] == 'li1':
+                verses += '  ' + verse_number_str + record['text']
+            elif record['marker'] == 'q2' and record['text']:
+                verses += '\n' + '  ' + verse_number_str + record['text']
+            elif record['marker'] == 'b':
+                verses += '\n\n'
+            else:
+                continue
+    
+    else: 
+        for record in markup_records:
+            if record['marker'] in ['m', 'pmo', 'q1']:
+                verses += record['text']
+            elif record['marker'] == 'li1':
+                verses += '  ' + record['text']
+            elif record['marker'] == 'q2' and record['text']:
+                verses += '\n' + '  ' + record['text']
+            elif record['marker'] == 'b':
+                verses += '\n\n'
+            else:
+                continue
     
     # Add trailing newline in case last verse doesn't have one
     wrapped_verses = wrap_long_lines(verses + '\n')
@@ -224,7 +245,7 @@ def render_reference_results(bible_client, format, verse_records, verse_numbers=
     match format: 
         case 'txt':
             # return verses_to_wall_of_text(verse_records, verse_numbers)
-            return render_markup(verse_records)
+            return render_markup(verse_records,  verse_numbers)
 
         case 'md':
             return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers)
