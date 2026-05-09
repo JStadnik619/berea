@@ -100,52 +100,11 @@ def wrap_long_lines(verses):
     return wrapped_verses
 
 
-# TODO: Remove this (only used in tests)
-# POC where format tags are embedded directly in verse text
-def verses_to_formatted_passage(verse_records, verse_numbers=False, format='txt'):
-    verses = ''
-    for row in verse_records:
-        # Skip empty verses so orphaned verse numbers or extra whitespace
-        # is not displayed
-        if not row['text']:
-            continue
-
-        last_character = ''
-        if verses:
-            last_character = verses[-1]
-
-        if last_character == '' or last_character.isspace():
-            verses += replace_usfm(row['text'])
-        else:
-            verses += ' ' + replace_usfm(row['text'])
-    
-    wrapped_verses = wrap_long_lines(verses)
-    
-    return wrapped_verses.rstrip()
-
-
-# TODO: Remove this (only used in tests)
-# TODO: verse-level replacement might not deal with blocks of verses that are
-# in margin (\m), eg. Gen 2:11-14
 # TODO: Format could be txt, md, or HTML
-def replace_usfm(verse, format='txt'):
-    # These are custom tags used by the BSB
-    tag_map = {
-        '\pmo': '\n',
-        '\q2': '\n  ',
-        '\b': '\n\n', 
-        '\li1': '  ',  # BUG: This will not indent multiline/wrapped verses
-    }
-    # TODO: Rendering cross references/footnotes will require special handling
-    # eg, [^1] or [^a] for markdown, anchors for HTML
-    # superscript alphabetically characters for stdout?
-    # TODO: Handle section headings
-    rendered_verse = verse
-    for tag, output in tag_map.items():
-        rendered_verse = rendered_verse.replace(tag, output)
-    return rendered_verse
-
-
+# TODO: Rendering cross references/footnotes will require special handling
+# eg, [^1] or [^a] for markdown, anchors for HTML
+# superscript alphabetically characters for stdout?
+# TODO: Handle section headings
 def render_markup(markup_records, verse_numbers=False):
     verses = ''
     
