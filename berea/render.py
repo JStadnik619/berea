@@ -110,6 +110,7 @@ def render_markup(markup_records, verse_numbers=False):
     
     if verse_numbers:
         verse_number = 0
+        contiguous_verse = False
         for record in markup_records:
             verse_number_str = ''
             if record['verse'] > verse_number:
@@ -118,15 +119,21 @@ def render_markup(markup_records, verse_numbers=False):
                 verse_number_str = str(verse_number) + ' '
             
             if record['marker'] in ['m', 'pmo', 'q1']:
-                verses += verse_number_str + record['text']
+                if not contiguous_verse:
+                    verses += verse_number_str + record['text']
+                    contiguous_verse = True
+                else:
+                    verses += ' ' + verse_number_str + record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + verse_number_str + record['text']
             elif record['marker'] == 'q2' and record['text']:
                 verses += '\n' + '  ' + verse_number_str + record['text']
             elif record['marker'] == 'b':
                 verses += '\n\n'
+                contiguous_verse = False
             else:
                 continue
+        verses = verses
     
     else: 
         for record in markup_records:
