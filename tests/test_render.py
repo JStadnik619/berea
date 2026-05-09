@@ -226,6 +226,25 @@ def test_render_markup(msg, markup_records, rendered_passage):
                 "cultivate and keep it."
             ),
         ),
+        (
+            "Line numbers of contiguous verses are not separated by spaces.",
+            [
+                {"book": "John", "chapter": 1, "verse": 1, "text": "In the beginning was the Word, and the Word was with God, and the Word was God.", "type": "para", "marker": "m"},
+                {"book": "John", "chapter": 1, "verse": 2, "text": "He was with God in the beginning.", "type": "para", "marker": "m"},
+                {"book": "John", "chapter": 1, "verse": 3, "text": "Through Him all things were made, and without Him nothing was made that has been made.", "type": "para", "marker": "m"},
+                {"book": "John", "chapter": 1, "verse": 4, "text": "In Him was life, and that life was the light of men.", "type": "para", "marker": "m"},
+                {"book": "John", "chapter": 1, "verse": 5, "text": "The Light shines in the darkness, and the darkness has not overcome", "type": "para", "marker": "m"},
+                {"book": "John", "chapter": 1, "verse": 5, "text": " it.", "type": "para", "marker": "m"},
+                {"book": "John", "chapter": 1, "verse": 5, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "1 In the beginning was the Word, and the Word was with God, and the Word was\n"
+                "God. 2 He was with God in the beginning. 3 Through Him all things were made, and\n"
+                "without Him nothing was made that has been made. 4 In Him was life, and that life\n"
+                "was the light of men. 5 The Light shines in the darkness, and the darkness has\n"
+                "not overcome it."
+            ),
+        ),
     ]
 )    
 def test_render_markup_verse_mumbers(msg, markup_records, rendered_passage):
