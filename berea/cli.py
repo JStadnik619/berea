@@ -98,6 +98,8 @@ def add_reference_parser(subparsers, downloaded_translations):
         action='store_true'
     )
     
+    # TODO: -w, --wall flag for wall of text
+    
     # TODO: Make the default format configurable
     reference_parser.add_argument(
         '-f', '--format',
@@ -209,7 +211,9 @@ def main():
             CLIConfig.set_default_translation(get_downloaded_translations()[0])
 
     elif args.command ==  'reference':
-        verse_records = []
+        markup_records = []
+        
+        # TODO: get markup records or verses depending on command & flags
         
         try:
             if not args.chapter:
@@ -220,13 +224,13 @@ def main():
                     args.chapter
                 )
             elif '-' in args.verse:
-                verse_records = bible.get_verses(
+                markup_records = bible.get_markup_for_verses(
                     args.book,
                     args.chapter,
                     args.verse
                 )
             else:
-                verse_records = bible.get_verse(
+                markup_records = bible.get_markup_for_verse(
                     args.book,
                     args.chapter,
                     args.verse
@@ -235,7 +239,7 @@ def main():
             output = render_reference_results(
                 bible,
                 args.format,
-                verse_records,
+                markup_records,
                 args.verse_numbers,
                 args.book,
                 args.chapter,
@@ -243,7 +247,7 @@ def main():
             )
         except BibleInputError as ex:
             output = str(ex)
-        
+    
     elif args.command ==  'search':
         verse_records = []
         try:

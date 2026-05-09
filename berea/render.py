@@ -103,7 +103,7 @@ def wrap_long_lines(verses):
 # TODO: Format could be txt, md, or HTML
 # TODO: Rendering cross references/footnotes will require special handling
 # eg, [^1] or [^a] for markdown, anchors for HTML
-# superscript alphabetically characters for stdout?
+# superscript alphabetical characters for stdout?
 # TODO: Handle section headings
 def render_markup(markup_records, verse_numbers=False):
     verses = ''
@@ -182,11 +182,9 @@ def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, v
         '\n______________________________________________________________________'
     )
     return output
-    
 
-# TODO: input markup_records instead of verses
-# TODO: Return paragraphs from Bible format
-def render_reference_results(bible_client, format, verse_records, verse_numbers=False, book=None, chapter=None, verse=None):
+
+def render_reference_results(bible_client, format, markup_records, verse_numbers=False, book=None, chapter=None, verse=None):
     """_summary_
 
     Args:
@@ -203,11 +201,12 @@ def render_reference_results(bible_client, format, verse_records, verse_numbers=
     """
     match format: 
         case 'txt':
+            # TODO: Toggle wall of text
             # return verses_to_wall_of_text(verse_records, verse_numbers)
-            return render_markup(verse_records,  verse_numbers)
+            return render_markup(markup_records,  verse_numbers)
 
         case 'md':
-            return create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers)
+            return create_markdown_excerpt(bible_client, markup_records, book, chapter, verse, verse_numbers)
 
 
  # TODO: Output txt, markdown table, csv format

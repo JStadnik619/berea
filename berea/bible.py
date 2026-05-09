@@ -229,7 +229,37 @@ class BibleClient:
     #     else:
     #         return verse_records
     
-    def get_verses(self, book, chapter, verse):
+    def get_markup_for_verse(self, book, chapter, verse):
+        """
+        Print a range of verses, eg. 5-7. 
+        """
+        cursor = self.get_bible_cursor()
+        book = self.get_book_from_abbreviation(book)
+        
+        params = {
+            'book': book,
+            'chapter': chapter,
+            'verse': verse,
+        }
+        
+        cursor.execute("""
+        SELECT verse, text, marker FROM markup
+        JOIN books ON markup.book_id = books.id
+        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        AND books.name = :book
+        AND chapter = :chapter
+        AND verse = :verse;
+        """, params)
+
+        markup_records = cursor.fetchall()
+        
+        if len(markup_records) == 0:
+            raise BibleInputError(f"Invalid verse: {book} {chapter}:{verse}.")
+        
+        else:
+            return markup_records
+
+    def get_markup_for_verses(self, book, chapter, verse):
         """
         Print a range of verses, eg. 5-7. 
         """
@@ -244,7 +274,6 @@ class BibleClient:
             'verse_end': verse_end,
         }
         
-        # BUG: Not returning poetry (q1, q2, eg Proverbs)
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
@@ -254,16 +283,16 @@ class BibleClient:
         AND verse BETWEEN :verse_start AND :verse_end;
         """, params)
 
-        verse_records = cursor.fetchall()
+        markup_records = cursor.fetchall()
         
-        if len(verse_records) == 0:
+        if len(markup_records) == 0:
             raise BibleInputError(
                 f"Invalid verses: {book} "
                 f"{chapter}:{verse_start}-{verse_end}."
             )
         
         else:
-            return verse_records
+            return markup_records
 
     def search_bible(self, phrase):
         cursor = self.get_bible_cursor()
