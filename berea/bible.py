@@ -229,6 +229,30 @@ class BibleClient:
     #     else:
     #         return verse_records
     
+    def get_markup_by_book():
+        pass
+    
+    def get_markup_by_chapter(self, book, chapter):
+        cursor = self.get_bible_cursor()
+        book = self.get_book_from_abbreviation(book)
+        params = {'book': book, 'chapter': chapter}
+        
+        cursor.execute("""
+        SELECT verse, text, marker FROM markup
+        JOIN books ON markup.book_id = books.id
+        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        AND books.name = :book
+        AND chapter = :chapter
+        """, params)
+
+        markup_records = cursor.fetchall()
+        
+        if len(markup_records) == 0:
+            raise BibleInputError(f"Invalid chapter: {book} {chapter}.")
+        
+        else:
+            return markup_records
+    
     def get_markup_for_verse(self, book, chapter, verse):
         """
         Print a range of verses, eg. 5-7. 

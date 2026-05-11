@@ -192,7 +192,9 @@ def main():
             CLIConfig.set_default_translation(args.translation)
         
         try:
-            output = bible.create_bible_db()
+            # TODO: Download from eBibleDatabases
+            # output = bible.create_bible_db()
+            pass
         except BibleInputError as ex:
             output = str(ex)
     
@@ -217,9 +219,9 @@ def main():
         
         try:
             if not args.chapter:
-                verse_records = bible.get_verses_by_book(args.book)
+                markup_records = bible.get_verses_by_book(args.book)
             elif not args.verse:
-                verse_records = bible.get_verses_by_chapter(
+                markup_records = bible.get_markup_by_chapter(
                     args.book,
                     args.chapter
                 )
