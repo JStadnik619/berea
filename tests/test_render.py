@@ -135,7 +135,20 @@ def test_list_multiline_verse(verse, verse_list):
                 "it was good."
             )
         ),
-        # TODO: Find example for Markup ending with ! ? : ; not separated by a space.
+        # TODO: Find examples for Markup ending with ? : ; not separated by a space.
+        (
+            "Verses ending with an exclamation point are not separated by a space.",
+            [
+                {"book": "Revelation", "chapter": 3, "verse": 15, "text": "I know your deeds; you are neither cold nor hot. How I wish you were one or the other!", "type": "para", "marker": "pmo"},
+                {"book": "Revelation", "chapter": 3, "verse": 16, "text": "So because you are lukewarm—neither hot nor cold—I am about to vomit you out of My mouth!", "type": "para", "marker": "pmo"},
+                {"book": "Revelation", "chapter": 3, "verse": 16, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "I know your deeds; you are neither cold nor hot. How I wish you were one or the\n"
+                "other! So because you are lukewarm—neither hot nor cold—I am about to vomit you\n"
+                "out of My mouth!"
+            )
+        ),
         (
             "Poetry within a paragraph is not rendered properly.",
             [
