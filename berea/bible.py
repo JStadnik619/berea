@@ -229,8 +229,21 @@ class BibleClient:
     #     else:
     #         return verse_records
     
-    def get_markup_by_book():
-        pass
+    def get_markup_by_book(self, book):
+        cursor = self.get_bible_cursor()
+        book = self.get_book_from_abbreviation(book)
+        params = {'book': book}
+        
+        cursor.execute("""
+        SELECT verse, text, marker FROM markup
+        JOIN books ON markup.book_id = books.id
+        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        AND books.name = :book;
+        """, params)
+
+        markup_records = cursor.fetchall()
+        
+        return markup_records
     
     def get_markup_by_chapter(self, book, chapter):
         cursor = self.get_bible_cursor()
@@ -242,7 +255,7 @@ class BibleClient:
         JOIN books ON markup.book_id = books.id
         WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
         AND books.name = :book
-        AND chapter = :chapter
+        AND chapter = :chapter;
         """, params)
 
         markup_records = cursor.fetchall()
@@ -253,7 +266,8 @@ class BibleClient:
         else:
             return markup_records
     
-    def get_markup_for_verse(self, book, chapter, verse):
+    # TODO: wall of text flag?
+    def get_markup_by_verse(self, book, chapter, verse):
         """
         Print a range of verses, eg. 5-7. 
         """
@@ -283,7 +297,8 @@ class BibleClient:
         else:
             return markup_records
 
-    def get_markup_for_verses(self, book, chapter, verse):
+    # TODO: wall of text flag?
+    def get_markup_by_verses(self, book, chapter, verse):
         """
         Print a range of verses, eg. 5-7. 
         """

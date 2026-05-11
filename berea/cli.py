@@ -216,23 +216,24 @@ def main():
         markup_records = []
         
         # TODO: get markup records or verses depending on command & flags
+        # (eg. wall of text)
         
         try:
             if not args.chapter:
-                markup_records = bible.get_verses_by_book(args.book)
+                markup_records = bible.get_markup_by_book(args.book)
             elif not args.verse:
                 markup_records = bible.get_markup_by_chapter(
                     args.book,
                     args.chapter
                 )
             elif '-' in args.verse:
-                markup_records = bible.get_markup_for_verses(
+                markup_records = bible.get_markup_by_verses(
                     args.book,
                     args.chapter,
                     args.verse
                 )
             else:
-                markup_records = bible.get_markup_for_verse(
+                markup_records = bible.get_markup_by_verse(
                     args.book,
                     args.chapter,
                     args.verse
