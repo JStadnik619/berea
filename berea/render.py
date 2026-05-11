@@ -121,8 +121,7 @@ def render_markup(markup_records, verse_numbers=False):
                 verse_number = record['verse']
                 # TODO: Use superscript char
                 verse_number_str = str(verse_number) + ' '
-            # TODO: Fix poetry q1 handling
-            if record['marker'] in ['m', 'pmo', 'q1']:
+            if record['marker'] in ['m', 'pmo']:
                 if not contiguous_verse:
                     verses += verse_number_str + record['text']
                     contiguous_verse = True
@@ -130,6 +129,8 @@ def render_markup(markup_records, verse_numbers=False):
                     verses += ' ' + verse_number_str + record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + verse_number_str + record['text']
+            elif record['marker'] == 'q1' and record['text']:
+                verses += '\n' + verse_number_str + record['text']
             elif record['marker'] == 'q2' and record['text']:
                 verses += '\n' + '  ' + verse_number_str + record['text']
             elif record['marker'] == 'b':

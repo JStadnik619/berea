@@ -279,6 +279,7 @@ def test_list_multiline_verse(verse, verse_list):
 def test_render_markup(msg, markup_records, rendered_passage):
     assert render_markup(markup_records) == rendered_passage, msg
 
+
 @pytest.mark.parametrize(
     "msg, markup_records, rendered_passage",
     [
@@ -342,6 +343,48 @@ def test_render_markup(msg, markup_records, rendered_passage):
                 "life was the light of men. 5 The Light shines in the darkness, and the darkness\n"
                 "has not overcome it."
             ),
+        ),
+        (
+            "Poetry of consecutive q1's and q2's (some empty) are not properly formatted.",
+            [
+                {"book": "Proverbs", "chapter": 1, "verse": 1, "text": "These are the proverbs of Solomon son of David,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 1, "text": "king of Israel,", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 2, "text": "for gaining wisdom and discipline,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 2, "text": "for comprehending words of insight,", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 3, "text": "and for receiving instruction in wise living", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 3, "text": "and in righteousness, justice, and equity.", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 4, "text": "To impart prudence to the simple", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 4, "text": "", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 4, "text": "and knowledge and discretion to the young,", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 5, "text": "let the wise listen and gain instruction,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 5, "text": "and the discerning acquire wise counsel", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "by understanding the proverbs and parables,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "the sayings and riddles of the wise.", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "", "type": "para", "marker": "b"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "The fear of the LORD is the beginning of knowledge,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "but fools", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": " despise wisdom and discipline.", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 7, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "1 These are the proverbs of Solomon son of David,\n"
+                "  king of Israel,\n"
+                "2 for gaining wisdom and discipline,\n"
+                "  for comprehending words of insight,\n"
+                "3 and for receiving instruction in wise living\n"
+                "  and in righteousness, justice, and equity.\n"
+                "4 To impart prudence to the simple\n"
+                "  and knowledge and discretion to the young,\n"
+                "5 let the wise listen and gain instruction,\n"
+                "  and the discerning acquire wise counsel\n"
+                "6 by understanding the proverbs and parables,\n"
+                "  the sayings and riddles of the wise.\n"
+                "\n"
+                "The fear of the LORD is the beginning of knowledge,\n"
+                # TODO: This poetry line gets split when parsed because it contains a footnote
+                "  but fools\n"
+                "   despise wisdom and discipline."
+            )
         ),
     ]
 )    
