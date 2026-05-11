@@ -135,7 +135,7 @@ def test_list_multiline_verse(verse, verse_list):
                 "it was good."
             )
         ),
-        # TODO: Find examples for Markup ending with ? : ; not separated by a space.
+        # TODO: Find examples for Markup ending with : ; not separated by a space.
         (
             "Verses ending with an exclamation point are not separated by a space.",
             [
@@ -147,6 +147,26 @@ def test_list_multiline_verse(verse, verse_list):
                 "I know your deeds; you are neither cold nor hot. How I wish you were one or the\n"
                 "other! So because you are lukewarm—neither hot nor cold—I am about to vomit you\n"
                 "out of My mouth!"
+            )
+        ),
+        (
+            "Verses ending with a question mark are not separated by a space.",
+            [
+                {"book": "James", "chapter": 4, "verse": 5, "text": "Or do you think the Scripture says without reason that the Spirit", "type": "para", "marker": "m"},
+                {"book": "James", "chapter": 4, "verse": 5, "text": " He caused to dwell in us yearns with envy?", "type": "para", "marker": "m"},
+                {"book": "James", "chapter": 4, "verse": 6, "text": "But He gives us more grace. This is why it says:", "type": "para", "marker": "m"},
+                {"book": "James", "chapter": 4, "verse": 6, "text": "", "type": "para", "marker": "b"},
+                {"book": "James", "chapter": 4, "verse": 6, "text": "“God opposes the proud,", "type": "para", "marker": "q1"},
+                {"book": "James", "chapter": 4, "verse": 6, "text": "but gives grace to the humble.”", "type": "para", "marker": "q2"},
+                {"book": "James", "chapter": 4, "verse": 6, "text": "", "type": "para", "marker": "q2"},
+                {"book": "James", "chapter": 4, "verse": 6, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "Or do you think the Scripture says without reason that the Spirit He caused to\n"
+                "dwell in us yearns with envy? But He gives us more grace. This is why it says:\n"
+                "\n"
+                "“God opposes the proud,\n"
+                "  but gives grace to the humble.”"
             )
         ),
         (
