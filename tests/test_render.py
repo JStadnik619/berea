@@ -135,7 +135,6 @@ def test_list_multiline_verse(verse, verse_list):
                 "it was good."
             )
         ),
-        # TODO: Find examples for Markup ending with : ; not separated by a space.
         (
             "Verses ending with an exclamation point are not separated by a space.",
             [
@@ -167,6 +166,32 @@ def test_list_multiline_verse(verse, verse_list):
                 "\n"
                 "“God opposes the proud,\n"
                 "  but gives grace to the humble.”"
+            )
+        ),
+        (
+            "Verses ending with a colon are not separated by a space.",
+            [
+                {"book": "1 John", "chapter": 2, "verse": 5, "text": "But if anyone keeps His word, the love of God has been truly perfected in him. By this we know that we are in Him:", "type": "para", "marker": "m"},
+                {"book": "1 John", "chapter": 2, "verse": 5, "text": "Whoever claims to abide in Him must walk as Jesus walked.", "type": "para", "marker": "m"},
+                {"book": "1 John", "chapter": 2, "verse": 6, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "But if anyone keeps His word, the love of God has been truly perfected in him.\n"
+                "By this we know that we are in Him: Whoever claims to abide in Him must walk as\n"
+                "Jesus walked."
+            )
+        ),
+        (
+            "Verses ending with a semicolon are not separated by a space.",
+            [
+                {"book": "Jude", "chapter": 1, "verse": 22, "text": "And indeed, have mercy on those who doubt;", "type": "para", "marker": "m"},
+                {"book": "Jude", "chapter": 1, "verse": 23, "text": "save others by snatching them from the fire; and to still others show mercy tempered with fear, hating even the clothing stained by the flesh.", "type": "para", "marker": "m"},
+                {"book": "Jude", "chapter": 1, "verse": 23, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "And indeed, have mercy on those who doubt; save others by snatching them from the\n"
+                "fire; and to still others show mercy tempered with fear, hating even the\n"
+                "clothing stained by the flesh."
             )
         ),
         (
