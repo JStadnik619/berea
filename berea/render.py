@@ -117,7 +117,7 @@ def render_markup(markup_records, verse_numbers=False):
                 verse_number = record['verse']
                 # TODO: Use superscript char
                 verse_number_str = str(verse_number) + ' '
-            
+            # TODO: Fix poetry q1 handling
             if record['marker'] in ['m', 'pmo', 'q1']:
                 if not contiguous_verse:
                     verses += verse_number_str + record['text']
@@ -137,12 +137,15 @@ def render_markup(markup_records, verse_numbers=False):
     
     else: 
         for record in markup_records:
-            if record['marker'] in ['m', 'pmo', 'q1']:
+            if record['marker'] in ['m', 'pmo']:
                 verses += record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + record['text']
+            elif record['marker'] == 'q1' and record['text']:
+                verses += '\n' + record['text']
             elif record['marker'] == 'q2' and record['text']:
                 verses += '\n' + '  ' + record['text']
+            # TODO: Handle higher levels of poetry indents (not used in BSB)
             elif record['marker'] == 'b':
                 verses += '\n\n'
             else:
@@ -150,8 +153,9 @@ def render_markup(markup_records, verse_numbers=False):
     
     # Add trailing newline in case last verse doesn't have one
     wrapped_verses = wrap_long_lines(verses + '\n')
-    
-    return wrapped_verses.rstrip()
+    # Remove consecutive blank lines
+    wrapped_verses = re.sub(r'\n\s*\n+', '\n\n', wrapped_verses)
+    return wrapped_verses.strip()
 
 
 def create_link_label(translation, book, chapter=None, verse=None):

@@ -135,8 +135,9 @@ def test_list_multiline_verse(verse, verse_list):
                 "it was good."
             )
         ),
+        # TODO: Find example for Markup ending with ! ? : ; not separated by a space.
         (
-            "Poetry is not rendered properly.",
+            "Poetry within a paragraph is not rendered properly.",
             [
                 {"book": "GEN", "chapter": 1, "verse": 26, "text": "Then God said, “Let Us make man in Our image, after Our likeness, to rule over the fish of the sea and the birds of the air, over the livestock, and over all the earth itself", "type": "para", "marker": "pmo"},
                 {"book": "GEN", "chapter": 1, "verse": 26, "text": " and every creature that crawls upon it.”", "type": "para", "marker": "pmo"},
@@ -161,6 +162,70 @@ def test_list_multiline_verse(verse, verse_list):
                 "God blessed them and said to them, “Be fruitful and multiply, and fill the earth\n"
                 "and subdue it; rule over the fish of the sea and the birds of the air and every\n"
                 "creature that crawls upon the earth.”"
+            )
+        ),
+        (
+            "Poetry of consecutive q1's and q2's (some empty) are not properly formatted.",
+            [
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "Praise the LORD, all you nations!", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "Extol Him, all you peoples!", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "For great is His loving devotion toward us,", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "and the faithfulness of the LORD endures forever.", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 117, "verse": 2, "text": "", "type": "para", "marker": "b"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "Hallelujah!", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "", "type": "para", "marker": "q1"},
+            ],
+            (
+                "Praise the LORD, all you nations!\n"
+                "  Extol Him, all you peoples!\n"
+                "For great is His loving devotion toward us,\n"
+                "  and the faithfulness of the LORD endures forever.\n"
+                "\n"
+                "Hallelujah!"
+            )
+        ),
+        (
+            # TODO: Poetry line containing footnote is not concatenated.
+            "Empty poetry lines are not omitted.",
+            [
+                {"book": "Proverbs", "chapter": 1, "verse": 1, "text": "These are the proverbs of Solomon son of David,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 1, "text": "king of Israel,", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 2, "text": "for gaining wisdom and discipline,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 2, "text": "for comprehending words of insight,", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 3, "text": "and for receiving instruction in wise living", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 3, "text": "and in righteousness, justice, and equity.", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 4, "text": "To impart prudence to the simple", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 4, "text": "", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 4, "text": "and knowledge and discretion to the young,", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 5, "text": "let the wise listen and gain instruction,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 5, "text": "and the discerning acquire wise counsel", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "by understanding the proverbs and parables,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "the sayings and riddles of the wise.", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "", "type": "para", "marker": "b"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "The fear of the LORD is the beginning of knowledge,", "type": "para", "marker": "q1"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": "but fools", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 6, "text": " despise wisdom and discipline.", "type": "para", "marker": "q2"},
+                {"book": "Proverbs", "chapter": 1, "verse": 7, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "These are the proverbs of Solomon son of David,\n"
+                "  king of Israel,\n"
+                "for gaining wisdom and discipline,\n"
+                "  for comprehending words of insight,\n"
+                "and for receiving instruction in wise living\n"
+                "  and in righteousness, justice, and equity.\n"
+                "To impart prudence to the simple\n"
+                "  and knowledge and discretion to the young,\n"
+                "let the wise listen and gain instruction,\n"
+                "  and the discerning acquire wise counsel\n"
+                "by understanding the proverbs and parables,\n"
+                "  the sayings and riddles of the wise.\n"
+                "\n"
+                "The fear of the LORD is the beginning of knowledge,\n"
+                # TODO: This poetry line gets split when parsed because it contains a footnote
+                "  but fools\n"
+                "   despise wisdom and discipline."
             )
         ),
         (
