@@ -12,20 +12,20 @@ from berea.utils import get_downloaded_translations
             "Printing a single verse failed",
             ['john', '3', '16'],
             (
-                "For God so loved the world that He gave His one and only Son, that everyone\n"
-                "who believes in Him shall not perish but have eternal life. "
+                "For God so loved the world that He gave His one and only Son, that everyone who\n"
+                "believes in Him shall not perish but have eternal life."
             )
         ),
         (
             "Printing multiple verses failed",
             ['john', '3', '16-18'],
             (
-                "For God so loved the world that He gave His one and only Son, that everyone\n"
-                "who believes in Him shall not perish but have eternal life. For God did not\n"
-                "send His Son into the world to condemn the world, but to save the world\n"
-                "through Him. Whoever believes in Him is not condemned, but whoever does not\n"
-                "believe has already been condemned, because he has not believed in the name of\n"
-                "God’s one and only Son. "
+                "For God so loved the world that He gave His one and only Son, that everyone who\n"
+                "believes in Him shall not perish but have eternal life. For God did not send His\n"
+                "Son into the world to condemn the world, but to save the world through\n"
+                "Him. Whoever believes in Him is not condemned, but whoever does not believe has\n"
+                "already been condemned, because he has not believed in the name of God’s one and\n"
+                "only Son."
             )
         ),
         (
@@ -34,28 +34,34 @@ from berea.utils import get_downloaded_translations
             (
                 "16 For God so loved the world that He gave His one and only Son, that everyone\n"
                 "who believes in Him shall not perish but have eternal life. 17 For God did not\n"
-                "send His Son into the world to condemn the world, but to save the world\n"
-                "through Him. 18 Whoever believes in Him is not condemned, but whoever does not\n"
-                "believe has already been condemned, because he has not believed in the name of\n"
-                "God’s one and only Son. "
+                "send His Son into the world to condemn the world, but to save the world through\n"
+                "Him. 18 Whoever believes in Him is not condemned, but whoever does not believe\n"
+                "has already been condemned, because he has not believed in the name of God’s one\n"
+                "and only Son."
             )
         ),
         (
             "Printing a chapter failed",
             ['psa', '117'],
             (
-                "Praise the LORD, all you nations! Extol Him, all you peoples! For great is His\n"
-                "loving devotion toward us, and the faithfulness of the LORD endures forever.  \n"
-                "Hallelujah! "
+                "Praise the LORD, all you nations!\n"
+                "  Extol Him, all you peoples!\n"
+                "For great is His loving devotion toward us,\n"
+                "  and the faithfulness of the LORD endures forever.\n"
+                "\n"
+                "Hallelujah!"
             )
         ),
         (
             "Printing a chapter with verse numbers failed",
             ['psa', '117', '-n'],
             (
-                "1 Praise the LORD, all you nations! Extol Him, all you peoples! 2 For great is\n"
-                "His loving devotion toward us, and the faithfulness of the LORD endures\n"
-                "forever.   Hallelujah! "
+                "1 Praise the LORD, all you nations!\n"
+                "  Extol Him, all you peoples!\n"
+                "2 For great is His loving devotion toward us,\n"
+                "  and the faithfulness of the LORD endures forever.\n"
+                "\n"
+                "Hallelujah!"
             )
         ),
         (
@@ -133,7 +139,6 @@ from berea.utils import get_downloaded_translations
                 "itself. We also testify for him, and you know that our testimony is true.\n"
                 "\n"
                 "13 I have many things to write to you, but I would prefer not to do so with pen\n"
-                # BUG: Why is a space appended to the following line?
                 "and ink. 14 Instead, I hope to see you soon and speak with you face to face.\n"
                 "\n"
                 "Peace to you.\n"
@@ -240,6 +245,9 @@ def test_reference(monkeypatch, capsys, msg, args, output):
     
     captured = capsys.readouterr()
     assert captured.out == output + '\n', msg
+
+
+# TODO: All books print without raising error (w/ and w/o verse numbers, markdown)
 
 
 def test_delete(monkeypatch, capsys):
