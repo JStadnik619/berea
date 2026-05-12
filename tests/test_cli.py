@@ -160,44 +160,41 @@ from berea.utils import get_downloaded_translations
             "Creating a Markdown excerpt failed",
             ['john', '3', '16', '-f', 'md'],
             (
-                "###\n\n"
-                "______________________________________________________________________\n\n"
-                "For God so loved the world that He gave His one and only Son, that everyone\n"
-                "who believes in Him shall not perish but have eternal life. \n"
-                "([John 3:16 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16&options=NVHUG))\n\n"
-                "______________________________________________________________________"
+                "[John 3:16 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16&options=NVHUG):\n"
+                "<pre style=\"font-family: Arial, sans-serif; white-space: pre-wrap;\">\n"
+                "For God so loved the world that He gave His one and only Son, that everyone who\n"
+                "believes in Him shall not perish but have eternal life.\n"
+                "</pre>"
             )
         ),
         (
             "Creating a Markdown excerpt for multiple verses failed",
             ['john', '3', '16-18', '-f', 'md'],
             (
-                "###\n\n"
-                "______________________________________________________________________\n\n"
-                "For God so loved the world that He gave His one and only Son, that everyone\n"
-                "who believes in Him shall not perish but have eternal life. For God did not\n"
-                "send His Son into the world to condemn the world, but to save the world\n"
-                "through Him. Whoever believes in Him is not condemned, but whoever does not\n"
-                "believe has already been condemned, because he has not believed in the name of\n"
-                "God’s one and only Son. \n"
-                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG))\n\n"
-                "______________________________________________________________________"
+                "[John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG):\n"
+                "<pre style=\"font-family: Arial, sans-serif; white-space: pre-wrap;\">\n"
+                "For God so loved the world that He gave His one and only Son, that everyone who\n"
+                "believes in Him shall not perish but have eternal life. For God did not send His\n"
+                "Son into the world to condemn the world, but to save the world through\n"
+                "Him. Whoever believes in Him is not condemned, but whoever does not believe has\n"
+                "already been condemned, because he has not believed in the name of God’s one and\n"
+                "only Son.\n"
+                "</pre>"
             )
         ),
         (
             "Creating a Markdown excerpt with verse numbers failed",
             ['john', '3', '16-18', '-f', 'md', '-n'],
             (
-                "###\n\n"
-                "______________________________________________________________________\n\n"
+                "[John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG):\n"
+                "<pre style=\"font-family: Arial, sans-serif; white-space: pre-wrap;\">\n"
                 "<sup>16</sup> For God so loved the world that He gave His one and only Son,\n"
                 "that everyone who believes in Him shall not perish but have eternal life.\n"
-                "<sup>17</sup> For God did not send His Son into the world to condemn the\n"
-                "world, but to save the world through Him. <sup>18</sup> Whoever believes in\n"
-                "Him is not condemned, but whoever does not believe has already been condemned,\n"
-                "because he has not believed in the name of God’s one and only Son. \n"
-                "([John 3:16-18 BSB](https://www.stepbible.org/?q=version=BSB@reference=John.3.16-John.3.18&options=NVHUG))\n\n"
-                "______________________________________________________________________"
+                "<sup>17</sup> For God did not send His Son into the world to condemn the world,\n"
+                "but to save the world through Him. <sup>18</sup> Whoever believes in Him is not\n"
+                "condemned, but whoever does not believe has already been condemned, because he\n"
+                "has not believed in the name of God’s one and only Son.\n"
+                "</pre>"
             )
         ),
         # The BSB contains empty verses for cross-references to verses present
