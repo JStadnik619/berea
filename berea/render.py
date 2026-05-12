@@ -117,10 +117,15 @@ def render_markup(markup_records, verse_numbers=False):
         contiguous_verse = False
         for record in markup_records:
             verse_number_str = ''
+            
+            if not isinstance(record['verse'], int):
+                continue
+            
             if record['verse'] > verse_number:
                 verse_number = record['verse']
                 # TODO: Use superscript char
                 verse_number_str = str(verse_number) + ' '
+            
             if record['marker'] in ['m', 'pmo']:
                 if not contiguous_verse:
                     verses += verse_number_str + record['text']
@@ -180,6 +185,17 @@ def create_link_label(translation, book, chapter=None, verse=None):
 
 
 # TODO: Print paragraphs from Bible format
+# TODO: Rendered markdown won't preserve formatting
+"""
+To properly render poetry would require something like this:
+
+Praise the LORD, all you nations!
+<br>&nbsp;&nbsp;Extol Him, all you peoples!
+<br>For great is His loving devotion toward us,
+<br>&nbsp;&nbsp;and the faithfulness of the LORD endures forever.
+
+Hallelujah!
+"""
 def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers=False):
     """Generate Markdown excerpt for the verses.
 
@@ -187,7 +203,7 @@ def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, v
         verse_records (_type_): _description_
         params (_type_): _description_
     """
-    verse_text = verses_to_wall_of_text(verse_records, verse_numbers, 'md')
+    verse_text = render_markup(verse_records, verse_numbers)
     book = bible_client.get_book_from_abbreviation(book)
     output = (
         '###\n'

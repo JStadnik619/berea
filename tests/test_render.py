@@ -411,6 +411,34 @@ def test_render_markup(msg, markup_records, rendered_passage):
                 "   despise wisdom and discipline."
             )
         ),
+        (
+            "Chapter break without a verse number is not skipped.",
+            [
+                {"book": "Psalms", "chapter": 131, "verse": '', "text": "", "type": "para", "marker": "b"},
+                {"book": "Psalms", "chapter": 131, "verse": 1, "text": "My heart is not proud, O LORD,", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 131, "verse": 1, "text": "my eyes are not haughty.", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 131, "verse": 1, "text": "I do not aspire to great things", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 131, "verse": 1, "text": "or matters too lofty for me.", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 131, "verse": 2, "text": "Surely I have stilled and quieted my soul;", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 131, "verse": 2, "text": "like a weaned child with his mother,", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 131, "verse": 2, "text": "like a weaned child is my soul within me.", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 131, "verse": 2, "text": "", "type": "para", "marker": "b"},
+                {"book": "Psalms", "chapter": 131, "verse": 3, "text": "O Israel, put your hope in the LORD,", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 131, "verse": 3, "text": "both now and forevermore.", "type": "para", "marker": "q2"},
+            ],
+            (
+                "1 My heart is not proud, O LORD,\n"
+                "  my eyes are not haughty.\n"
+                "I do not aspire to great things\n"
+                "  or matters too lofty for me.\n"
+                "2 Surely I have stilled and quieted my soul;\n"
+                "  like a weaned child with his mother,\n"
+                "  like a weaned child is my soul within me.\n"
+                "\n"
+                "3 O Israel, put your hope in the LORD,\n"
+                "  both now and forevermore."
+            )
+        ),
     ]
 )    
 def test_render_markup_verse_mumbers(msg, markup_records, rendered_passage):
