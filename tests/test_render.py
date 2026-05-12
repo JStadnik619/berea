@@ -439,6 +439,28 @@ def test_render_markup(msg, markup_records, rendered_passage):
                 "  both now and forevermore."
             )
         ),
+        (
+            "Empty markup record is not skipped.",
+            [
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "Instead, I hope to see you soon and speak with you face to face.", "type": "para", "marker": "m"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "", "type": "para", "marker": "m"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "", "type": "para", "marker": "b"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "Peace to you.", "type": "para", "marker": "m"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "", "type": "para", "marker": "b"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "The friends here send you greetings.", "type": "para", "marker": "m"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "", "type": "para", "marker": "b"},
+                {"book": "3 John", "chapter": 1, "verse": 14, "text": "Greet each of our friends there by name.", "type": "para", "marker": "m"},
+            ],
+            (
+                "14 Instead, I hope to see you soon and speak with you face to face.\n"
+                "\n"
+                "Peace to you.\n"
+                "\n"
+                "The friends here send you greetings.\n"
+                "\n"
+                "Greet each of our friends there by name."
+            ),
+        )
     ]
 )    
 def test_render_markup_verse_mumbers(msg, markup_records, rendered_passage):

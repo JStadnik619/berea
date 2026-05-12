@@ -126,7 +126,7 @@ def render_markup(markup_records, verse_numbers=False):
                 # TODO: Use superscript char
                 verse_number_str = str(verse_number) + ' '
             
-            if record['marker'] in ['m', 'pmo']:
+            if record['marker'] in ['m', 'pmo'] and record['text']:
                 if not contiguous_verse:
                     verses += verse_number_str + record['text']
                     contiguous_verse = True
