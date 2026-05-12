@@ -41,8 +41,11 @@ def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'):
     return wrapped_verses
 
 
-def get_indent(string):
-    return (len(string) - len(string.lstrip())) * ' '
+def get_indent(string, format='txt'):
+    if format == 'txt':
+        return (len(string) - len(string.lstrip())) * ' '
+    elif format == 'md':
+        return re.match(r'^(?:&nbsp;)*', string).group()
 
 
 # This assumes that the last verse has a trailing newline
@@ -74,6 +77,65 @@ def wrap_long_lines(verses):
                     line = verses[current_pos:last_space_pos]
                     # Remove extra whitespace in the middle of the line
                     line = re.sub(r'(?<=\S)\s+(?=\S)', ' ', line)
+                    # Add a space after the following characters are followed
+                    # by an alphabet character: . , ! ? ; :
+                    line = re.sub(
+                        r'([.,!?;:]+[\'"’”)\]]?)(?![\s\d\W]|$)',
+                        r'\1 ',
+                        line
+                    )
+                    if not line.startswith(indent):
+                        wrapped_verses += indent
+                    wrapped_verses += line + "\n"
+                    # Shift the current and last space positions forward
+                    current_pos = last_space_pos + 1
+                    last_space_pos = next_pos
+                    continue
+                
+                # Add the last piece of this line
+                else:
+                    wrapped_verses += indent + verses[current_pos:next_pos + 1]
+                    break
+        
+        else:
+            wrapped_verses += verses[current_pos:next_pos + 1]
+
+        # Proceed to the next line
+        current_pos = next_pos + 1
+        continue
+
+    return wrapped_verses
+
+
+# This assumes that the last verse has a trailing newline
+def wrap_markdown(verses):
+    """Replace the last space before the 80th character 
+    in a line longer than 80 characters with a newline.
+    """
+    wrapped_verses = ''
+    current_pos = 0
+    next_pos = 0
+
+    while next_pos < len(verses):
+        # Line length is the distance to the next newline character
+        next_pos = verses.find('\n', current_pos)
+        if next_pos == -1:
+            break
+        line_length = next_pos - current_pos
+        
+        if line_length > 80:
+            indent = get_indent(verses[current_pos:next_pos], 'md')
+            # Replace the last space before the 80th character with a newline
+            last_space_pos = next_pos
+            # Add as many newlines between current and next positions as needed
+            while current_pos <= next_pos:
+                while (last_space_pos - current_pos) > 80:
+                    last_space_pos = verses.rfind(" ", current_pos, last_space_pos)
+                
+                if last_space_pos != -1:
+                    line = verses[current_pos:last_space_pos]
+                    # Remove indents in the middle of the line
+                    # line = re.sub(r'(?<=\S)&nbsp;+(?=\S)', '', line)
                     # Add a space after the following characters are followed
                     # by an alphabet character: . , ! ? ; :
                     line = re.sub(
@@ -168,6 +230,32 @@ def render_markup(markup_records, verse_numbers=False):
     return wrapped_verses.strip()
 
 
+# TODO: Only blank lines are worth converting to Markdown (reactive format)
+def markup_to_markdown(markup_records, verse_numbers=False):
+    verses = ''
+    indent = '&nbsp;' * 2
+    for record in markup_records:
+        if record['marker'] in ['m', 'pmo']:
+            verses += record['text']
+        elif record['marker'] == 'li1':
+            verses += indent + record['text']
+        elif record['marker'] == 'q1' and record['text']:
+            verses += '\n<br>' + record['text']
+        elif record['marker'] == 'q2' and record['text']:
+            verses += '\n<br>' + indent + record['text']
+        # TODO: Handle higher levels of poetry indents (not used in BSB)
+        elif record['marker'] == 'b':
+            verses += '\n\n'
+        else:
+            continue
+    
+    # Add trailing newline in case last verse doesn't have one
+    wrapped_verses = wrap_markdown(verses + '\n')
+    # Remove consecutive blank lines
+    wrapped_verses = re.sub(r'\n\s*\n+', '\n\n', wrapped_verses)
+    return wrapped_verses.strip()
+
+
 def create_link_label(translation, book, chapter=None, verse=None):
     """Creates a link label, eg. `Isaiah 14:12-20`
     """
@@ -203,7 +291,7 @@ def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, v
         verse_records (_type_): _description_
         params (_type_): _description_
     """
-    verse_text = render_markup(verse_records, verse_numbers)
+    verse_text = markup_to_markdown(verse_records, verse_numbers)
     book = bible_client.get_book_from_abbreviation(book)
     output = (
         '###\n'

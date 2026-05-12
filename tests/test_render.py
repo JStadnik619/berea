@@ -2,7 +2,8 @@ import pytest
 
 from berea.render import (
     list_multiline_verse,
-    render_markup
+    render_markup,
+    markup_to_markdown,
 )
 
 
@@ -465,3 +466,33 @@ def test_render_markup(msg, markup_records, rendered_passage):
 )    
 def test_render_markup_verse_mumbers(msg, markup_records, rendered_passage):
     assert render_markup(markup_records, verse_numbers=True) == rendered_passage, msg
+
+
+@pytest.mark.parametrize(
+    "msg, markup_records, rendered_passage",
+    [
+        (
+            "Poetry formatting is not properly converted.",
+            [
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "Praise the LORD, all you nations!", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "Extol Him, all you peoples!", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "For great is His loving devotion toward us,", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "and the faithfulness of the LORD endures forever.", "type": "para", "marker": "q2"},
+                {"book": "Psalms", "chapter": 117, "verse": 2, "text": "", "type": "para", "marker": "b"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "Hallelujah!", "type": "para", "marker": "q1"},
+                {"book": "Psalms", "chapter": 117, "verse": 1, "text": "", "type": "para", "marker": "q1"},
+            ],
+            (
+                "<br>Praise the LORD, all you nations!\n"
+                "<br>&nbsp;&nbsp;Extol Him, all you peoples!\n"
+                "<br>For great is His loving devotion toward us,\n"
+                "<br>&nbsp;&nbsp;and the faithfulness of the LORD endures forever.\n"
+                "\n"
+                "<br>Hallelujah!"
+            ),
+        ),
+    ]
+)
+def test_markup_to_markdown(msg, markup_records, rendered_passage):
+    assert markup_to_markdown(markup_records, verse_numbers=True) == rendered_passage, msg
