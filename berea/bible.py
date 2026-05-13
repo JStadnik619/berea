@@ -237,7 +237,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
         AND books.name = :book;
         """, params)
 
@@ -253,7 +253,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
         AND books.name = :book
         AND chapter = :chapter;
         """, params)
@@ -283,7 +283,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
         AND books.name = :book
         AND chapter = :chapter
         AND verse = :verse;
@@ -316,7 +316,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
         AND books.name = :book
         AND chapter = :chapter
         AND verse BETWEEN :verse_start AND :verse_end;

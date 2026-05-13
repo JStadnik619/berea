@@ -153,7 +153,7 @@ from berea.utils import get_downloaded_translations
             ['john', '3', '16', '-t', 'KJV'],
             (
                 "For God so loved the world, that he gave his only begotten Son, that whosoever\n"
-                "believeth in him should not perish, but have everlasting life. "
+                "believeth in him should not perish, but have everlasting life."
             )    
         ),
         (

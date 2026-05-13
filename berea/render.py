@@ -110,6 +110,7 @@ def wrap_long_lines(verses):
 # superscript alphabetical characters for stdout?
 # TODO: Handle section headings
 def render_markup(markup_records, verse_numbers=False, format='txt'):
+    PARAGRAPH_MARKERS = ['m', 'pmo', 'sc', 'p', 'add']
     verses = ''
     
     if verse_numbers:
@@ -130,7 +131,7 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
                     case 'md':
                         verse_number_str = f"<sup>{verse_number}</sup>" + ' '
             
-            if record['marker'] in ['m', 'pmo'] and record['text']:
+            if record['marker'] in PARAGRAPH_MARKERS and record['text']:
                 if not contiguous_verse:
                     verses += verse_number_str + record['text']
                     contiguous_verse = True
@@ -151,7 +152,7 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
     
     else: 
         for record in markup_records:
-            if record['marker'] in ['m', 'pmo']:
+            if record['marker'] in PARAGRAPH_MARKERS:
                 verses += record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + record['text']
