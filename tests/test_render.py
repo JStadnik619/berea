@@ -300,7 +300,28 @@ def test_list_multiline_verse(verse, verse_list):
                 "And there was evening, and there was morning—the sixth day."
             )
         ),
-        # TODO: gen 1 4 KJV (sc, add, p)
+        # KJV Cambridge Paragraph Version
+        (
+            "Small-cap text and translator's additions aren't rendered properly.",
+            [
+                {"book": "Genesis", "chapter": 1, "verse": 1, "text": "In", "type": "char", "marker": "sc"},
+                {"book": "Genesis", "chapter": 1, "verse": 1, "text": " the beginning God created the heaven and the earth.", "type": "para", "marker": "m"},
+                {"book": "Genesis", "chapter": 1, "verse": 2, "text": "And the earth was without form, and void; and darkness", "type": "para", "marker": "m"},
+                {"book": "Genesis", "chapter": 1, "verse": 2, "text": "was", "type": "char", "marker": "add"},
+                {"book": "Genesis", "chapter": 1, "verse": 2, "text": " upon the face of the deep. And the Spirit of God moved upon the face of the waters.", "type": "para", "marker": "m"},
+                {"book": "Genesis", "chapter": 1, "verse": 3, "text": "And God said, Let there be light: and there was light.", "type": "para", "marker": "p"},
+                {"book": "Genesis", "chapter": 1, "verse": 4, "text": "And God saw the light, that", "type": "para", "marker": "p"},
+                {"book": "Genesis", "chapter": 1, "verse": 4, "text": "it was", "type": "char", "marker": "add"},
+                {"book": "Genesis", "chapter": 1, "verse": 4, "text": " good: and God divided the light from the darkness.", "type": "para", "marker": "p"},
+            ],
+            (
+                "In the beginning God created the heaven and the earth. And the earth was without\n"
+                "form, and void; and darkness was upon the face of the deep. And the Spirit of\n"
+                "God moved upon the face of the waters. And God said, Let there be light: and\n"
+                "there was light. And God saw the light, that it was good: and God divided the\n"
+                "light from the darkness."
+            )
+        )
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):
