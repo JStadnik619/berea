@@ -286,6 +286,7 @@ def test_list_multiline_verse(verse, verse_list):
                 "   despise wisdom and discipline."
             )
         ),
+        # BUG: The last q2 of matt 1 23 is split by a footnote
         (
             "Failed to render all markup records of a verse without a trailing newline.",
             [
