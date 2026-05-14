@@ -19,7 +19,7 @@ def download_translations():
     for translation in ['BSB', 'KJV']:
         if not translation_exists(translation):
             bible = BibleClient(translation)
-            bible.create_bible_db()
+            bible.download_bible()
     
     default_translation = CLIConfig.get_default_translation()
     

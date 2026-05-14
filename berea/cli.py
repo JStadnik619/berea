@@ -192,8 +192,7 @@ def main():
             CLIConfig.set_default_translation(args.translation)
         
         try:
-            # TODO: Download from eBibleDatabases
-            # output = bible.create_bible_db()
+            output = bible.download_bible()
             pass
         except BibleInputError as ex:
             output = str(ex)
