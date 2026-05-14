@@ -133,103 +133,6 @@ class BibleClient:
             link = f"https://www.stepbible.org/?q=version={self.translation}@reference={book_abbrev}&options=NVHUG"
 
         return link
-
-    def get_verses_by_book(self, book):
-        cursor = self.get_bible_cursor()
-        book = self.get_book_from_abbreviation(book)
-        params = {'book': book}
-    
-        cursor.execute("""
-        SELECT verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE books.name = :book
-        """, params)
-
-        verse_records = cursor.fetchall()
-        
-        return verse_records
-
-    # TODO: Validate chapter?
-    def get_verses_by_chapter(self, book, chapter):
-        cursor = self.get_bible_cursor()
-        book = self.get_book_from_abbreviation(book)
-        params = {'book': book, 'chapter': chapter}
-        
-        cursor.execute("""
-        SELECT verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE books.name = :book
-        AND chapter = :chapter
-        """, params)
-
-        verse_records = cursor.fetchall()
-        
-        if len(verse_records) == 0:
-            raise BibleInputError(f"Invalid chapter: {book} {chapter}.")
-        
-        else:
-            return verse_records
-
-    # TODO: Validate chapter?
-    def get_verse(self, book, chapter, verse):
-        cursor = self.get_bible_cursor()
-        book = self.get_book_from_abbreviation(book)
-        params = {
-            'book': book,
-            'chapter': chapter,
-            'verse': verse
-        }
-        
-        cursor.execute("""
-        SELECT verse, text FROM verses
-        JOIN books ON verses.book_id = books.id
-        WHERE books.name = :book
-        AND chapter = :chapter
-        AND verse = :verse
-        """, params)
-
-        verse_records = cursor.fetchall()
-        
-        if len(verse_records) == 0:
-            raise BibleInputError(f"Invalid verse: {book} {chapter}:{verse}.")
-        
-        else:
-            return verse_records
-
-    # TODO: Validate chapter?
-    # def get_verses(self, book, chapter, verse):
-    #     """
-    #     Print a range of verses, eg. 5-7. 
-    #     """
-    #     cursor = self.get_bible_cursor()
-    #     book = self.get_book_from_abbreviation(book)
-    #     verse_start, verse_end = parse_verses_str(verse)
-        
-    #     params = {
-    #         'book': book,
-    #         'chapter': chapter,
-    #         'verse_start': verse_start,
-    #         'verse_end': verse_end,
-    #     }
-        
-    #     cursor.execute("""
-    #     SELECT verse, text FROM verses
-    #     JOIN books ON verses.book_id = books.id
-    #     WHERE books.name = :book
-    #     AND chapter = :chapter
-    #     AND verse BETWEEN :verse_start AND :verse_end
-    #     """, params)
-
-    #     verse_records = cursor.fetchall()
-        
-    #     if len(verse_records) == 0:
-    #         raise BibleInputError(
-    #             f"Invalid verses: {book} "
-    #             f"{chapter}:{verse_start}-{verse_end}."
-    #         )
-        
-    #     else:
-    #         return verse_records
     
     def get_markup_by_book(self, book):
         cursor = self.get_bible_cursor()
@@ -239,7 +142,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'p', 'pc', 'sc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
         AND books.name = :book;
         """, params)
 
@@ -255,7 +158,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'p', 'pc', 'sc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
         AND books.name = :book
         AND chapter = :chapter;
         """, params)
@@ -285,7 +188,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'p', 'pc', 'sc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
         AND books.name = :book
         AND chapter = :chapter
         AND verse = :verse;
@@ -318,7 +221,7 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'add', 'li1', 'q1', 'q2')
+        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'pc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
         AND books.name = :book
         AND chapter = :chapter
         AND verse BETWEEN :verse_start AND :verse_end;
