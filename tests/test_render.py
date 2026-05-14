@@ -88,6 +88,32 @@ def test_list_multiline_verse(verse, verse_list):
             ),
         ),
         (
+            "Indented list items are not properly rendered properly.",
+            [
+                {"book": "Numbers", "chapter": 1, "verse": 9, "text": "from Zebulun, Eliab son of Helon;", "type": "para", "marker": "li1"},
+                {"book": "Numbers", "chapter": 1, "verse": 9, "text": "", "type": "para", "marker": "b"},
+                {"book": "Numbers", "chapter": 1, "verse": 10, "text": "from the sons of Joseph:", "type": "para", "marker": "li1"},
+                {"book": "Numbers", "chapter": 1, "verse": 10, "text": "", "type": "para", "marker": "b"},
+                {"book": "Numbers", "chapter": 1, "verse": 10, "text": "from Ephraim, Elishama son of Ammihud,", "type": "para", "marker": "li2"},
+                {"book": "Numbers", "chapter": 1, "verse": 10, "text": "", "type": "para", "marker": "b"},
+                {"book": "Numbers", "chapter": 1, "verse": 10, "text": "and from Manasseh, Gamaliel son of Pedahzur;", "type": "para", "marker": "li2"},
+                {"book": "Numbers", "chapter": 1, "verse": 10, "text": "", "type": "para", "marker": "b"},
+                {"book": "Numbers", "chapter": 1, "verse": 11, "text": "from Benjamin, Abidan son of Gideoni;", "type": "para", "marker": "li1"},
+                {"book": "Numbers", "chapter": 1, "verse": 11, "text": "", "type": "para", "marker": "b"},
+            ],
+            (
+                "from Zebulun, Eliab son of Helon;\n"
+                "\n"
+                "  from the sons of Joseph:\n"
+                "\n"
+                "    from Ephraim, Elishama son of Ammihud,\n"
+                "\n"
+                "    and from Manasseh, Gamaliel son of Pedahzur;\n"
+                "\n"
+                "  from Benjamin, Abidan son of Gideoni;"
+            ),
+        ),
+        (
             "Sentences within the same paragraph are not separated by a space.",
             [
                 {"book": "GEN", "chapter": 1, "verse": 3, "text": "And God said, “Let there be light,”", "type": "para", "marker": "pmo"},
@@ -194,6 +220,26 @@ def test_list_multiline_verse(verse, verse_list):
                 "clothing stained by the flesh."
             )
         ),
+        # TODO: Actually center this
+        (
+            "Centered paragraph is not properly render.",
+            [
+                {"book": "Matthew", "chapter": 27, "verse": 37, "text": "Above His head they posted the written charge against Him:", "type": "para", "marker": "m"},
+                {"book": "Matthew", "chapter": 27, "verse": 37, "text": "", "type": "para", "marker": "b"},
+                {"book": "Matthew", "chapter": 27, "verse": 37, "text": "THIS IS JESUS,", "type": "para", "marker": "pc"},
+                {"book": "Matthew", "chapter": 27, "verse": 37, "text": "THE KING OF THE JEWS.", "type": "para", "marker": "pc"},
+                {"book": "Matthew", "chapter": 27, "verse": 37, "text": "", "type": "para", "marker": "b"},
+                {"book": "Matthew", "chapter": 27, "verse": 38, "text": "Two robbers", "type": "para", "marker": "m"},
+                {"book": "Matthew", "chapter": 27, "verse": 38, "text": " were crucified with Him, one on His right and the other on His left.", "type": "para", "marker": "m"},
+            ],
+            (
+                "Above His head they posted the written charge against Him:\n"
+                "\n"
+                "THIS IS JESUS,THE KING OF THE JEWS.\n"
+                "\n"
+                "Two robbers were crucified with Him, one on His right and the other on His left."
+            ),
+        ),
         (
             "Poetry within a paragraph is not rendered properly.",
             [
@@ -287,6 +333,20 @@ def test_list_multiline_verse(verse, verse_list):
             )
         ),
         # BUG: The last q2 of matt 1 23 is split by a footnote
+        # TODO: Right-align poetry response
+        (
+            "Failed to render poetry response.",
+            [
+                {"book": "Jeremiah", "chapter": 2, "verse": 12, "text": "Be stunned by this, O heavens;", "type": "para", "marker": "q1"},
+                {"book": "Jeremiah", "chapter": 2, "verse": 12, "text": "be shocked and utterly appalled,”", "type": "para", "marker": "q2"},
+                {"book": "Jeremiah", "chapter": 2, "verse": 12, "text": "declares the LORD.", "type": "para", "marker": "qr"},
+            ],
+            (
+                "Be stunned by this, O heavens;\n"
+                "  be shocked and utterly appalled,”\n"
+                "declares the LORD."
+            )
+        ),
         (
             "Failed to render all markup records of a verse without a trailing newline.",
             [
