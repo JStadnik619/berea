@@ -104,13 +104,12 @@ def wrap_long_lines(verses):
     return wrapped_verses
 
 
-# TODO: Format could be txt, md, or HTML
 # TODO: Rendering cross references/footnotes will require special handling
 # eg, [^1] or [^a] for markdown, anchors for HTML
 # superscript alphabetical characters for stdout?
-# TODO: Handle section headings
+# TODO: Handle section headings, subtitles, acrostic letters
 def render_markup(markup_records, verse_numbers=False, format='txt'):
-    PARAGRAPH_MARKERS = ['m', 'pmo', 'sc', 'p',]
+    PARAGRAPH_MARKERS = ['m', 'pmo', 'sc', 'p', 'pc',]
     verses = ''
     
     if verse_numbers:
@@ -142,6 +141,8 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
                 verses += ' ' + record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + verse_number_str + record['text']
+            elif record['marker'] == 'li2':
+                verses += '    ' + verse_number_str + record['text']
             elif record['marker'] == 'q1' and record['text']:
                 verses += '\n' + verse_number_str + record['text']
             elif record['marker'] == 'q2' and record['text']:
@@ -161,7 +162,9 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
                 verses += ' ' + record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + record['text']
-            elif record['marker'] == 'q1' and record['text']:
+            elif record['marker'] == 'li2':
+                verses += '    ' + record['text']
+            elif record['marker'] in ['q1', 'qr'] and record['text']:
                 verses += '\n' + record['text']
             elif record['marker'] == 'q2' and record['text']:
                 verses += '\n' + '  ' + record['text']
