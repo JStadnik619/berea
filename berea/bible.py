@@ -35,8 +35,8 @@ class BibleClient:
         self.database = f"{get_app_data_path('translations')}/{self.translation}.db"
     
     def download_bible(self):
-        # TODO: Rename repo and make public
-        url = f"https://github.com/JStadnik619/eBibleDatabases/tree/main/databases{self.translation}.db"
+        # TODO: Rename repo
+        url = f"https://github.com/jstadnik619/eBibleDatabases/raw/refs/heads/main/databases/{self.translation}.db"
 
         try:
             urllib.request.urlretrieve(url, self.database)
