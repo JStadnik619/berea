@@ -95,16 +95,16 @@ def test_validate_resource_abbreviations():
 
 
 @pytest.mark.parametrize(
-    "translation",
+    "translation, book_count, verse_count",
     [
-        ('KJV'),
-        ('BSB'),
+        ('KJV', 83, 32000),  # Apocrypha & extra verses from newer manuscripts
+        ('BSB', 66, 31086),
         # TODO: Restore LEB once successfully parsed
         # ('LEB'),   
         # TODO: Use different translation (WEB)       
     ]
 )
-def test_download_bible(translation):
+def test_download_bible(translation, book_count, verse_count):
     bible = BibleClient(translation)
     bible.download_bible()
 
@@ -117,8 +117,8 @@ def test_download_bible(translation):
     actual_tables = [row['name'] for row in cursor.execute(sql).fetchall()]
 
     table_record_counts = {
-        'books': 66,
-        'verses': 31102,
+        'books': book_count,
+        'fts_verses': verse_count,
     }
 
     msg = 'Renaming the database tables failed.'
