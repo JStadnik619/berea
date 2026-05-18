@@ -158,7 +158,7 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
         for record in markup_records:
             if record['marker'] in PARAGRAPH_MARKERS:
                 verses += record['text']
-            elif record['marker'] == 'add':
+            elif record['marker'] in ['add', 'tl']:
                 verses += ' ' + record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + record['text']

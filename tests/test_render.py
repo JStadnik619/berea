@@ -88,7 +88,7 @@ def test_list_multiline_verse(verse, verse_list):
             ),
         ),
         (
-            "Indented list items are not properly rendered properly.",
+            "Indented list items are not rendered properly.",
             [
                 {"book": "Numbers", "chapter": 1, "verse": 9, "text": "from Zebulun, Eliab son of Helon;", "type": "para", "marker": "li1"},
                 {"book": "Numbers", "chapter": 1, "verse": 9, "text": "", "type": "para", "marker": "b"},
@@ -385,7 +385,7 @@ def test_list_multiline_verse(verse, verse_list):
         ),
         # KJV Cambridge Paragraph Version
         (
-            "Small-cap text and translator's additions aren't rendered properly.",
+            "Small-cap text and translator's additions are not rendered properly.",
             [
                 {"book": "Genesis", "chapter": 1, "verse": 1, "text": "In", "type": "char", "marker": "sc"},
                 {"book": "Genesis", "chapter": 1, "verse": 1, "text": " the beginning God created the heaven and the earth.", "type": "para", "marker": "m"},
@@ -404,7 +404,22 @@ def test_list_multiline_verse(verse, verse_list):
                 "there was light. And God saw the light, that it was good: and God divided the\n"
                 "light from the darkness."
             )
-        )
+        ),
+        # John 19:13 LEB
+        (
+            "Transliterated/foreign words are not rendered properly.",
+            [
+                {"book": "John", "chapter": 19, "verse": 13, "text": "So Pilate,", "type": "para", "marker": "p"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": "when he", "type": "char", "marker": "add"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": " heard these words, brought Jesus outside and sat down on the judgment seat, in the place called The Stone Pavement (but", "type": "para", "marker": "p"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": "Gabbatha", "type": "char", "marker": "tl"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": " in Aramaic).", "type": "para", "marker": "p"},
+            ],
+            (
+                "So Pilate, when he heard these words, brought Jesus outside and sat down on the\n"
+                "judgment seat, in the place called The Stone Pavement (but Gabbatha in Aramaic)."
+            ),
+        ),
     ]
 )
 def test_render_markup(msg, markup_records, rendered_passage):
