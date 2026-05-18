@@ -295,8 +295,7 @@ def test_download_sets_default_translation(monkeypatch):
     [
         ('KJV'),
         ('BSB'),
-        # TODO: Restore LEB once successfully parsed
-        # ('LEB'),
+        ('LEB'),
         # TODO: Use different translation (WEB)        
     ]
 )
