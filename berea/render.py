@@ -168,7 +168,8 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
                 verses += '\n' + record['text']
             elif record['marker'] == 'q2' and record['text']:
                 verses += '\n' + '  ' + record['text']
-            # TODO: Handle higher levels of poetry indents (not used in BSB)
+            elif record['marker'] == 'q3' and record['text']:
+                verses += '\n' + '    ' + record['text']
             elif record['marker'] == 'b':
                 verses += '\n\n'
             else:

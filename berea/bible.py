@@ -142,7 +142,21 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'p', 'pc', 'sc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
+        WHERE marker IN (
+            'b',
+            'm',
+            'pmo',
+            'p',
+            'pc',
+            'sc',
+            'add',
+            'li1',
+            'li2',
+            'q1',
+            'q2',
+            'q3',
+            'qr'
+        )
         AND books.name = :book;
         """, params)
 
@@ -158,7 +172,21 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'p', 'pc', 'sc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
+        WHERE marker IN (
+            'b',
+            'm',
+            'pmo',
+            'p',
+            'pc',
+            'sc',
+            'add',
+            'li1',
+            'li2',
+            'q1',
+            'q2',
+            'q3',
+            'qr'
+        )
         AND books.name = :book
         AND chapter = :chapter;
         """, params)
@@ -188,7 +216,21 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'p', 'pc', 'sc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
+        WHERE marker IN (
+            'b',
+            'm',
+            'pmo',
+            'p',
+            'pc',
+            'sc',
+            'add',
+            'li1',
+            'li2',
+            'q1',
+            'q2',
+            'q3',
+            'qr'
+        )
         AND books.name = :book
         AND chapter = :chapter
         AND verse = :verse;
@@ -221,7 +263,21 @@ class BibleClient:
         cursor.execute("""
         SELECT verse, text, marker FROM markup
         JOIN books ON markup.book_id = books.id
-        WHERE marker IN ('b', 'm', 'pmo', 'sc', 'p', 'pc', 'add', 'li1', 'li2', 'q1', 'q2', 'qr')
+        WHERE marker IN (
+            'b',
+            'm',
+            'pmo',
+            'p',
+            'pc',
+            'sc',
+            'add',
+            'li1',
+            'li2',
+            'q1',
+            'q2',
+            'q3',
+            'qr'
+        )
         AND books.name = :book
         AND chapter = :chapter
         AND verse BETWEEN :verse_start AND :verse_end;

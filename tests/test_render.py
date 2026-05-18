@@ -347,6 +347,29 @@ def test_list_multiline_verse(verse, verse_list):
                 "declares the LORD."
             )
         ),
+        # Ecclesiates 1:9-10 LEB
+        (
+            "q3 lines are not properly rendered.",
+            [
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "What has been—it is what will be;", "type": "para", "marker": "q1"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "what has been done—it is what will be done;", "type": "para", "marker": "q2"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "there is nothing new under the sun.", "type": "para", "marker": "q3"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "There is a thing", "type": "para", "marker": "q1"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "of", "type": "char", "marker": "add"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": " which it is said, “Look at this! This is new!”", "type": "para", "marker": "q1"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "But", "type": "char", "marker": "add"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": " it already existed in ages past before us.", "type": "char", "marker": "q2"},
+            ],
+            (
+                "What has been—it is what will be;\n"
+                "  what has been done—it is what will be done;\n"
+                "    there is nothing new under the sun.\n"
+                # BUG: Poetry lines with add words are broken up (of, But)
+                "There is a thing of\n"
+                " which it is said, “Look at this! This is new!” But\n"
+                "   it already existed in ages past before us."
+            ),
+        ),
         (
             "Failed to render all markup records of a verse without a trailing newline.",
             [
