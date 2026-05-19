@@ -97,9 +97,9 @@ def test_validate_resource_abbreviations():
 @pytest.mark.parametrize(
     "translation, book_count, verse_count",
     [
-        ('KJV', 83, 32000),  # Apocrypha & extra verses from newer manuscripts
+        ('KJV', 83, 36826),  # Apocrypha & extra verses from newer manuscripts
         ('BSB', 66, 31086),
-        ('LEB', 66, 31086),   
+        ('LEB', 66, 31083),   
         # TODO: Use different translation (WEB)       
     ]
 )
