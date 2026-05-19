@@ -66,7 +66,7 @@ def valid_url(url, gen1_invalid=True):
         ),
         (
             "Creating link for a book",
-            "III John", None, None, "BSB",
+            "3 John", None, None, "BSB",
             "https://www.stepbible.org/?q=version=BSB@reference=3John&options=NVHUG"
         ),
     ]
