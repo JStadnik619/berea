@@ -136,16 +136,18 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
                 else:
                     verses += ' ' + verse_number_str + record['text']
             # TODO: Do adds ever occur at the start of the verse?
-            elif record['marker'] == 'add':
+            elif record['marker'] in ['add', 'tl']:
                 verses += ' ' + record['text']
             elif record['marker'] == 'li1':
                 verses += '  ' + verse_number_str + record['text']
             elif record['marker'] == 'li2':
                 verses += '    ' + verse_number_str + record['text']
-            elif record['marker'] == 'q1' and record['text']:
+            elif record['marker'] in ['q1', 'qr'] and record['text']:
                 verses += '\n' + verse_number_str + record['text']
             elif record['marker'] == 'q2' and record['text']:
                 verses += '\n' + '  ' + verse_number_str + record['text']
+            elif record['marker'] == 'q3' and record['text']:
+                verses += '\n' + '    ' + verse_number_str + record['text']
             elif record['marker'] == 'b':
                 verses += '\n\n'
                 contiguous_verse = False

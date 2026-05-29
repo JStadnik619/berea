@@ -532,6 +532,43 @@ def test_render_markup(msg, markup_records, rendered_passage):
                 "   despise wisdom and discipline."
             )
         ),
+        # Ecclesiates 1:9-10 LEB
+        (
+            "q3 lines are not properly rendered.",
+            [
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "What has been—it is what will be;", "type": "para", "marker": "q1"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "what has been done—it is what will be done;", "type": "para", "marker": "q2"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "there is nothing new under the sun.", "type": "para", "marker": "q3"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "There is a thing", "type": "para", "marker": "q1"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "of", "type": "char", "marker": "add"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": " which it is said, “Look at this! This is new!”", "type": "para", "marker": "q1"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": "But", "type": "char", "marker": "add"},
+                {"book": "Ecclesiastes", "chapter": 1, "verse": 9, "text": " it already existed in ages past before us.", "type": "char", "marker": "q2"},
+            ],
+            (
+                "9 What has been—it is what will be;\n"
+                "  what has been done—it is what will be done;\n"
+                "    there is nothing new under the sun.\n"
+                # BUG: Poetry lines with add words are broken up (of, But)
+                "There is a thing of\n"
+                " which it is said, “Look at this! This is new!” But\n"
+                "   it already existed in ages past before us."
+            ),
+        ),
+        # TODO: Right-align poetry response
+        (
+            "Failed to render poetry response.",
+            [
+                {"book": "Jeremiah", "chapter": 2, "verse": 12, "text": "Be stunned by this, O heavens;", "type": "para", "marker": "q1"},
+                {"book": "Jeremiah", "chapter": 2, "verse": 12, "text": "be shocked and utterly appalled,”", "type": "para", "marker": "q2"},
+                {"book": "Jeremiah", "chapter": 2, "verse": 12, "text": "declares the LORD.", "type": "para", "marker": "qr"},
+            ],
+            (
+                "12 Be stunned by this, O heavens;\n"
+                "  be shocked and utterly appalled,”\n"
+                "declares the LORD."
+            )
+        ),
         (
             "Chapter break without a verse number is not skipped.",
             [
@@ -581,7 +618,23 @@ def test_render_markup(msg, markup_records, rendered_passage):
                 "\n"
                 "Greet each of our friends there by name."
             ),
-        )
+        ),
+        # John 19:13 LEB
+        (
+            "Transliterated/foreign words are not rendered properly.",
+            [
+                {"book": "John", "chapter": 19, "verse": 13, "text": "So Pilate,", "type": "para", "marker": "p"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": "when he", "type": "char", "marker": "add"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": " heard these words, brought Jesus outside and sat down on the judgment seat, in the place called The Stone Pavement (but", "type": "para", "marker": "p"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": "Gabbatha", "type": "char", "marker": "tl"},
+                {"book": "John", "chapter": 19, "verse": 13, "text": " in Aramaic).", "type": "para", "marker": "p"},
+            ],
+            (
+                "13 So Pilate, when he heard these words, brought Jesus outside and sat down on\n"
+                "the judgment seat, in the place called The Stone Pavement (but Gabbatha in\n"
+                "Aramaic)."
+            ),
+        ),
     ]
 )    
 def test_render_markup_verse_mumbers(msg, markup_records, rendered_passage):
