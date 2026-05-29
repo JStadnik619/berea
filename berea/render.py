@@ -45,7 +45,7 @@ def get_indent(string):
 
 
 # This assumes that the last verse has a trailing newline
-def wrap_long_lines(verses):
+def wrap_long_lines(verses, line_length=80):
     """Replace the last space before the 80th character 
     in a line longer than 80 characters with a newline.
     """
@@ -58,15 +58,15 @@ def wrap_long_lines(verses):
         next_pos = verses.find('\n', current_pos)
         if next_pos == -1:
             break
-        line_length = next_pos - current_pos
+        current_line_length = next_pos - current_pos
         
-        if line_length > 80:
+        if current_line_length > line_length:
             indent = get_indent(verses[current_pos:next_pos])
             # Replace the last space before the 80th character with a newline
             last_space_pos = next_pos
             # Add as many newlines between current and next positions as needed
             while current_pos <= next_pos:
-                while (last_space_pos - current_pos) > 80:
+                while (last_space_pos - current_pos) > line_length:
                     last_space_pos = verses.rfind(" ", current_pos, last_space_pos)
                 
                 if last_space_pos != -1:
