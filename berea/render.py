@@ -18,7 +18,6 @@ def list_multiline_verse(verse):
     return lines
 
 
-# TODO: Replace consecutive spaces with single spaces
 # TODO: Input line length?
 def verses_to_wall_of_text(verse_records, verse_numbers=False, format='txt'): 
     verses = ''
@@ -199,14 +198,14 @@ def create_link_label(translation, book, chapter=None, verse=None):
 
 
 # TODO: Toggle wall of text (or replace pre tags with lines)
-def create_markdown_excerpt(bible_client, verse_records, book, chapter, verse, verse_numbers=False):
+def create_markdown_excerpt(bible_client, markup_records, book, chapter, verse, verse_numbers=False):
     """Generate Markdown excerpt for the verses.
 
     Args:
-        verse_records (_type_): _description_
+        markup_records (_type_): _description_
         params (_type_): _description_
     """
-    passage = render_markup(verse_records, verse_numbers, 'md')
+    passage = render_markup(markup_records, verse_numbers, 'md')
     book = bible_client.get_book_from_abbreviation(book)
     output = (
         f"[{create_link_label(bible_client.translation, book, chapter, verse)}]"
@@ -224,7 +223,7 @@ def render_reference_results(bible_client, format, markup_records, verse_numbers
     Args:
         bible_client (BibleClient): Used to create the link and label if needed.
         format (_type_): _description_
-        verse_records (_type_): _description_
+        markup_records (_type_): _description_
         verse_numbers (bool, optional): _description_. Defaults to False.
         book (_type_, optional): _description_. Defaults to None.
         chapter (_type_, optional): _description_. Defaults to None.
