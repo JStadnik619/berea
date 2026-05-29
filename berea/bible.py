@@ -35,8 +35,7 @@ class BibleClient:
         self.database = f"{get_app_data_path('translations')}/{self.translation}.db"
     
     def download_bible(self):
-        # TODO: Rename repo
-        url = f"https://github.com/jstadnik619/eBibleDatabases/raw/refs/heads/main/databases/{self.translation}.db"
+        url = f"https://github.com/jstadnik619/BibleDatabases/raw/refs/heads/main/databases/{self.translation}.db"
 
         try:
             urllib.request.urlretrieve(url, self.database)
@@ -44,7 +43,7 @@ class BibleClient:
             
         except HTTPError:
             # TODO: Create equivalent section on new repo's README
-            link = "https://github.com/jstadnik619/bible_databases?tab=readme-ov-file#available-translations-140"
+            link = "https://github.com/jstadnik619/BibleDatabases?tab=readme-ov-file#available-translations"
             msg = (
                 f"Translation '{self.translation}' does not exist.\n"
                 f"Check the following link for available translations:\n{link}"
