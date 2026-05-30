@@ -42,7 +42,6 @@ class BibleClient:
             return f"Downloaded: {self.database}"
             
         except HTTPError:
-            # TODO: Create equivalent section on new repo's README
             link = "https://github.com/jstadnik619/BibleDatabases?tab=readme-ov-file#available-translations"
             msg = (
                 f"Translation '{self.translation}' does not exist.\n"
