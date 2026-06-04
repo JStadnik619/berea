@@ -101,7 +101,7 @@ class BibleClient:
             SELECT * FROM books
             JOIN abbreviations ON abbreviations.book_id = books.id
             WHERE abbreviations.abbreviation = ?;
-            """, (book,)).fetchone()
+            """, (book.lower(),)).fetchone()
             
             if book_row:
                 return book_row['name']
