@@ -122,7 +122,6 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
             
             if record['verse'] > verse_number:
                 verse_number = record['verse']
-                verse_number_str = ''
                 match format:
                     case 'txt':
                         verse_number_str = str(verse_number) + ' '
@@ -153,7 +152,6 @@ def render_markup(markup_records, verse_numbers=False, format='txt'):
                 contiguous_verse = False
             else:
                 continue
-        verses = verses
     
     else: 
         for record in markup_records:

@@ -99,7 +99,7 @@ def test_validate_resource_abbreviations():
     [
         ('KJV', 83, 36826),  # Apocrypha & extra verses from newer manuscripts
         ('BSB', 66, 31086),
-        ('LEB', 66, 31083),   
+        ('LEB', 66, 31083),
         # TODO: Use different translation (WEB)       
     ]
 )
