@@ -220,6 +220,7 @@ def test_list_multiline_verse(verse, verse_list):
                 "clothing stained by the flesh."
             )
         ),
+        # BUG: Ephesians 1:4-5 BSB In loveHe
         # TODO: Actually center this
         (
             "Centered paragraph is not properly render.",
